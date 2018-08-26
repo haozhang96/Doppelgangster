@@ -17,16 +17,6 @@ const databaseServer: Promise<void> = new Promise((resolve, reject) => {
 	);
 });
 
-/*const serverIDs: { [name: string]: string; } = {
-	RRR: "171866567045283840",
-	Smiley: "177138757080711168"
-}, userIDs: { [name: string]: string; } = {
-	Me: "147458853456314368",
-	MyAlt: "460170831344042015",
-	Chako: "163873528586829824",
-	Smiley: "126581335438524416"
-};*/
-
 
 export class Doppelgangster implements IDiscordGuildAttachable {
 	// Public properties
