@@ -1,0 +1,40 @@
+<script>
+	$ = function (selector) { return document.getElementById(selector); };
+	
+	removeDuplicates = function (array) {
+		return [...new Set(array)];
+	};
+	
+	// Remove strings that are superstrings of other strings
+	// Beware of cases such as "fu"
+	removeSuperstrings = function (strings, substrings = strings, minimumLength = 0) {
+		return strings.filter(string => !substrings.some(_string => string.length >= minimumLength && (strings === substrings ? string.length > _string.length : string.length >= _string.length) && string.includes(_string)));
+	};
+	
+	loadInput = function (value) {
+		let values;
+		try {
+			values = JSON.parse(value);
+		} catch (_) {
+			values = value.split("\n");
+		} finally {
+			return removeDuplicates(values.map(value => value.trim().toLowerCase().replace(/[^\w\s]+/g, "")).filter(value => value.length)).sort();
+		}
+	};
+	
+	process = function () {
+		const profanities = window.profanities = loadInput($("profanities").value), slurs = window.slurs = loadInput($("slurs").value);
+		const outputP = profanities.filter(profanity => !slurs.includes(profanity)), outputS = slurs;
+		
+		console.log("Profanities:", profanities); console.log("Slurs:", slurs);
+		$("outputP").value = JSON.stringify(outputP); $("outputS").value = JSON.stringify(outputS);
+	};
+</script>
+
+<body style="margin: 0">
+	<textarea id="profanities" style="width: 23%; height: 100%" placeholder="Profanities"></textarea>
+	<textarea id="slurs" style="width: 23%; height: 100%" placeholder="Slurs"></textarea>
+	<textarea id="outputP" style="width: 23%; height: 100%" placeholder="Output (profanities without slurs)" readonly></textarea>
+	<textarea id="outputS" style="width: 23%; height: 100%" placeholder="Output (processed slurs)" readonly></textarea>
+	<button onclick="process()">Process</button>
+</body>
