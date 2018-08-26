@@ -127,4 +127,4 @@ export class Doppelgangster implements IDiscordGuildAttachable {
 }
 
 
-export const initialize: () => Promise<Doppelgangster | void> = Doppelgangster.initialize;
+export const initialize: typeof Doppelgangster.initialize = Doppelgangster.initialize;
