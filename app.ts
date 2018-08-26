@@ -13,4 +13,4 @@ process.on("uncaughtException", (error: Error) =>
 ).on("unhandledRejection", (error: Error, promise: Promise<any>) =>
 	Logger.warn("Unhandled promise rejection:", Utilities.Miscellaneous.stringifyError(error), $Utilities.inspect(promise))
 );
-Doppelgangster.initialize(); // Test account switch
+Doppelgangster.initialize();
