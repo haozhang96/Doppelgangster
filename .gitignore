@@ -1,0 +1,12 @@
+# Environment-specifics
+node_modules/
+database/
+.vscode/
+*.code-workspace
+
+# Compiled JavaScript files
+*.js
+*.js.map
+
+# Temporary
+Configurations.ts
