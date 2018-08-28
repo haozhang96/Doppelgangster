@@ -7,7 +7,7 @@ import { EventEmitter } from "events";
 
 import { Doppelgangster } from "@";
 import { DatabaseInterface } from "@/Gatekeeper/DatabaseInterface";
-import { IGatekeeperFingerprint } from "@/Gatekeeper/FingerprintInterface";
+import { IGatekeeperFingerprint } from "@/Gatekeeper/Interfaces";
 import { IDiscordGuildAttachable } from "@/Interfaces";
 import Logger from "@/Logger";
 import Configurations from "Configurations";

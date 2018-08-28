@@ -1,2 +1,2 @@
 export * from "./Gatekeeper";
-export * from "./FingerprintInterface";
+export * from "./Interfaces";
