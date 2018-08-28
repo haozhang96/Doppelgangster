@@ -1,21 +1,11 @@
 ﻿import * as Discord from "discord.js";
 import * as MongoDB from "mongodb";
-import * as ChildProcess from "child_process";
 
 import { Commander, Gatekeeper, ProfileMarshal } from "@";
 import { IDiscordGuildAttachable } from "@/Interfaces";
 import * as Utilities from "@/Utilities";
 import Logger from "@/Logger";
 import Configurations from "Configurations";
-
-
-const databaseServer: Promise<void> = new Promise((resolve, reject) => {
-	Logger.info("Starting database server...");
-	const process: ChildProcess.ChildProcess = ChildProcess.spawn(Configurations.doppelgangster.database.mongodbExecutablePath, ["--dbpath", "database"]);
-	process.on("exit", reject).stdout.on("data", output =>
-		output.toString().includes("waiting for connections on port") && Logger.info("Successfully started database server.") && resolve() && process.stdout.removeAllListeners("data")
-	);
-});
 
 
 export class Doppelgangster implements IDiscordGuildAttachable {
@@ -78,9 +68,8 @@ export class Doppelgangster implements IDiscordGuildAttachable {
 			await login();
 
 			// Connect to database
-			await databaseServer;
 			Logger.info("Connecting to database...");
-			const database: MongoDB.Db = (await MongoDB.connect("mongodb://localhost:27017", { useNewUrlParser: true } as any)).db("doppelgangster");
+			const database: MongoDB.Db = (await MongoDB.connect(Configurations.doppelgangster.database.mongodbConnectionString, { useNewUrlParser: true } as any)).db("doppelgangster");
 			Logger.info("Successfully connected to database.");
 
 			// Initialize modules
