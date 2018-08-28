@@ -10,7 +10,8 @@
         "**/*.js.map": true,
         "**/node_modules": true,
         "**/database": true,
-        "**/package-lock.json": true,
+        "*.code-workspace": true,
+        "package-lock.json": true,
         "LICENSE": true,
         "README.md": true
     }
