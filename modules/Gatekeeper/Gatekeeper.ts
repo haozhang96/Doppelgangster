@@ -38,7 +38,7 @@ export class Gatekeeper extends EventEmitter implements IDiscordGuildAttachable 
 	constructor(doppelgangster: Doppelgangster, backendDatabase: MongoDB.Db) {
 		super(); /*this.doppelgangster = doppelgangster;*/ this.backendDatabase = backendDatabase;
 
-		// Testing
+		// TODO: Testing
 		doppelgangster.discord.on("message", async message => {
 			if (this.attachedGuilds.includes(message.guild) && message.content === "~~" && !this.verificationSessions.find(session => session.guild === message.guild && session.user === message.author))
 				this.createSession(message.guild, message.author);
@@ -89,6 +89,8 @@ export class Gatekeeper extends EventEmitter implements IDiscordGuildAttachable 
 			
 			this.attachedGuilds.push(guild);
 		}
+
+		if (!this.isGuildAttached(guild)) this.attachedGuilds.push(guild); // TODO: Temporary
 		return this;
 	}
 
