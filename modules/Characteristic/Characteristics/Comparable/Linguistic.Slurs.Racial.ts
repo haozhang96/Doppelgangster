@@ -53,8 +53,8 @@ export default class extends ComparableCharacteristic<Data, Example> {
 		return new CharacteristicComparison(this, otherCharacteristic,
 			sameCount / uniqueCount,
             Utilities.Discord.matchMessages(
-                [...this.data.values()].flat(),
-                [...otherCharacteristic.data.values()].flat(),
+                ([] as Discord.Message[]).concat(...this.data.values()),
+                ([] as Discord.Message[]).concat(...otherCharacteristic.data.values()),
                 (thisMessage, otherMessage) => {
                     let matched: boolean = false;
                     for (const slur of unusedSlurs)
