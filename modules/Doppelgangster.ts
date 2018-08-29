@@ -60,9 +60,7 @@ export class Doppelgangster implements IDiscordGuildAttachable {
 				//}
 			}).on("disconnect", () => {
 				Logger.error("Doppelgangster has disconnected from Discord!");
-			})/*.on("ready", () => {
-				//Object.values(userIDs).map(id => guild.members.find("id", id).user).forEach(async user => await doppelgangster.profileMarshal.getUserProfile(user));
-			})*/;
+			});
 
 			// Log into Discord
 			await login();
