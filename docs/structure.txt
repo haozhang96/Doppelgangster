@@ -34,6 +34,7 @@
             + utilities
         + common
             + classes
+                .set
                 .tagged_event_listener
                 + expirable...
                 + pair...
@@ -53,10 +54,10 @@
             + types
                 .recursive_readonly
         + core
+            .doppelgangster
+                * Initialize core
+                * Initialize all modules by calling their initialize() method (maybe make this configurable?)
             + heuristic
-                .index
-                    * Initialize core
-                    * Initialize all modules by calling their initialize() method (maybe make this configurable?)
                 + characteristic
                     .characteristic
                     .characteristic_marshal
@@ -68,14 +69,14 @@
                     .profile_comparison
                     .profile_marshal
                     .profile_report
-            + interaction
+            + interaction / io
                 .command
                 .command_handler
                 + handlers
                     .plain_text
                     .web_interface?
             + logging
-            + persistence
+            + persistence (use waterline)
                 .model (data encapsulation)
                 .data_store (CRUD operations)
                 + encapsulation
@@ -97,6 +98,7 @@
         + utilities
             .array
             .collection
+            .cryptography
             .discord
             .event
             .logging

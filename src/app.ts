@@ -5,8 +5,10 @@ import "module-alias/register";
 import { Doppelgangster } from "@/core/doppelgangster";
 import * as Utilities from "@/utilities";
 
-// Import external components.
+// Import external libraries.
 import * as $Discord from "discord.js";
+
+// Import built-in libraries.
 import * as $Utilities from "util";
 
 /**
@@ -39,12 +41,15 @@ process.on("unhandledRejection", (error: unknown, promise: Promise<any>) =>
  * Initialization
  */
 
-// Display version information.
-Utilities.logging.info(`Versions: Node.js ${
+// Display runtime environment version information.
+Utilities.logging.info(`Runtime environment: Node.js v${
     process.version.slice(1)
-}, discord.js ${
+}, discord.js v${
     $Discord.version
 }`);
 
 // Initialize the bot.
-Doppelgangster.initialize();
+new Doppelgangster(); // tslint:disable-line:no-unused-expression
+
+// Display Doppelgangster version information.
+Utilities.logging.info(`Doppelgangster v${Doppelgangster.version}) started.`);

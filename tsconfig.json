@@ -19,6 +19,7 @@
     "sourceMap": true,
     "watch": true,
     "removeComments": true,
+    "resolveJsonModule": true,
     
     // Type-checking options
     "strict": true,
