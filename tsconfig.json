@@ -2,16 +2,15 @@
   "compileOnSave": true,
   "compilerOptions": {
     // Compilation paths
-    "rootDir": "src",
+    "rootDir": "",
     "outDir": "dist",
     
     // Module resolution paths
     "baseUrl": "",
     "paths": {
-      "$/*": ["./*"], // App root
-      "@": ["modules/."], // Doppelgangster main
-      "@/*": ["modules/*"], // Doppelgangster components
-      "Configurations": ["Configurations"] // Configurations
+      "?/*": ["conf/*"], // Configurations root
+      "$/*": ["data/*"], // Data root
+      "@/*": ["src/*"], // Source code root
     },
 
     // Compilation parameters

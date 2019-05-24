@@ -1,0 +1,1 @@
+export { IDiscordGuildAttachable } from "./guild_attachable";

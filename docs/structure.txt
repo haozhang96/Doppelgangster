@@ -1,0 +1,116 @@
++ Doppelgangster ($)
+    + conf
+        .discord
+        .persistence
+        + modules
+            .commander
+    + data (processed data)
+        + dictionaries
+            .profanities
+            + slurs
+                .ethnic_slurs
+                .sexual_slurs
+    + docs
+    + ext (external bot components)
+    + res (unprocessed or unrelated data?)
+        + dictionaries...
+    + src (@)
+        .app
+        + characteristics
+            + comparable
+                + behavior
+                + connection
+                + linguistic
+                + system
+            + incomparable
+                + behavior
+                + connection
+                + linguistic
+                + system
+        + commands
+            + administrative
+            + analytical
+            + debugging
+            + utilities
+        + common
+            + classes
+                .tagged_event_listener
+                + expirable...
+                + pair...
+            + errors
+                .not_implemented
+                .not_overridden
+            + interfaces
+                .collection
+                + traits
+                    .exemplifiable
+                    .initializable
+                    .scorable
+                    .serializable (unneeded due to data model?)
+                    .weightable
+                    + discord
+                        .guild_attachable
+            + types
+                .recursive_readonly
+        + core
+            + heuristic
+                .index
+                    * Initialize core
+                    * Initialize all modules by calling their initialize() method (maybe make this configurable?)
+                + characteristic
+                    .characteristic
+                    .characteristic_marshal
+                    .comparable_characteristic
+                    .incomparable_characteristic
+                + profile
+                    .profile
+                    .profile_analysis
+                    .profile_comparison
+                    .profile_marshal
+                    .profile_report
+            + interaction
+                .command
+                .command_handler
+                + handlers
+                    .plain_text
+                    .web_interface?
+            + logging
+            + persistence
+                .model (data encapsulation)
+                .data_store (CRUD operations)
+                + encapsulation
+                    .json
+                    .sql
+                    .xml
+                + stores
+                    + database
+                        .mongodb
+                        .mysql
+                    + file
+                        .json
+                        .sqlite
+                        .xml
+        + modules (optional components; should be removable without errors)
+            + gatekeeper (server lockdown)
+                + database
+            + ?
+        + utilities
+            .array
+            .collection
+            .discord
+            .event
+            .logging
+            .math
+            .miscellaneous
+            .object
+            .reflection
+            .set
+            .string
+        
+    
+
+
+Report output:
+* Send plain text?
+* Send rich embed
+* Generate a webpage?

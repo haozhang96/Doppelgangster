@@ -8,4 +8,5 @@ dist/
 *.js.map
 
 # Temporary
+conf/
 Configurations.ts
