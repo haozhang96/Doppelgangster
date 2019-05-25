@@ -1,7 +1,7 @@
 import { Set as SetUtilities } from "@/utilities/set";
 
 /**
- * The ExtendedSet class extends the built-in Set class to provides set
+ * The ExtendedSet class extends the built-in Set class to provide set
  *   operations.
  */
 export class ExtendedSet<T> extends Set<T> {

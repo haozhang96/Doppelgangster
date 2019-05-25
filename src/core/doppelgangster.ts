@@ -1,6 +1,11 @@
 // Import internal components.
+import { IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import { getModules, Module } from "./module";
+import {
+    Controller, ControllerConstructor, getControllers,
+} from "@/core/base/controller";
+import { getModules, Module, ModuleConstructor } from "@/core/base/module";
+import { Object } from "@/utilities";
 
 // Import external libraries.
 import * as $Discord from "discord.js";
@@ -9,9 +14,9 @@ import * as $Discord from "discord.js";
 import { EventEmitter } from "events";
 
 // Import configurations.
-import { Discord } from "?/discord";
+import { Discord as DiscordConfigs } from "?/discord";
 
-// Import application version from package.json.
+// Import the application version from package.json.
 import { version as application_version } from "@/../package.json";
 
 /**
@@ -23,30 +28,37 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
     // Public variables
     public readonly discord: $Discord.Client;
-    public readonly modules: readonly Module[];
+    public readonly controllers: Readonly<IMappedObject<Controller>>;
+    public readonly modules: Readonly<IMappedObject<Module>>;
 
     constructor() {
         super();
 
+        // Instantiate all controllers.
+        this.controllers = Object.mapValues<ControllerConstructor, Controller>(
+            getControllers(), (_Controller) => new _Controller(this),
+        );
+
+        // Instantiate all modules.
+        this.modules = Object.mapValues<ModuleConstructor, Module>(
+            getModules(), (_Module) => new _Module(this),
+        );
+
         // Create a new discord.js client.
         const discord: $Discord.Client = this.discord = new $Discord.Client();
 
-        // ?
-        discord.login(Discord.api_token);
-
-        // Instantiate all enabled module instances.
-        this.modules = getModules().filter((_Module) =>
-            _Module.enabled,
-        ).map((_Module) =>
-            new _Module(this),
-        );
-
-        return;
+        // Log into Discord.
+        discord.login(DiscordConfigs.api_token);
     }
 
     public async destroy(): Promise<void> {
-        // Destroy all modules.
-        for (const module of this.modules) {
+        // Destroy all controller instances.
+        for (const controller of global.Object.values(this.controllers)) {
+            await controller.destroy();
+        }
+
+        // Destroy all module instances.
+        for (const module of global.Object.values(this.modules)) {
             await module.destroy();
         }
 

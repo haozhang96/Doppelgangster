@@ -2,7 +2,7 @@
 import "module-alias/register";
 
 // Import internal components.
-import { Doppelgangster } from "@/core/doppelgangster";
+import { Doppelgangster } from "@/core";
 import * as Utilities from "@/utilities";
 
 // Import external libraries.
@@ -48,8 +48,10 @@ Utilities.logging.info(`Runtime environment: Node.js v${
     $Discord.version
 }`);
 
+// Display Doppelgangster version information.
+Utilities.logging.info(`Initializing Doppelgangster v${
+    Doppelgangster.version
+})...`);
+
 // Initialize the bot.
 new Doppelgangster(); // tslint:disable-line:no-unused-expression
-
-// Display Doppelgangster version information.
-Utilities.logging.info(`Doppelgangster v${Doppelgangster.version}) started.`);

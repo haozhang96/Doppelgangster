@@ -1,10 +1,12 @@
+import { Callback, Optional } from "@/common/types";
+
 // Import built-in libraries.
 import { EventEmitter } from "events";
 
 async function listenWithTimeout<T>(
     emitter: EventEmitter,
     event: string,
-    handler: (...args: any[]) => T | undefined,
+    handler: Callback<any, Optional<T>>,
     timeout: number,
     failureReturn?: T,
 ): Promise<T> {
@@ -12,7 +14,7 @@ async function listenWithTimeout<T>(
     return new Promise<T>((resolve) => {
         // Wrap the handler in our own so we can process timeouts.
         const _handler: () => void = (...args: any[]) => {
-            const returned: T | undefined = handler.call(null, ...args);
+            const returned: Optional<T> = handler.call(null, ...args);
             if (returned !== undefined) {
                 resolve(returned);
                 emitter.removeListener(event, _handler);
