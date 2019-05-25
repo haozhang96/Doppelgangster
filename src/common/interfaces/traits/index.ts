@@ -1,3 +1,4 @@
+export { IDestructible } from "./destructible";
 export { IExemplifiable } from "./exemplifiable";
 export { IExpirable } from "./expirable";
 export { IInitializable, IStaticInitializable } from "./initializable";

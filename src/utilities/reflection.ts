@@ -1,5 +1,21 @@
+// Import internal components.
 import { IClass, IClassConstructionArray } from "@/common/interfaces/class";
 import { IInstance } from "@/common/interfaces/instance";
+
+// Import internal libraries.
+import { FileSystem } from ".";
+
+/**
+ * Return all the default classes in every file found within a given directory.
+ * @param directory The directory to recursively scan for classes
+ */
+function getClassesInDirectory<T>(directory: string): T[] {
+    return FileSystem.getAllFilePaths(directory).filter((file) =>
+        file.endsWith(".ts"),
+    ).map((file) =>
+        require(file.slice(0, -3)).default,
+    );
+}
 
 /**
  * Return the type name of an object.
@@ -111,6 +127,7 @@ function mixIn(
 
 // Expose components.
 export const Reflection = {
+    getClassesInDirectory,
     getTypeOf,
     mixIn,
 };
