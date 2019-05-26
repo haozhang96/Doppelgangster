@@ -17,7 +17,7 @@ export abstract class ModuleController extends Controller {
 
         // Instantiate all modules.
         this.modules = Utilities.object.mapValues<ModuleConstructor, Module>(
-            getModules(), (_Module) => new _Module(doppelgangster),
+            getModules(), (_Module) => new _Module(this),
         );
     }
 

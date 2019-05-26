@@ -1,9 +1,8 @@
 // Import internal components.
 import { IMappedObject } from "@/common/interfaces";
 import { Optional } from "@/common/types";
-import {
-    DisableableComponent, DisableableComponentConstructor,
-} from "@/core/base/components";
+import { DisableableComponent } from "@/core/base/components";
+import { CommandController } from "@/core/base/controllers";
 import {
     ICommandArgument, ICommandArguments,
     ICommandCallContext,
@@ -367,6 +366,14 @@ export abstract class Command extends DisableableComponent {
     private _help?: string;
 
     /**
+     * Construct a Command instance.
+     * @param controller A CommandController instance to attach to
+     */
+    constructor(public readonly controller: CommandController) {
+        super(controller.doppelgangster);
+    }
+
+    /**
      * Return the help documentations string a la command-line style.
      */
     public get help(): string {
@@ -591,5 +598,6 @@ export abstract class Command extends DisableableComponent {
 /**
  * Define the command's constructor type with the abstract property removed.
  */
-export type CommandConstructor =
-    DisableableComponentConstructor<typeof Command, Command>;
+export type CommandConstructor = typeof Command & (
+    new (controller: CommandController) => Command
+);

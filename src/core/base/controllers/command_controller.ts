@@ -25,7 +25,7 @@ export abstract class CommandController extends Controller implements IDiscordGu
 
         // Instantiate all commands.
         this.commands =
-            getCommands().map((_Command) => new _Command(doppelgangster));
+            getCommands().map((_Command) => new _Command(this));
     }
 
     public attachGuild(guild: $Discord.Guild): this {

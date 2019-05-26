@@ -1,8 +1,6 @@
 // Import internal components.
-import {
-    DisableableComponent, DisableableComponentConstructor,
-} from "@/core/base/components";
-import { Doppelgangster } from "@/core/doppelgangster";
+import { DisableableComponent } from "@/core/base/components";
+import { ModuleController } from "@/core/base/controllers";
 import { Logging } from "@/utilities";
 
 /**
@@ -11,10 +9,10 @@ import { Logging } from "@/utilities";
 export abstract class Module extends DisableableComponent {
     /**
      * Construct a Module instance.
-     * @param doppelgangster A Doppelgangster instance to attach to
+     * @param controller A ModuleController instance to attach to
      */
-    constructor(doppelgangster: Doppelgangster) {
-        super(doppelgangster);
+    constructor(public readonly controller: ModuleController) {
+        super(controller.doppelgangster);
         Logging.info(`Instantiating the ${this.constructor.name} module...`);
     }
 }
@@ -22,5 +20,6 @@ export abstract class Module extends DisableableComponent {
 /**
  * Define the module's constructor type with the abstract property removed.
  */
-export type ModuleConstructor =
-    DisableableComponentConstructor<typeof Module, Module>;
+export type ModuleConstructor = typeof Module & (
+    new (controller: ModuleController) => Module
+);

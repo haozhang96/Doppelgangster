@@ -10,7 +10,7 @@ export abstract class Component implements IDestructible {
      * Construct a Component instance.
      * @param doppelgangster A Doppelgangster instance to attach to
      */
-    constructor(public doppelgangster: Doppelgangster) { }
+    constructor(public readonly doppelgangster: Doppelgangster) { }
 
     // @Override
     public abstract destroy(): void;
