@@ -18,8 +18,7 @@ import * as $Utilities from "util";
 // Catch uncaught exceptions.
 process.on("uncaughtException", (error: Error) =>
     Utilities.logging.warn(
-        "Uncaught exception:",
-        Utilities.miscellaneous.stringifyError(error),
+        "Uncaught exception:", Utilities.misc.stringifyError(error),
     ),
 );
 
@@ -29,7 +28,7 @@ process.on("unhandledRejection", (error: unknown, promise: Promise<any>) =>
         "Unhandled promise rejection:",
         (
             error instanceof Error ?
-                Utilities.miscellaneous.stringifyError(error)
+                Utilities.misc.stringifyError(error)
             :
                 error
         ),
@@ -54,4 +53,4 @@ Utilities.logging.info(`Initializing Doppelgangster v${
 })...`);
 
 // Initialize the bot.
-new Doppelgangster(); // tslint:disable-line:no-unused-expression
+export const doppelgangster: Doppelgangster = new Doppelgangster();
