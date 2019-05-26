@@ -18,7 +18,7 @@ export abstract class CommandController extends Controller implements IDiscordGu
     public readonly commands: readonly Command[];
 
     // Private properties
-    private readonly _attachedGuilds: $Discord.Guild[] = [];
+    protected readonly _attachedGuilds: $Discord.Guild[] = [];
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);

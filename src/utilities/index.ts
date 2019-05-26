@@ -1,3 +1,4 @@
+export { DiscordUtils, DiscordUtils as discord } from "./discord";
 export { EventUtils, EventUtils as event } from "./event";
 export { FileSystemUtils, FileSystemUtils as file_system } from "./file_system";
 export { IterableUtils, IterableUtils as iterable } from "./iterable";
