@@ -53,4 +53,4 @@ Utilities.logging.info(`Initializing Doppelgangster v${
 })...`);
 
 // Initialize the bot.
-export const doppelgangster: Doppelgangster = new Doppelgangster();
+export let doppelgangster: Doppelgangster = new Doppelgangster();
