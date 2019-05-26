@@ -1,0 +1,1 @@
+export { BasicModuleController } from "./basic";

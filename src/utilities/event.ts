@@ -33,6 +33,6 @@ async function listenWithTimeout<T>(
 }
 
 // Expose components.
-export const Event = {
+export const EventUtils = {
     listenWithTimeout,
 };

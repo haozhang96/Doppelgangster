@@ -1,13 +1,10 @@
-// Keep a reference to the original Set object.
-const $Set: globalThis.SetConstructor = global.Set;
-
 /**
  * Return an array of sets given an array of iterables.
  * @param iterables An array of iterables to coerce into sets
  */
 function coerceIterables<T>(iterables: Array<Iterable<T>>): Array<Set<T>> {
     return iterables.map((iterable) =>
-        iterable instanceof $Set ? iterable : new $Set(iterable),
+        iterable instanceof Set ? iterable : new Set(iterable),
     );
 }
 
@@ -17,7 +14,7 @@ function coerceIterables<T>(iterables: Array<Iterable<T>>): Array<Set<T>> {
  */
 function difference<T>(mainSet: Set<T>, ...otherSets: Array<Set<T>>): Set<T> {
     const unionOthers: Set<T> = union(...otherSets);
-    return new $Set([...mainSet].filter((value) => !unionOthers.has(value)));
+    return new Set([...mainSet].filter((value) => !unionOthers.has(value)));
 }
 
 /**
@@ -29,9 +26,9 @@ function intersect<T>(...sets: Array<Set<T>>): Set<T> {
     //   Array.sort() and Array.splice() mutate the original array.
     const intersection: Set<T> = (
         sets.length > 0 ?
-            new $Set(sets.sort((a, b) => a.size - b.size).splice(0, 1)[0])
+            new Set(sets.sort((a, b) => a.size - b.size).splice(0, 1)[0])
         :
-            new $Set()
+            new Set()
     );
 
     // Remove values from the intersection set that do not exist in every other
@@ -50,11 +47,11 @@ function intersect<T>(...sets: Array<Set<T>>): Set<T> {
  * @param sets An array of sets to union together
  */
 function union<T>(...sets: Array<Set<T>>): Set<T> {
-    return new $Set(sets.map((set) => [...set]).flat());
+    return new Set(sets.map((set) => [...set]).flat());
 }
 
 // Expose components.
-export const Set = {
+export const SetUtils = {
     coerceIterables,
     difference,
     intersect,

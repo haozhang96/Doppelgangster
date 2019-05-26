@@ -1,52 +1,31 @@
 // Import internal components.
-import { IDisableable } from "@/common/interfaces/traits";
-import { Doppelgangster } from "@/core/doppelgangster";
-import { Path, Reflection } from "@/utilities";
+import {
+    DisableableComponent, DisableableComponentConstructor,
+} from "@/core/base/components";
 
 /**
  * STUB
  */
-export abstract class Command implements IDisableable {
+export abstract class Command extends DisableableComponent {
+    // Public variables
+    // @Override
+    public abstract readonly aliases: string[];
+    public readonly description?: string;
+    public readonly arguments?: ICommandArgument[];
+    public readonly parameters?: ICommandParameters;
+
+    // Protected variables
+    protected readonly permitted?: CommandPermissible[];
+
     // Private variables
-    private _enabled: boolean = true;
+    private _help?: string;
 
-    /**
-     * Construct a Command instance.
-     * @param doppelgangster A Doppelgangster instance
-     */
-    constructor(public doppelgangster: Doppelgangster) { }
-
-    /**
-     * Return whether the command is enabled.
-     */
-    public get enabled(): boolean {
-        return this._enabled;
-    }
-
-    /**
-     * Enable the command.
-     */
-    public enable(): void {
-        this._enabled = true;
-    }
-
-    /**
-     * Disable the command.
-     */
-    public disable(): void {
-        this._enabled = false;
-    }
+    // @Override
+    public abstract async handler(context: ICommandCallContext): Promise<void>;
 }
 
 /**
  * Define the command's constructor type with the abstract property removed.
  */
 export type CommandConstructor =
-    typeof Command & (new (doppelgangster: Doppelgangster) => Command);
-
-/**
- * Return all the available commands found in /src/commands.
- */
-export function getCommands(): CommandConstructor[] {
-    return Reflection.getClassesInDirectory(Path.sourceRootResolve("commands"));
-}
+    DisableableComponentConstructor<typeof Command, Command>;

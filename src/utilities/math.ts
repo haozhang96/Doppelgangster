@@ -3,6 +3,6 @@ function calculateSimilarity(a: number, b: number, factor: number): number {
 }
 
 // Expose components.
-export const Math = {
+export const MathUtils = {
     calculateSimilarity,
 };

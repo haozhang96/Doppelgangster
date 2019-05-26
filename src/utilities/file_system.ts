@@ -11,6 +11,6 @@ function getAllFilePaths(root: string): string[] {
 }
 
 // Expose components.
-export const FileSystem = {
+export const FileSystemUtils = {
     getAllFilePaths,
 };

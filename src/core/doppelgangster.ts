@@ -1,11 +1,8 @@
 // Import internal components.
 import { IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import {
-    Controller, ControllerConstructor, getControllers,
-} from "@/core/base/controller";
-import { getModules, Module, ModuleConstructor } from "@/core/base/module";
-import { Object } from "@/utilities";
+import { Controller, ControllerConstructor } from "@/core/base/controllers";
+import * as Utilities from "@/utilities";
 
 // Import external libraries.
 import * as $Discord from "discord.js";
@@ -14,7 +11,8 @@ import * as $Discord from "discord.js";
 import { EventEmitter } from "events";
 
 // Import configurations.
-import { Discord as DiscordConfigs } from "?/discord";
+import * as ControllerConfigs from "?/controllers";
+import * as DiscordConfigs from "?/discord";
 
 // Import the application version from package.json.
 import { version as application_version } from "@/../package.json";
@@ -29,20 +27,16 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
     // Public variables
     public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IMappedObject<Controller>>;
-    public readonly modules: Readonly<IMappedObject<Module>>;
 
     constructor() {
         super();
 
         // Instantiate all controllers.
-        this.controllers = Object.mapValues<ControllerConstructor, Controller>(
-            getControllers(), (_Controller) => new _Controller(this),
-        );
-
-        // Instantiate all modules.
-        this.modules = Object.mapValues<ModuleConstructor, Module>(
-            getModules(), (_Module) => new _Module(this),
-        );
+        this.controllers =
+            Utilities.object.mapValues<ControllerConstructor, Controller>(
+                ControllerConfigs.controllers,
+                (_Controller) => new _Controller(this),
+            );
 
         // Create a new discord.js client.
         const discord: $Discord.Client = this.discord = new $Discord.Client();
@@ -55,11 +49,6 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         // Destroy all controller instances.
         for (const controller of global.Object.values(this.controllers)) {
             await controller.destroy();
-        }
-
-        // Destroy all module instances.
-        for (const module of global.Object.values(this.modules)) {
-            await module.destroy();
         }
 
         // Destroy the discord.js client.

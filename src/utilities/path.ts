@@ -9,6 +9,6 @@ function sourceRootResolve(...pathSegments: string[]): string {
 }
 
 // Expose components.
-export const Path = {
+export const PathUtils = {
     sourceRootResolve,
 };

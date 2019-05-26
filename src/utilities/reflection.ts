@@ -126,7 +126,7 @@ function mixIn(
 }
 
 // Expose components.
-export const Reflection = {
+export const ReflectionUtils = {
     getClassesInDirectory,
     getTypeOf,
     mixIn,

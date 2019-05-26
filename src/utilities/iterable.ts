@@ -6,6 +6,6 @@ function hasIntersection<T>(...iterables: Array<Iterable<T>>): boolean {
 }
 
 // Expose components.
-export const Iterable = {
+export const IterableUtils = {
     hasIntersection,
 };

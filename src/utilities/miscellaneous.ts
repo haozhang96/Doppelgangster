@@ -24,6 +24,6 @@ function stringifyError(
 }
 
 // Expose components.
-export const Miscellaneous = {
+export const MiscUtils = {
     stringifyError,
 };

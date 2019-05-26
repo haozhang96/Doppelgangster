@@ -16,6 +16,6 @@ function mapValues<T, U = T>(
 }
 
 // Expose components.
-export const Object = {
+export const ObjectUtils = {
     mapValues,
 };
