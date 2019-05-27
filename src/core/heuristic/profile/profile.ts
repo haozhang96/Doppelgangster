@@ -1,5 +1,5 @@
 // Import internal components.
-import { EventEmitter, Expirable, Mix } from "@/common/classes/mixins";
+import { EventEmitter, Expirable, Mix } from "@/common/mixins";
 import { IMappedObject } from "@/common/interfaces";
 import { IExpirable } from "@/common/interfaces/traits";
 import { Optional } from "@/common/types";

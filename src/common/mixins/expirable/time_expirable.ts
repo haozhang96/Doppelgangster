@@ -1,6 +1,6 @@
 import {
     IRefreshCallbackDescriptor, RefreshableExpirable, RefreshCallback,
-} from "@/common/classes/mixins/expirable";
+} from "@/common/mixins/expirable";
 import { InstantiableClass, Optional } from "@/common/types";
 
 export function TimeExpirable<ClassT extends InstantiableClass>(
