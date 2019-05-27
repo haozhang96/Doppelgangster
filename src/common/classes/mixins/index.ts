@@ -1,5 +1,6 @@
 export { EventEmitter } from "./event_emitter";
+export { Expirable, RefreshableExpirable, TimeExpirable } from "./expirable";
 
-// Create a reference to the abstract class deabstractifier utility function.
-import { ReflectionUtils } from "@/utilities";
-export const _ = ReflectionUtils.deabstractifyClass;
+// Expose a short-hand reference to the mix-in composer.
+import { MixInComposer } from "./mixin_composer";
+export const Mix = MixInComposer.mix;
