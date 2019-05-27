@@ -1,7 +1,6 @@
 // Import internal components.
 import { Component, ComponentConstructor } from "@/core/base/components";
 import { Doppelgangster } from "@/core/doppelgangster";
-import { Logging } from "@/utilities";
 
 /**
  * STUB
@@ -13,7 +12,7 @@ export abstract class Controller extends Component {
      */
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
-        Logging.info(`Instantiating the ${
+        doppelgangster.logger.info(`Instantiating the ${
             this.constructor.name
         } controller...`);
     }

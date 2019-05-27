@@ -2,9 +2,9 @@
  * A normal or abstract class
  */
 // export type Class = () => void & { prototype: { constructor: Class; }; };
-export interface IClass<InstanceT = any> {
+export interface IClass<InstanceT = any> extends Function {
     prototype: { constructor: IClass; };
-    new (): InstanceT;
+    new (...args: any[]): InstanceT;
 }
 
 /**

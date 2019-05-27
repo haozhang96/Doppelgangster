@@ -1,7 +1,10 @@
 // Import internal components.
-import { IMappedObject } from "@/common/interfaces";
+import { ILogger, IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import { Controller, ControllerConstructor } from "@/core/base/controllers";
+import { Optional } from "@/common/types";
+import {
+    Controller, ControllerConstructor, LoggingController,
+} from "@/core/base/controllers";
 import * as Utilities from "@/utilities";
 
 // Import external libraries.
@@ -28,6 +31,12 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
     public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IMappedObject<Controller>>;
 
+    public get logger(): ILogger {
+        return Object.values(this.controllers).find((_controller) =>
+            _controller instanceof LoggingController,
+        ) as Optional<LoggingController> || Utilities.logging;
+    }
+
     constructor() {
         super();
 
@@ -47,7 +56,7 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
     public async destroy(): Promise<void> {
         // Destroy all controller instances.
-        for (const controller of global.Object.values(this.controllers)) {
+        for (const controller of Object.values(this.controllers)) {
             await controller.destroy();
         }
 

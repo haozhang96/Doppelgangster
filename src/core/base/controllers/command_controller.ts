@@ -2,9 +2,7 @@
 import { IDiscordGuildAttachable } from "@/common/interfaces/traits/discord";
 import { Doppelgangster } from "@/core";
 import { Controller, ControllerConstructor } from "@/core/base/controllers";
-import {
-    Command, CommandConstructor,
-} from "@/core/interaction/command/command";
+import { Command, CommandConstructor } from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
 // Import external libraries.

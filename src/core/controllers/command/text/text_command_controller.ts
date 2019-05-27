@@ -195,7 +195,7 @@ export class TextCommandController extends CommandController {
                     return;
                 }
             } catch (error) {
-                Utilities.logging.warn(
+                this.doppelgangster.logger.warn(
                     "An error has occurred while parsing a command:",
                     Utilities.misc.stringifyError(error),
                 );
@@ -260,7 +260,7 @@ export class TextCommandController extends CommandController {
             try {
                 context = commandClass.buildCallContext(descriptor, message);
             } catch (error) {
-                Utilities.logging.warn(
+                this.doppelgangster.logger.warn(
                     "An error has occurred while building the call context for"
                     + "a command:",
                     Utilities.misc.stringifyError(error),
@@ -281,7 +281,7 @@ export class TextCommandController extends CommandController {
             try {
                 command.handler(context);
             } catch (error) {
-                Utilities.logging.warn(
+                this.doppelgangster.logger.warn(
                     "An error has occurred while executing a command:",
                     Utilities.misc.stringifyError(error),
                 );

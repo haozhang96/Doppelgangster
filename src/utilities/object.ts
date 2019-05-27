@@ -8,7 +8,7 @@ function mapValues<T, U = T>(
 ): IMappedObject<U> {
     const newObject: IMappedObject<U> = {};
 
-    for (const [key, value] of global.Object.entries(object)) {
+    for (const [key, value] of Object.entries(object)) {
         newObject[key] = callback(value);
     }
 

@@ -1,16 +1,26 @@
 // Import internal components.
-import { IClass, IClassConstructionArray } from "@/common/interfaces/class";
-import { IInstance } from "@/common/interfaces/instance";
+import {
+    IClass, IClassConstructionArray, IInstance,
+} from "@/common/interfaces";
+import { Class, InstantiableClass } from "@/common/types";
 
 // Import internal libraries.
-import { FileSystem } from ".";
+import { FileSystemUtils } from "./file_system";
+
+/**
+ * Deabstractify an abstract class for TypeScript's type-checking system.
+ * @param AbstractClass An abstract class to deabstractify
+ */
+function deabstractifyClass<ClassT extends Class>(AbstractClass: ClassT) {
+    return AbstractClass as ClassT & InstantiableClass;
+}
 
 /**
  * Return all the default classes in every file found within a given directory.
  * @param directory The directory to recursively scan for classes
  */
 function getClassesInDirectory<T>(directory: string): T[] {
-    return FileSystem.getAllFilePaths(directory).filter((file) =>
+    return FileSystemUtils.getAllFilePaths(directory).filter((file) =>
         file.endsWith(".ts"),
     ).map((file) =>
         require(file.slice(0, -3)).default,
@@ -54,27 +64,27 @@ function getTypeOf(
 /**
  * Applies mix-in instance and/or class properties to a base instance or class
  * @param Base The base instance or class to apply the mix-ins to
- * @param Mixins The mix-in instances and/or classes to apply to the base
+ * @param MixIns The mix-in instances and/or classes to apply to the base
  */
 function mixIn(
     Base: IInstance | IClass,
-    Mixins: Array<IInstance | IClass | IClassConstructionArray>,
+    MixIns: Array<IInstance | IClass | IClassConstructionArray>,
 ): typeof Base {
     // Perform runtime argument type checks that cannot be done at compile time.
     if (!Base || Base.constructor === Object) {
         // Make sure the base is non-null and that it's not just a generic
         //   object.
         throw new TypeError(
-            "You must pass a valid instance or class for the base argument!"
+            "You must pass a valid instance or class for the base argument!",
         );
     } else {
         // Make sure all the mix-ins are valid instances and/or classes.
-        for (const [index, Mixin] of Mixins.entries()) {
-            if (!Mixin || Mixin.constructor === Object) {
+        for (const [index, MixIn] of MixIns.entries()) {
+            if (!MixIn || MixIn.constructor === Object) {
                 // Make sure the mix-in is non-null and that it's not just a
                 //   generic object.
                 throw new TypeError(`${
-                    Mixin
+                    MixIn
                 } @ Mixins[${
                     index
                 }] is not a valid instance or class!`);
@@ -83,10 +93,10 @@ function mixIn(
     }
 
     // Apply mix-ins
-    for (const _Mixin of Mixins) {
-        const Mixin: any = _Mixin instanceof Array ? _Mixin[0] : _Mixin;
+    for (const _MixIn of MixIns) {
+        const Mixin: any = _MixIn instanceof Array ? _MixIn[0] : _MixIn;
         const mixinConstructorArguments: any[] =
-            _Mixin instanceof Array ? _Mixin.slice(1) : [];
+            _MixIn instanceof Array ? _MixIn.slice(1) : [];
 
         const isConstructor: boolean = Mixin.constructor === Function;
         const classProperties: PropertyDescriptorMap =
@@ -127,6 +137,7 @@ function mixIn(
 
 // Expose components.
 export const ReflectionUtils = {
+    deabstractifyClass,
     getClassesInDirectory,
     getTypeOf,
     mixIn,

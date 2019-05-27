@@ -1,33 +1,9 @@
-import { doppelgangster } from "@/app"; // Circular import?
-import { LoggingController } from "@/core/base/controllers";
+// Import internal components.
+import { ILogger } from "@/common/interfaces";
 
-// Wait for a logging controller to exist in the global Doppelgangster instance.
-const started: number = Date.now();
-const checker = setInterval(() => {
-    // Find a new logging controller.
-    const controller =
-        Object.values(doppelgangster.controllers).find((_controller) =>
-            _controller instanceof LoggingController,
-        );
-
-    if (controller) {
-        // Switch to the new logging controller.
-        clearInterval(checker);
-        const oldControllerName: string =
-            Logging.constructor ? Logging.constructor.name : "" + Logging;
-        Logging.info(`Switching to the ${controller.constructor.name} logger.`);
-        Logging = controller as LoggingController;
-        Logging.info(`Switched from the ${oldControllerName} logger.`);
-    } else if (Date.now() - started >= 15000) {
-        // If no new logging controler was found after 15 seconds, assume there
-        //   won't ever be one.
-        clearInterval(checker);
-    }
-}, 500);
-
-// Define a basic console logger as the default logger.
+// Define a basic console logger as the default global logger.
 // tslint:disable:no-console
-export let Logging = {
+let Logger: ILogger = {
     debug: console.debug,
     error: console.error,
     fatal: (...args: any[]) => console.error("[!!! FATAL !!!]", ...args),
@@ -38,13 +14,26 @@ export let Logging = {
 };
 // tslint:enable:no-console
 
+/**
+ * Set the logger to be used globally.
+ * @param logger A logger
+ */
+function setLogger(logger: ILogger): void {
+    const oldLoggerName: string =
+        Logger.constructor ? Logger.constructor.name : "" + Logger;
+    Logging.info(`Switching to the ${logger.constructor.name} logger.`);
+    Logger = logger;
+    Logging.info(`Switched from the ${oldLoggerName} logger.`);
+}
+
 // Expose components.
-/*export const Logging = {
+export const Logging: ILogger & { readonly setLogger: typeof setLogger } = {
     debug: (...args: any[]) => Logger.debug(...args),
     error: (...args: any[]) => Logger.error(...args),
     fatal: (...args: any[]) => Logger.fatal(...args),
     info: (...args: any[]) => Logger.info(...args),
     log: (...args: any[]) => Logger.log(...args),
+    setLogger,
     trace: (...args: any[]) => Logger.trace(...args),
     warn: (...args: any[]) => Logger.warn(...args),
-};*/
+};

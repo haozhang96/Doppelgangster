@@ -26,7 +26,7 @@ export abstract class ModuleController extends Controller {
      */
     public async destroy(): Promise<void> {
         // Destroy all module instances.
-        for (const module of global.Object.values(this.modules)) {
+        for (const module of Object.values(this.modules)) {
             await module.destroy();
         }
     }

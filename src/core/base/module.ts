@@ -1,7 +1,6 @@
 // Import internal components.
 import { DisableableComponent } from "@/core/base/components";
 import { ModuleController } from "@/core/base/controllers";
-import { Logging } from "@/utilities";
 
 /**
  * STUB
@@ -13,7 +12,9 @@ export abstract class Module extends DisableableComponent {
      */
     constructor(public readonly controller: ModuleController) {
         super(controller.doppelgangster);
-        Logging.info(`Instantiating the ${this.constructor.name} module...`);
+        controller.doppelgangster.logger.info(`Instantiating the ${
+            this.constructor.name
+        } module...`);
     }
 }
 
