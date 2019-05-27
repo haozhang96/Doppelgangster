@@ -1,5 +1,5 @@
 // Import internal components.
-import { Mix, EventEmitter, Expirable } from "@/common/classes/mixins";
+import { EventEmitter, Expirable, Mix } from "@/common/classes/mixins";
 import { IMappedObject } from "@/common/interfaces";
 import { IExpirable } from "@/common/interfaces/traits";
 import { Optional } from "@/common/types";
@@ -9,7 +9,13 @@ import { ProfileController } from "@/core/base/controllers";
 /**
  * STUB
  */
-export class Profile extends Mix(DisableableComponent).with(EventEmitter).with(Expirable).done() {
+export class Profile extends Mix(
+    DisableableComponent,
+).with(
+    EventEmitter,
+).with(
+    Expirable,
+).done() implements IExpirable {
     /**
      * Construct a Profile instance.
      * @param controller A ProfileController instance to attach to
@@ -28,4 +34,3 @@ export class Profile extends Mix(DisableableComponent).with(EventEmitter).with(E
 }
 
 const a = new Profile();
-a.
