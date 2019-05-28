@@ -8,8 +8,8 @@ import { EventEmitter as $EventEmitter } from "events";
 const prototype: typeof $EventEmitter.prototype = $EventEmitter.prototype;
 
 /**
- * STUB
- * @param Base 
+ * Define a proxied mix-in implementation of the built-in EventEmitter class.
+ * @param Base The base class to apply the mix-in to
  */
 export function EventEmitter<ClassT extends InstantiableClass>(Base: ClassT) {
     return class extends Base implements $EventEmitter {

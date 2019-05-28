@@ -8,11 +8,10 @@ import { ProfileController } from "@/core/base/controllers";
 /**
  * STUB
  */
-export class Profile extends
-    Mix(DisableableComponent)
+export class Profile extends Mix(DisableableComponent)
     .with(EventEmitter)
     .with(Expirable)
-.done() {
+.compose() {
     /**
      * Construct a Profile instance.
      * @param controller A ProfileController instance to attach to
