@@ -41,7 +41,7 @@ export abstract class CommandController extends Controller implements IDiscordGu
     }
 
     /**
-     * Destroy the command controller instance.
+     * Destroy the CommandController instance.
      */
     public async destroy(): Promise<void> {
         // Destroy all command instances.

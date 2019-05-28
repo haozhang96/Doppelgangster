@@ -1,1 +1,1 @@
-export { IDiscordGuildAttachable } from "./guild_attachable";
+export * from "./guild_attachable";

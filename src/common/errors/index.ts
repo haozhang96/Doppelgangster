@@ -1,2 +1,2 @@
-export { NotImplementedError } from "./not_implemented";
-export { NotOverriddenError } from "./not_overridden";
+export * from "./not_implemented";
+export * from "./not_overridden";

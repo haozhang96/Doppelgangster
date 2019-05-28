@@ -1,5 +1,5 @@
-export { EventEmitter } from "./event_emitter";
-export { Expirable, RefreshableExpirable, TimeExpirable } from "./expirable";
+export * from "./event_emitter";
+export * from "./expirable";
 
 // Expose a short-hand reference to the mix-in composer.
 import { MixInComposer } from "./mixin_composer";

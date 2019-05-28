@@ -1,2 +1,2 @@
-export { Command, CommandConstructor } from "./command";
-export { ICommandCallContext } from "./interfaces";
+export * from "./command";
+export * from "./interfaces";

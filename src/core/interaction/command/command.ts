@@ -25,17 +25,251 @@ import { runInNewContext as safeEval } from "vm";
 export abstract class Command extends DisableableComponent {
     // Public constants
     // @Override
-    public static readonly aliases: string[];
-    public static readonly description?: string;
-    public static readonly _arguments?: ICommandArguments;
-    public static readonly parameters?: ICommandParameters;
+    public abstract readonly aliases: string[];
+    public readonly description?: string;
+    public readonly arguments?: ICommandArguments;
+    public readonly parameters?: ICommandParameters;
+
+    // Protected variables
+    protected readonly permitted?: CommandPermissible[];
+
+    // Private variables
+    private _help?: string;
+
+    /**
+     * Construct a Command instance.
+     * @param controller A CommandController instance to attach to
+     */
+    constructor(public readonly controller: CommandController) {
+        super(controller.doppelgangster);
+    }
+
+    /**
+     * Return the help documentations string a la command-line style.
+     */
+    public get help(): string {
+        if (this._help) {
+            this._help = `${ // Description
+                this.description
+                || "There is no description for this command."
+            }\nUsage: ${ // Command aliases
+                this.aliases.length > 1 ?
+                    "(" + this.aliases.join("|") + ")"
+                :
+                    this.aliases[0]
+            }${ // Required arguments
+                this.arguments ?
+                    " " + this.arguments.filter((argument) =>
+                        !argument.optional,
+                    ).map((argument) =>
+                        argument.name
+                        || "arg" + (
+                            (this.arguments as ICommandArguments)
+                                .indexOf(argument) + 1
+                        ),
+                    ).join(" ")
+                :
+                    ""
+            }${ // Required parameters
+                this.parameters ?
+                    " "
+                    + Object.values(this.parameters).filter((parameter) =>
+                        !parameter.optional,
+                    ).map((parameter) =>
+                        `-${ // Find the shortest alias for the parameter.
+                            (parameter.aliases || []).concat(
+                                Object.keys(
+                                    this.parameters as ICommandParameters,
+                                ).find((name) =>
+                                    (
+                                        this.parameters as any
+                                    )[name] === parameter,
+                                ) || [],
+                            ).sort((a, b) => a.length - b.length)[0]
+                        } <${
+                            parameter.type || "@string"
+                        }>`,
+                    ).join(" ")
+                :
+                    ""
+            }${ // Full arguments
+                this.arguments ?
+                    "\n\nArguments:\n\t" + (() => {
+                        const names: string[] =
+                            this.arguments.map((argument) =>
+                                (
+                                    argument.name
+                                    || "arg" + (
+                                        (
+                                            this.arguments as any
+                                        ).indexOf(argument) + 1
+                                    )
+                                ) + (
+                                    argument.default !== undefined ?
+                                        "=" + argument.default
+                                    : argument.optional ?
+                                        "?"
+                                    :
+                                        ""
+                                ),
+                            );
+                        const types: string[] =
+                            this.arguments.map((argument) =>
+                                argument.type || "@string",
+                            );
+                        const descriptions: string[] =
+                            this.arguments.map((argument) =>
+                                argument.description
+                                || "<no description available>",
+                            );
+                        const maxNameLength: number =
+                            names.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        const maxTypeLength: number =
+                            types.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        const maxDescriptionLength: number =
+                            descriptions.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        return names.map((name, index) =>
+                            name.padEnd(maxNameLength)
+                            + "      "
+                            + types[index].padEnd(maxTypeLength)
+                            + "      "
+                            + descriptions[index].padEnd(maxDescriptionLength),
+                        ).join("\n\t");
+                    })()
+                :
+                    ""
+            }${ // Full parameters
+                this.parameters ? "\n\nParameters:\n\t" + (() => {
+                    const aliases: string[] =
+                        Object.keys(this.parameters).map((name) => {
+                            const parameter: ICommandParameter = (
+                                this.parameters as ICommandParameters
+                            )[name];
+                            const _aliases: string[] = (
+                                parameter.aliases || []
+                            ).concat(name);
+                            return `-${
+                                _aliases.length > 1 ?
+                                    "(" + _aliases.filter((alias) =>
+                                        alias.length <= 15,
+                                    ).sort((a, b) =>
+                                        a.length - b.length,
+                                    ).join("|") + ")"
+                                :
+                                    _aliases[0]
+                            }${
+                                parameter.default !== undefined ?
+                                    "=" + parameter.default
+                                : parameter.optional ?
+                                    "?"
+                                :
+                                    ""
+                            }`;
+                        });
+                    const types: string[] =
+                        Object.values(this.parameters).map((parameter) =>
+                            parameter.type || "@string",
+                        );
+                    const descriptions: string[] =
+                        Object.values(this.parameters).map((parameter) =>
+                            parameter.description
+                            || "<no description available>",
+                        );
+                    const maxAliasLength: number =
+                        aliases.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    const maxTypeLength: number =
+                        types.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    const maxDescriptionLength: number =
+                        descriptions.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    return aliases.map((alias, index) =>
+                        alias.padEnd(maxAliasLength)
+                        + "      "
+                        + types[index].padEnd(maxTypeLength)
+                        + "      "
+                        + descriptions[index].padEnd(maxDescriptionLength),
+                    ).join("\n\t");
+                })() : ""
+            }`;
+        }
+        return this._help as string;
+    }
+
+    /**
+     * Check whether the context of a message has the necessary command
+     *   permission.
+     * @param message A Discord message
+     */
+    public isMessagePermitted(message: $Discord.Message): boolean {
+        // If permitted isn't initialized, assume everyone has permission.
+        if (this.permitted === undefined) {
+            return true;
+        }
+
+        // Check username.
+        if (this.permitted.includes(message.author)) {
+            return true;
+        }
+
+        // Check user ID.
+        if (this.permitted.includes(message.author.id)) {
+            return true;
+        }
+
+        // Check Discord role.
+        if (message.member.roles.array().some((role) =>
+            this.permitted && this.permitted.includes(role) || false,
+        )) {
+            return true;
+        }
+
+        // Check Discord permission.
+        if (this.permitted.some((permission) => {
+            try {
+                // This might throw an exception on error.
+                return message.member.hasPermission(
+                    $Discord.Permissions.resolve(permission as any),
+                    false, true, true,
+                );
+            } catch (_) {
+                return false;
+            }
+        })) {
+            return true;
+        }
+
+        // The user does not have permission to execute this command.
+        return false;
+    }
+
+    /**
+     * Destroy the Command instance.
+     */
+    public destroy(): void {
+        // Do nothing for now.
+        return;
+    }
+
+    // @Override
+    public abstract async handler(context: ICommandCallContext): Promise<void>;
 
     /**
      * Build a call context from a parsed command descriptor.
      * @param descriptor A parsed command descriptor
      * @param message The Discord message that was used to create the descriptor
      */
-    public static buildCallContext(
+    public buildCallContext(
         descriptor: ICommandParsedDescriptor,
         message: $Discord.Message,
     ): ICommandCallContext {
@@ -50,7 +284,7 @@ export abstract class Command extends DisableableComponent {
      * Build a call context's arguments from a parsed command descriptor.
      * @param descriptor A parsed command descriptor
      */
-    private static buildCallContextArguments(
+    private buildCallContextArguments(
         descriptor: ICommandParsedDescriptor,
     ): ICommandCallContextArguments {
         const rawArguments: any[] = [];
@@ -59,8 +293,8 @@ export abstract class Command extends DisableableComponent {
 
         // Calculate the maximum argument index to iterate over.
         const maxIndex: number = (
-            this._arguments ?
-                Math.max(this._arguments.length, descriptor.arguments.length)
+            this.arguments ?
+                Math.max(this.arguments.length, descriptor.arguments.length)
             :
                 descriptor.arguments.length
         );
@@ -71,7 +305,7 @@ export abstract class Command extends DisableableComponent {
             // Note that this may go out of range if the descriptor arguments
             //   array is longer.
             const commandArgument: Optional<ICommandArgument> =
-                this._arguments && this._arguments[index];
+                this.arguments && this.arguments[index];
 
             // Extract the descriptor's argument at the current index.
             // Note that this may go out of range if the command arguments array
@@ -194,7 +428,7 @@ export abstract class Command extends DisableableComponent {
      * Build a call context's parameters from a parsed command descriptor.
      * @param descriptor A parsed command descriptor
      */
-    private static buildCallContextParameters(
+    private buildCallContextParameters(
         descriptor: ICommandParsedDescriptor,
     ): ICommandCallContextParameters {
         const parameters: IMappedObject<unknown> = {};
@@ -358,241 +592,6 @@ export abstract class Command extends DisableableComponent {
 
         return parameters;
     }
-
-    // Protected variables
-    protected readonly permitted?: CommandPermissible[];
-
-    // Private variables
-    private _help?: string;
-
-    /**
-     * Construct a Command instance.
-     * @param controller A CommandController instance to attach to
-     */
-    constructor(public readonly controller: CommandController) {
-        super(controller.doppelgangster);
-    }
-
-    /**
-     * Return the help documentations string a la command-line style.
-     */
-    public get help(): string {
-        if (this._help === undefined) {
-            const thisClass: CommandConstructor = this.constructor as any;
-            this._help = `${ // Description
-                thisClass.description
-                || "There is no description for this command."
-            }\nUsage: ${ // Command aliases
-                thisClass.aliases.length > 1 ?
-                    "(" + thisClass.aliases.join("|") + ")"
-                :
-                    thisClass.aliases[0]
-            }${ // Required arguments
-                thisClass._arguments ?
-                    " " + thisClass._arguments.filter((argument) =>
-                        !argument.optional,
-                    ).map((argument) =>
-                        argument.name
-                        || "arg" + (
-                            (thisClass._arguments as ICommandArguments)
-                                .indexOf(argument) + 1
-                        ),
-                    ).join(" ")
-                :
-                    ""
-            }${ // Required parameters
-                thisClass.parameters ?
-                    " "
-                    + Object.values(thisClass.parameters).filter((parameter) =>
-                        !parameter.optional,
-                    ).map((parameter) =>
-                        `-${ // Find the shortest alias for the parameter.
-                            (parameter.aliases || []).concat(
-                                Object.keys(
-                                    thisClass.parameters as ICommandParameters,
-                                ).find((name) =>
-                                    (
-                                        thisClass.parameters as any
-                                    )[name] === parameter,
-                                ) || [],
-                            ).sort((a, b) => a.length - b.length)[0]
-                        } <${
-                            parameter.type || "@string"
-                        }>`,
-                    ).join(" ")
-                :
-                    ""
-            }${ // Full arguments
-                thisClass._arguments ?
-                    "\n\nArguments:\n\t" + (() => {
-                        const names: string[] =
-                            thisClass._arguments.map((argument) =>
-                                (
-                                    argument.name
-                                    || "arg" + (
-                                        (
-                                            thisClass._arguments as any
-                                        ).indexOf(argument) + 1
-                                    )
-                                ) + (
-                                    argument.default !== undefined ?
-                                        "=" + argument.default
-                                    : argument.optional ?
-                                        "?"
-                                    :
-                                        ""
-                                ),
-                            );
-                        const types: string[] =
-                            thisClass._arguments.map((argument) =>
-                                argument.type || "@string",
-                            );
-                        const descriptions: string[] =
-                            thisClass._arguments.map((argument) =>
-                                argument.description
-                                || "<no description available>",
-                            );
-                        const maxNameLength: number =
-                            names.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        const maxTypeLength: number =
-                            types.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        const maxDescriptionLength: number =
-                            descriptions.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        return names.map((name, index) =>
-                            name.padEnd(maxNameLength)
-                            + "      "
-                            + types[index].padEnd(maxTypeLength)
-                            + "      "
-                            + descriptions[index].padEnd(maxDescriptionLength),
-                        ).join("\n\t");
-                    })()
-                :
-                    ""
-            }${ // Full parameters
-                thisClass.parameters ? "\n\nParameters:\n\t" + (() => {
-                    const aliases: string[] =
-                        Object.keys(thisClass.parameters).map((name) => {
-                            const parameter: ICommandParameter = (
-                                thisClass.parameters as ICommandParameters
-                            )[name];
-                            const _aliases: string[] = (
-                                parameter.aliases || []
-                            ).concat(name);
-                            return `-${
-                                _aliases.length > 1 ?
-                                    "(" + _aliases.filter((alias) =>
-                                        alias.length <= 15,
-                                    ).sort((a, b) =>
-                                        a.length - b.length,
-                                    ).join("|") + ")"
-                                :
-                                    _aliases[0]
-                            }${
-                                parameter.default !== undefined ?
-                                    "=" + parameter.default
-                                : parameter.optional ?
-                                    "?"
-                                :
-                                    ""
-                            }`;
-                        });
-                    const types: string[] =
-                        Object.values(thisClass.parameters).map((parameter) =>
-                            parameter.type || "@string",
-                        );
-                    const descriptions: string[] =
-                        Object.values(thisClass.parameters).map((parameter) =>
-                            parameter.description
-                            || "<no description available>",
-                        );
-                    const maxAliasLength: number =
-                        aliases.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    const maxTypeLength: number =
-                        types.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    const maxDescriptionLength: number =
-                        descriptions.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    return aliases.map((alias, index) =>
-                        alias.padEnd(maxAliasLength)
-                        + "      "
-                        + types[index].padEnd(maxTypeLength)
-                        + "      "
-                        + descriptions[index].padEnd(maxDescriptionLength),
-                    ).join("\n\t");
-                })() : ""
-            }`;
-        }
-        return this._help;
-    }
-
-    /**
-     * Check whether the context of a message has the necessary command
-     *   permission.
-     * @param message A Discord message
-     */
-    public isMessagePermitted(message: $Discord.Message): boolean {
-        // If permitted isn't initialized, assume everyone has permission.
-        if (this.permitted === undefined) {
-            return true;
-        }
-
-        // Check username.
-        if (this.permitted.includes(message.author)) {
-            return true;
-        }
-
-        // Check user ID.
-        if (this.permitted.includes(message.author.id)) {
-            return true;
-        }
-
-        // Check Discord role.
-        if (message.member.roles.array().some((role) =>
-            this.permitted && this.permitted.includes(role) || false,
-        )) {
-            return true;
-        }
-
-        // Check Discord permission.
-        if (this.permitted.some((permission) => {
-            try {
-                // This might throw an exception on error.
-                return message.member.hasPermission(
-                    $Discord.Permissions.resolve(permission as any),
-                    false, true, true,
-                );
-            } catch (_) {
-                return false;
-            }
-        })) {
-            return true;
-        }
-
-        // The user does not have permission to execute this command.
-        return false;
-    }
-
-    /**
-     * Destroy the command instance.
-     */
-    public destroy(): void {
-        // Do nothing for now.
-        return;
-    }
-
-    // @Override
-    public abstract async handler(context: ICommandCallContext): Promise<void>;
 }
 
 /**

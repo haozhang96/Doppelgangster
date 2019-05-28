@@ -1,1 +1,1 @@
-export { ConsoleLoggingController } from "./console_logging_controller";
+export * from "./console_logging_controller";

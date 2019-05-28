@@ -22,7 +22,7 @@ export abstract class ModuleController extends Controller {
     }
 
     /**
-     * Destroy the module controller instance.
+     * Destroy the ModuleController instance.
      */
     public async destroy(): Promise<void> {
         // Destroy all module instances.

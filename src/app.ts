@@ -8,4 +8,4 @@ import { Doppelgangster } from "@/core";
 Doppelgangster.suppressUncaughtExceptions();
 
 // Initialize the bot.
-export let doppelgangster: Doppelgangster = new Doppelgangster();
+export const doppelgangster: Doppelgangster = new Doppelgangster();

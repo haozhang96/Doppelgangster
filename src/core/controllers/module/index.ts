@@ -1,1 +1,1 @@
-export { BasicModuleController } from "./basic_module_controller";
+export * from "./basic_module_controller";

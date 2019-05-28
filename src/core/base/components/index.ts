@@ -1,4 +1,2 @@
-export { Component, ComponentConstructor } from "./component";
-export {
-    DisableableComponent, DisableableComponentConstructor,
-} from "./disableable_component";
+export * from "./component";
+export * from "./disableable_component";

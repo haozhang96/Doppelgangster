@@ -78,6 +78,9 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         discord.login(DiscordConfigs.api_token);
     }
 
+    /**
+     * Destroy the Doppelgangster instance.
+     */
     public async destroy(): Promise<void> {
         // Destroy all controller instances.
         for (const controller of Object.values(this.controllers)) {

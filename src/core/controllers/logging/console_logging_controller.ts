@@ -17,7 +17,7 @@ export class ConsoleLoggingController extends LoggingController {
     public warn = Tracer.warn;
 
     /**
-     * Destroy the console logging controller instance.
+     * Destroy the ConsoleLoggingController instance.
      */
     public destroy(): void {
         return;

@@ -1,4 +1,3 @@
-export { Pair } from "./pair";
-export { UniquePair } from "./unique_pair";
-
-export { PairStore, OrderedPairStore, UnorderedPairStore } from "./store";
+export * from "./pair";
+export * from "./store";
+export * from "./unique_pair";

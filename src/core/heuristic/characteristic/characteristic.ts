@@ -1,56 +1,111 @@
 // Import internal components.
-import { IDisableable } from "@/common/interfaces/traits";
-import { Doppelgangster } from "@/core/doppelgangster";
-import { Path, Reflection } from "@/utilities";
+import { IMappedObject } from "@/common/interfaces";
+import { IWeightable } from "@/common/interfaces/traits";
+import { EventEmitter, Expirable, Mix } from "@/common/mixins";
+import { Optional } from "@/common/types";
+import { DisableableComponent } from "@/core/base/components";
+import { Profile } from "@/core/heuristic/profile/profile";
+import { PathUtils, ReflectionUtils } from "@/utilities";
 
 /**
  * STUB
  */
-export abstract class Characteristic implements IDisableable {
-    // Private variables
-    private _enabled: boolean = true;
+export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
+    .with(EventEmitter)
+    .with(Expirable)
+.compose() implements IWeightable {
+    // Public constants
+    // @Override
+    public abstract readonly name: string;
+    public abstract readonly description: string;
+    public abstract readonly weight: number;
+
+    // Private properties
+    private _data: Optional<DataT>;
 
     /**
      * Construct a Characteristic instance.
-     * @param doppelgangster A Doppelgangster instance
+     * @param profile A Profile instance
      */
-    constructor(public doppelgangster: Doppelgangster) { }
+    constructor(public readonly profile: Profile) {
+        super(profile.doppelgangster);
 
-    /**
-     * Return whether the characteristic is enabled.
-     */
-    public get enabled(): boolean {
-        return this._enabled;
+        if (this.initializer) {
+            this.initializer();
+        }
+        this.collector();
+    }
+
+    public get hasData(): boolean {
+        const data: any = this._data;
+        return data !== undefined && !!(
+            typeof data.length === "number" ?
+                data.length
+            : typeof data.size === "number" ?
+                data.size
+            :
+                true
+        );
     }
 
     /**
-     * Enable the characteristic.
+     * Destroy the Characteristic instance.
      */
-    public enable(): void {
-        this._enabled = true;
+    public destroy(): void {
+        // Do nothing for now.
+        return;
     }
 
-    /**
-     * Disable the characteristic.
-     */
-    public disable(): void {
-        this._enabled = false;
+    public findSelfInProfile(profile: Profile): Optional<this> {
+        return profile.characteristics.find((characteristic) =>
+            characteristic instanceof this.constructor,
+        ) as Optional<this>;
     }
+
+    public toString(): string {
+        return `[${
+            this instanceof IncomparableCharacteristic ? "Inc" : "C"
+        }omparableCharacteristic@${
+            this.weight
+        }] ${
+            this.name
+        }: ${
+            this.description
+        }`;
+    }
+
+    protected get configurations(): IMappedObject {
+        return this._configurations || Configurations.doppelgangster.characteristic.characteristics[this.name];
+    }
+
+    protected get data(): Optional<DataT> {
+        return this._data;
+    }
+
+    protected set data(data: Optional<DataT>) {
+        if (this._data !== (this._data = data) && !this._initialized) {
+            this.emit("data");
+        }
+    }
+
+    // @Override
+    protected async initializer?(): Promise<void>;
+    protected abstract async collector(): Promise<void>;
 }
 
 /**
  * Define the characteristic's constructor type with the abstract property
  *   removed.
  */
-export type CharacteristicConstructor = typeof Characteristic & (
-    new (doppelgangster: Doppelgangster) => Characteristic
+export type CharacteristicConstructor<DataT = any> = typeof Characteristic & (
+    new (profile: Profile) => Characteristic<DataT>
 );
 
 /**
  * Return all the available characteristics found in /src/characteristics.
  */
 export function getCharacteristics(): CharacteristicConstructor[] {
-    return Reflection.getClassesInDirectory(
-        Path.sourceRootResolve("characteristics"),
+    return ReflectionUtils.getClassesInDirectory(
+        PathUtils.sourceRootResolve("characteristics"),
     );
 }

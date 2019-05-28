@@ -1,1 +1,1 @@
-export { CommandPermissible } from "./command_permissible";
+export * from "./command_permissible";

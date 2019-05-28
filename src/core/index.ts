@@ -1,1 +1,1 @@
-export { Doppelgangster } from "./doppelgangster";
+export * from "./doppelgangster";

@@ -1,1 +1,1 @@
-export { TextCommandController } from "./text_command_controller";
+export * from "./text_command_controller";

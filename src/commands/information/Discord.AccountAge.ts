@@ -2,10 +2,10 @@ import { Command, ICommandCallContext } from "@/core/interaction/command";
 import { DiscordUtils } from "@/utilities";
 
 export default class extends Command {
-    public static aliases = ["accountage", "accage", "age"];
-    public static description =
+    public aliases = ["accountage", "accage", "age"];
+    public description =
         "Calculate the account age of a Discord user given their user ID.";
-    public static _arguments = [
+    public arguments = [
         {
             description: "User ID for the user to calculate the account age of",
             name: "userID",
