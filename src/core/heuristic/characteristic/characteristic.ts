@@ -1,10 +1,9 @@
 // Import internal components.
-import { IMappedObject } from "@/common/interfaces";
 import { IWeightable } from "@/common/interfaces/traits";
 import { EventEmitter, Expirable, Mix } from "@/common/mixins";
 import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
-import { Profile } from "@/core/heuristic/profile/profile";
+import { Profile } from "@/core/heuristic/profile";
 import { PathUtils, ReflectionUtils } from "@/utilities";
 
 /**
@@ -36,6 +35,9 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
         this.collector();
     }
 
+    /**
+     * Whether the characteristic has any data depending on its type
+     */
     public get hasData(): boolean {
         const data: any = this._data;
         return data !== undefined && !!(
@@ -64,8 +66,8 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
 
     public toString(): string {
         return `[${
-            this instanceof IncomparableCharacteristic ? "Inc" : "C"
-        }omparableCharacteristic@${
+            this.constructor.name
+        }@${
             this.weight
         }] ${
             this.name
@@ -74,16 +76,16 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
         }`;
     }
 
-    protected get configurations(): IMappedObject {
-        return this._configurations || Configurations.doppelgangster.characteristic.characteristics[this.name];
-    }
-
     protected get data(): Optional<DataT> {
         return this._data;
     }
 
     protected set data(data: Optional<DataT>) {
-        if (this._data !== (this._data = data) && !this._initialized) {
+        const oldData = this._data;
+        this._data = data;
+
+        // Notify listeners of data change.
+        if (data !== oldData) {
             this.emit("data");
         }
     }

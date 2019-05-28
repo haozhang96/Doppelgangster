@@ -1,12 +1,14 @@
 // Import internal components.
 import { EventEmitter, Expirable, Mix } from "@/common/mixins";
-import { IMappedObject } from "@/common/interfaces";
 import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
     Characteristic, getCharacteristics,
 } from "@/core/heuristic/characteristic";
+import {
+    ProfileAnalysis, ProfileComparison, ProfileReport,
+} from "@/core/heuristic/profile";
 
 // Import external libraries.
 import * as $Discord from "discord.js";
@@ -22,6 +24,11 @@ export class Profile extends Mix(DisableableComponent)
     public readonly characteristics: ReadonlyArray<Characteristic<any>>;
     public readonly user: $Discord.User;
     public readonly userID: string;
+
+    // Private properties
+    private _analysis: Optional<ProfileAnalysis>;
+    private _report: Optional<ProfileReport>;
+    private readonly _reportsAgainst: Map<string, ProfileReport> = new Map();
 
     /**
      * Construct a Profile instance.
@@ -42,11 +49,59 @@ export class Profile extends Mix(DisableableComponent)
         if (user instanceof $Discord.User) {
             this.user = user;
             this.userID = user.id;
-		} else if (this.user = controller.doppelgangster.discord.users.find(_user => _user.id === user)) {
-			this.userID = this.user.id;
         } else {
-            this.userID = user;
+            this.user = controller.doppelgangster.discord.users.find((_user) =>
+                _user.id === user,
+            );
+            if (this.user) {
+                // The user with the given ID has been found.
+                this.userID = this.user.id;
+            } else {
+                // Use only the given ID.
+                this.userID = user;
+            }
         }
+    }
+
+    public get analysis(): ProfileAnalysis {
+        if (!this._analysis || this._analysis.expired) {
+            this._analysis = new ProfileAnalysis(this);
+        }
+        return this._analysis;
+    }
+
+    public get expired(): boolean {
+        if (this._analysis && this._analysis.expired) {
+            // The profile's analysis has expired.
+            return true;
+        } else if (
+            this.controller.getComparisonsWithProfile(this).some((comparison) =>
+                comparison.expired,
+            )
+        ) {
+            // A profile comparison the profile is associated with has expired.
+            return true;
+        }
+        return false;
+    }
+
+    public get report(): ProfileReport {
+        if (!this._report || this._report.expired) {
+            this._report = new ProfileReport(this, this.controller.profiles);
+        }
+        return this._report;
+    }
+
+    public get comparisons(): ProfileComparison[] {
+        return this.controller.getComparisonsWithProfile(this);
+    }
+
+    public compareTo(otherProfile: Profile): ProfileComparison {
+        return this.controller.compareProfiles(this, otherProfile);
+    }
+
+    public runReportAgainst(against: Profile[]): ProfileReport {
+
     }
 
     /**
