@@ -1,7 +1,7 @@
 // Import internal components.
 import { ILogger, IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import { Optional } from "@/common/types";
+import { Callback, Optional } from "@/common/types";
 import {
     Controller, ControllerConstructor, LoggingController,
 } from "@/core/base/controllers";
@@ -12,6 +12,7 @@ import * as $Discord from "discord.js";
 
 // Import built-in libraries.
 import { EventEmitter } from "events";
+import * as $Utilities from "util";
 
 // Import configurations.
 import * as ControllerConfigs from "?/controllers";
@@ -27,10 +28,23 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
     // Public constants
     public static readonly version: string = application_version;
 
+    public static suppressUncaughtExceptions(): void {
+        process.on("uncaughtException", uncaughtExceptionHandler);
+        process.on("unhandledRejection", uncaughtPromiseRejectionHandler);
+    }
+
+    public static unsuppressUncaughtExceptions(): void {
+        process.off("uncaughtException", uncaughtExceptionHandler);
+        process.off("unhandledRejection", uncaughtPromiseRejectionHandler);
+    }
+
     // Public variables
     public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IMappedObject<Controller>>;
 
+    /**
+     * STUB
+     */
     public get logger(): ILogger {
         return Object.values(this.controllers).find((_controller) =>
             _controller instanceof LoggingController,
@@ -39,6 +53,16 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
     constructor() {
         super();
+
+        // Display runtime environment version information.
+        this.logger.info("Initializing Doppelgangster...");
+        this.logger.info(`Runtime environment: Doppelgangster v${
+            Doppelgangster.version
+        }, Node.js v${
+            process.version.slice(1)
+        }, discord.js v${
+            $Discord.version
+        }`);
 
         // Instantiate all controllers.
         this.controllers =
@@ -64,3 +88,24 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         await this.discord.destroy();
     }
 }
+
+/**
+ * Define a handler to catch uncaught exceptions.
+ * @param error The uncaught error
+ */
+const uncaughtExceptionHandler: Callback =
+    (error: Error) => Utilities.logging.warn(
+        "Uncaught exception:", Utilities.misc.stringifyError(error),
+    );
+
+/**
+ * Define a handler to catch uncaught promise rejection exceptions.
+ * @param error The uncaught error
+ * @param promise The promise object that caused the error
+ */
+const uncaughtPromiseRejectionHandler: Callback =
+    (error: unknown, promise: Promise<any>) => Utilities.logging.warn(
+        "Unhandled promise rejection:",
+        error instanceof Error ? Utilities.misc.stringifyError(error) : error,
+        $Utilities.inspect(promise),
+    );
