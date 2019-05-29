@@ -4,6 +4,12 @@ import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { CommandController } from "@/core/base/controllers";
 import {
+    CommandArgumentEvaluationError,
+    CommandArgumentMissingError, CommandArgumentTypeMismatchError,
+    CommandParameterEvaluationError,
+    CommandParameterMissingError, CommandParameterNameError, CommandParameterTypeMismatchError,
+} from "@/core/interaction/command/errors";
+import {
     ICommandArgument, ICommandArguments,
     ICommandCallContext,
     ICommandCallContextArguments, ICommandCallContextParameters,
@@ -72,7 +78,7 @@ export abstract class Command extends DisableableComponent {
     ): ICommandCallContextArguments {
         const rawArguments: any[] = [];
         const namedArguments: IMappedObject<unknown> = {};
-        const commandName: string = this.aliases[0];
+        // const commandName: string = this.aliases[0];
 
         // Calculate the maximum argument index to iterate over.
         const maxIndex: number = (
@@ -123,7 +129,12 @@ export abstract class Command extends DisableableComponent {
                         evaluatedArgumentType =
                             Utilities.reflection.getTypeOf(evaluatedArgument);
                     } catch (error) {
-                        throw new TypeError(
+                        throw new CommandArgumentEvaluationError(
+                            this,
+                            index,
+                            error.message,
+                        );
+                        /*throw new TypeError(
                             "an error has occurred while evaluating argument "
                             + `\`${
                                 index + 1
@@ -139,7 +150,7 @@ export abstract class Command extends DisableableComponent {
                             }\`\`\``
                             + "If you do not want the argument to be evaluated,"
                             + " prefix it with \`@\`.",
-                        );
+                        );*/
                     }
 
                     // If a specific type is required for the argument, make
@@ -150,7 +161,12 @@ export abstract class Command extends DisableableComponent {
                             commandArgument.type,
                         )
                     ) {
-                        throw new TypeError(
+                        throw new CommandArgumentTypeMismatchError(
+                            this,
+                            index,
+                            evaluatedArgumentType,
+                        );
+                        /*throw new TypeError(
                             `argument \`${
                                 index + 1
                             }\`${
@@ -165,7 +181,7 @@ export abstract class Command extends DisableableComponent {
                             }\`, but \`${
                                 evaluatedArgumentType.toLowerCase()
                             }\` was given!`,
-                        );
+                        );*/
                     } else {
                         rawArguments[index] = evaluatedArgument;
                     }
@@ -179,7 +195,8 @@ export abstract class Command extends DisableableComponent {
                 if (!commandArgument.optional) {
                     // Check if the current argument is required but wasn't
                     //   passed.
-                    throw new TypeError(
+                    throw new CommandArgumentMissingError(this, index);
+                    /*throw new TypeError(
                         `argument \`${
                             index + 1
                         }\`${
@@ -195,7 +212,7 @@ export abstract class Command extends DisableableComponent {
                         } is required for the \`${
                             commandName
                         }\` command!`,
-                    );
+                    );*/
                 } else if (commandArgument.default !== undefined) {
                     // If nothing was passed for the current argument and it
                     //   isn't required, set it to its default value.
@@ -215,7 +232,7 @@ export abstract class Command extends DisableableComponent {
         descriptor: ICommandParsedDescriptor,
     ): ICommandCallContextParameters {
         const parameters: IMappedObject<unknown> = {};
-        const commandName: string = this.aliases[0];
+        // const commandName: string = this.aliases[0];
 
         // Go through an initial loop to match descriptor parameters to command
         //   parameters.
@@ -287,10 +304,15 @@ export abstract class Command extends DisableableComponent {
                                     evaluatedParameter,
                                 );
                         } catch (error) {
-                            throw new TypeError(
+                            throw new CommandParameterEvaluationError(
+                                this,
+                                commandParameterName,
+                                error.message,
+                            );
+                            /*throw new TypeError(
                                 "an error has occurred while evaluating the"
                                 + ` parameter \`${
-                                    descriptorParameterName
+                                    commandParameterName
                                 }\` for the \`${
                                     commandName
                                 }\` command:\`\`\`\n${
@@ -298,7 +320,7 @@ export abstract class Command extends DisableableComponent {
                                 }\`\`\``
                                 + "If you do not want the parameter to be "
                                 + "evaluated, prefix it with `@`.",
-                            );
+                            );*/
                         }
 
                         // If a specific type is required for the argument,
@@ -309,7 +331,12 @@ export abstract class Command extends DisableableComponent {
                                 commandParameter.type,
                             )
                         ) {
-                            throw new TypeError(
+                            throw new CommandParameterTypeMismatchError(
+                                this,
+                                commandParameterName,
+                                evaluatedParameterType,
+                            );
+                            /*throw new TypeError(
                                 `the parameter \`${
                                     commandParameterName
                                 }\` for the \`${
@@ -319,7 +346,7 @@ export abstract class Command extends DisableableComponent {
                                 }\`, but \`${
                                     evaluatedParameterType.toLowerCase()
                                 }\` was given!`,
-                            );
+                            );*/
                         } else {
                             parameters[commandParameterName] =
                                 evaluatedParameter;
@@ -334,13 +361,17 @@ export abstract class Command extends DisableableComponent {
             if (!matches) {
                 // The current passed parameter does not match any of the
                 //   command's parameters.
-                throw new TypeError(
+                throw new CommandParameterNameError(
+                    this,
+                    descriptorParameterName,
+                );
+                /*throw new TypeError(
                     `the \`${
                         commandName
                     }\` command does not have a parameter named \`${
                         descriptorParameterName
                     }\`!`,
-                );
+                );*/
             }
         }
 
@@ -353,7 +384,11 @@ export abstract class Command extends DisableableComponent {
 
                 if (parameters[commandParameterName] === undefined) {
                     if (!commandParameter.optional) {
-                        throw new TypeError(
+                        throw new CommandParameterMissingError(
+                            this,
+                            commandParameterName,
+                        );
+                        /*throw new TypeError(
                             `the parameter \`${
                                 commandParameterName
                             }\`${
@@ -364,7 +399,7 @@ export abstract class Command extends DisableableComponent {
                             } is required for the \`${
                                 commandName
                             }\` command!`,
-                        );
+                        );*/
                     } else if (commandParameter.default !== undefined) {
                         parameters[commandParameterName] =
                             commandParameter.default;
