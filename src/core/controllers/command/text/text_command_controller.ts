@@ -3,11 +3,18 @@ import { IMappedObject } from "@/common/interfaces";
 import { Nullable, Optional } from "@/common/types";
 import { Doppelgangster } from "@/core";
 import { CommandController } from "@/core/base/controllers";
-import { Command, CommandConstructor } from "@/core/interaction/command";
 import {
-    ICommandCallContext, ICommandParsedDescriptor,
-} from "@/core/interaction/command/interfaces";
+    Command,
+    CommandCallResultType,
+    ICommandArguments,
+    ICommandCallContext, ICommandCallResult,
+    ICommandParameter, ICommandParameters,
+    ICommandParsedDescriptor,
+} from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
+
+// Import external libraries.
+import * as $Discord from "discord.js";
 
 // Import configurations.
 import * as Configs from "?/controllers/command/text_command_controller";
@@ -16,13 +23,226 @@ import * as Configs from "?/controllers/command/text_command_controller";
  * STUB
  */
 export class TextCommandController extends CommandController {
+    private static _help: Map<Command, string> = new Map();
+
+    /**
+     * Return the help documentations string a la command-line style.
+     */
+    private static getHelp(command: Command): string {
+        if (!this._help.has(command)) {
+            this._help.set(command, `${ // Description
+                command.description
+                || "There is no description for this command."
+            }\nUsage: ${ // Command aliases
+                command.aliases.length > 1 ?
+                    "(" + command.aliases.join("|") + ")"
+                :
+                    command.aliases[0]
+            }${ // Required arguments
+                command.arguments ?
+                    " " + command.arguments.filter((argument) =>
+                        !argument.optional,
+                    ).map((argument) =>
+                        argument.name
+                        || "arg" + (
+                            (command.arguments as ICommandArguments)
+                                .indexOf(argument) + 1
+                        ),
+                    ).join(" ")
+                :
+                    ""
+            }${ // Required parameters
+                command.parameters ?
+                    " "
+                    + Object.values(command.parameters).filter((parameter) =>
+                        !parameter.optional,
+                    ).map((parameter) =>
+                        `-${ // Find the shortest alias for the parameter.
+                            (parameter.aliases || []).concat(
+                                Object.keys(
+                                    command.parameters as ICommandParameters,
+                                ).find((name) =>
+                                    (
+                                        command.parameters as any
+                                    )[name] === parameter,
+                                ) || [],
+                            ).sort((a, b) => a.length - b.length)[0]
+                        } <${
+                            parameter.type || "@string"
+                        }>`,
+                    ).join(" ")
+                :
+                    ""
+            }${ // Full arguments
+                command.arguments ?
+                    "\n\nArguments:\n\t" + (() => {
+                        const names: string[] =
+                            command.arguments.map((argument) =>
+                                (
+                                    argument.name
+                                    || "arg" + (
+                                        (command.arguments as ICommandArguments)
+                                            .indexOf(argument) + 1
+                                    )
+                                ) + (
+                                    argument.default !== undefined ?
+                                        "=" + argument.default
+                                    : argument.optional ?
+                                        "?"
+                                    :
+                                        ""
+                                ),
+                            );
+                        const types: string[] =
+                            command.arguments.map((argument) =>
+                                argument.type || "@string",
+                            );
+                        const descriptions: string[] =
+                            command.arguments.map((argument) =>
+                                argument.description
+                                || "<no description available>",
+                            );
+                        const maxNameLength: number =
+                            names.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        const maxTypeLength: number =
+                            types.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        const maxDescriptionLength: number =
+                            descriptions.slice().sort((a, b) =>
+                                b.length - a.length,
+                            )[0].length;
+                        return names.map((name, index) =>
+                            name.padEnd(maxNameLength)
+                            + "      "
+                            + types[index].padEnd(maxTypeLength)
+                            + "      "
+                            + descriptions[index].padEnd(maxDescriptionLength),
+                        ).join("\n\t");
+                    })()
+                :
+                    ""
+            }${ // Full parameters
+                command.parameters ? "\n\nParameters:\n\t" + (() => {
+                    const aliases: string[] =
+                        Object.keys(command.parameters).map((name) => {
+                            const parameter: ICommandParameter = (
+                                command.parameters as ICommandParameters
+                            )[name];
+                            const _aliases: string[] = (
+                                parameter.aliases || []
+                            ).concat(name);
+                            return `-${
+                                _aliases.length > 1 ?
+                                    "(" + _aliases.filter((alias) =>
+                                        alias.length <= 15,
+                                    ).sort((a, b) =>
+                                        a.length - b.length,
+                                    ).join("|") + ")"
+                                :
+                                    _aliases[0]
+                            }${
+                                parameter.default !== undefined ?
+                                    "=" + parameter.default
+                                : parameter.optional ?
+                                    "?"
+                                :
+                                    ""
+                            }`;
+                        });
+                    const types: string[] =
+                        Object.values(command.parameters).map((parameter) =>
+                            parameter.type || "@string",
+                        );
+                    const descriptions: string[] =
+                        Object.values(command.parameters).map((parameter) =>
+                            parameter.description
+                            || "<no description available>",
+                        );
+                    const maxAliasLength: number =
+                        aliases.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    const maxTypeLength: number =
+                        types.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    const maxDescriptionLength: number =
+                        descriptions.slice().sort((a, b) =>
+                            b.length - a.length,
+                        )[0].length;
+                    return aliases.map((alias, index) =>
+                        alias.padEnd(maxAliasLength)
+                        + "      "
+                        + types[index].padEnd(maxTypeLength)
+                        + "      "
+                        + descriptions[index].padEnd(maxDescriptionLength),
+                    ).join("\n\t");
+                })() : ""
+            }`);
+        }
+        return this._help.get(command) as string;
+    }
+
+    /**
+     * Check whether the context of a message has the necessary command
+     *   permission.
+     * @param message A Discord message to check the permission for
+     */
+    private static isMessagePermitted(
+        command: Command,
+        message: $Discord.Message,
+    ): boolean {
+        // If permitted isn't initialized, assume everyone has permission.
+        if (command.permitted === undefined) {
+            return true;
+        }
+
+        // Check username.
+        if (command.permitted.includes(message.author)) {
+            return true;
+        }
+
+        // Check user ID.
+        if (command.permitted.includes(message.author.id)) {
+            return true;
+        }
+
+        // Check Discord role.
+        if (message.member.roles.array().some((role) =>
+            command.permitted && command.permitted.includes(role) || false,
+        )) {
+            return true;
+        }
+
+        // Check Discord permission.
+        if (command.permitted.some((permission) => {
+            try {
+                // This might throw an exception on error.
+                return message.member.hasPermission(
+                    $Discord.Permissions.resolve(permission as any),
+                    false, true, true,
+                );
+            } catch (_) {
+                return false;
+            }
+        })) {
+            return true;
+        }
+
+        // The user does not have permission to execute this command.
+        return false;
+    }
+
     /**
      * Parse a text command and creates a command descriptor from a string.
      * @param input A string
      */
-    public static parseCommand(
+    private static parseCommand(
         input: string,
-        prefix: string,
+        prefix: string = Configs.prefix,
     ): Optional<ICommandParsedDescriptor> {
         // Determine command validity.
         if (
@@ -174,12 +394,17 @@ export class TextCommandController extends CommandController {
         return { name, arguments: _arguments, parameters };
     }
 
+    /**
+     * Construct a TextCommandController instance.
+     * @param doppelgangster A Doppelgangster instance to attach to
+     */
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        // TODO
-        doppelgangster.discord.on("message", (message) => {
-            if (!this._attachedGuilds.includes(message.guild)) {
+        // Listen for Discord messages.
+        doppelgangster.discord.on("message", async (message) => {
+            // Ignore messages in detached guilds.
+            if (!this.attachedGuilds.includes(message.guild)) {
                 return;
             }
 
@@ -187,7 +412,7 @@ export class TextCommandController extends CommandController {
             let descriptor: ICommandParsedDescriptor;
             try {
                 descriptor = TextCommandController.parseCommand(
-                    message.content, Configs.prefix,
+                    message.content,
                 ) as ICommandParsedDescriptor;
 
                 // Make sure the message contains a valid command invocation.
@@ -209,17 +434,16 @@ export class TextCommandController extends CommandController {
 
             // Find the command that matches the descriptor's.
             const command: Optional<Command> = this.commands.find((_command) =>
-                (_command.constructor as CommandConstructor).aliases.some(
-                    (alias) =>
-                        Configs.partialCommandMatch ?
-                            alias.toLowerCase().startsWith(
-                                descriptor.name.toLowerCase(),
-                            )
-                        :
-                            Utilities.string.caseInsensitiveEquals(
-                                alias,
-                                descriptor.name,
-                            ),
+                _command.aliases.some((alias) =>
+                    Configs.partialCommandMatch ?
+                        alias.toLowerCase().startsWith(
+                            descriptor.name.toLowerCase(),
+                        )
+                    :
+                        Utilities.string.caseInsensitiveEquals(
+                            alias,
+                            descriptor.name,
+                        ),
                 ),
             );
 
@@ -231,11 +455,11 @@ export class TextCommandController extends CommandController {
                 return;
             }
 
-            const commandClass: CommandConstructor = command.constructor as any;
-            const commandName: string = commandClass.aliases[0];
+            // Use the command's first alias as its name.
+            const commandName: string = command.aliases[0];
 
             // Make sure the user who sent the command has permission.
-            if (!command.isMessagePermitted(message)) {
+            if (!TextCommandController.isMessagePermitted(command, message)) {
                 message.reply(`you do not have permission to use the \`${
                     commandName
                 }\` command!`);
@@ -250,7 +474,7 @@ export class TextCommandController extends CommandController {
                 message.reply(`here are the help documentations for the \`${
                     commandName
                 }\` command:\`\`\`\n${
-                    command.help
+                    TextCommandController.getHelp(command)
                 }\`\`\``);
                 return;
             }
@@ -258,7 +482,7 @@ export class TextCommandController extends CommandController {
             // Build the command's call context from the descriptor
             let context: ICommandCallContext;
             try {
-                context = commandClass.buildCallContext(descriptor, message);
+                context = command.buildCallContext(descriptor);
             } catch (error) {
                 this.doppelgangster.logger.warn(
                     "An error has occurred while building the call context for"
@@ -277,9 +501,9 @@ export class TextCommandController extends CommandController {
                 return;
             }
 
-            // Execute the command.
+            // Call and handle the command.
             try {
-                command.handler(context);
+                this.handleCommandCall(await command.handler(context), message);
             } catch (error) {
                 this.doppelgangster.logger.warn(
                     "An error has occurred while executing a command:",
@@ -293,5 +517,27 @@ export class TextCommandController extends CommandController {
                 );
             }
         });
+    }
+
+    /**
+     * STUB
+     * @param result 
+     * @param message 
+     */
+    protected async handleCommandCall(
+        result: ICommandCallResult,
+        message: $Discord.Message,
+    ): Promise<void> {
+        switch (result.type) {
+            case CommandCallResultType.SUCCESS: {
+                message.reply(result.message);
+                return;
+            }
+
+            case CommandCallResultType.FAILURE: {
+                message.reply(result.message);
+                return;
+            }
+        }
     }
 }

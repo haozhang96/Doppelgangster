@@ -7,14 +7,12 @@ import {
     ICommandArgument, ICommandArguments,
     ICommandCallContext,
     ICommandCallContextArguments, ICommandCallContextParameters,
+    ICommandCallResult,
     ICommandParameter, ICommandParameters,
     ICommandParsedDescriptor,
 } from "@/core/interaction/command/interfaces";
 import { CommandPermissible } from "@/core/interaction/command/types";
 import * as Utilities from "@/utilities";
-
-// Import external libraries.
-import * as $Discord from "discord.js";
 
 // Import built-in libraries.
 import { runInNewContext as safeEval } from "vm";
@@ -29,12 +27,7 @@ export abstract class Command extends DisableableComponent {
     public readonly description?: string;
     public readonly arguments?: ICommandArguments;
     public readonly parameters?: ICommandParameters;
-
-    // Protected variables
-    protected readonly permitted?: CommandPermissible[];
-
-    // Private variables
-    private _help?: string;
+    public readonly permitted?: CommandPermissible[];
 
     /**
      * Construct a Command instance.
@@ -45,224 +38,16 @@ export abstract class Command extends DisableableComponent {
     }
 
     /**
-     * Return the help documentations string a la command-line style.
-     */
-    public get help(): string {
-        if (this._help) {
-            this._help = `${ // Description
-                this.description
-                || "There is no description for this command."
-            }\nUsage: ${ // Command aliases
-                this.aliases.length > 1 ?
-                    "(" + this.aliases.join("|") + ")"
-                :
-                    this.aliases[0]
-            }${ // Required arguments
-                this.arguments ?
-                    " " + this.arguments.filter((argument) =>
-                        !argument.optional,
-                    ).map((argument) =>
-                        argument.name
-                        || "arg" + (
-                            (this.arguments as ICommandArguments)
-                                .indexOf(argument) + 1
-                        ),
-                    ).join(" ")
-                :
-                    ""
-            }${ // Required parameters
-                this.parameters ?
-                    " "
-                    + Object.values(this.parameters).filter((parameter) =>
-                        !parameter.optional,
-                    ).map((parameter) =>
-                        `-${ // Find the shortest alias for the parameter.
-                            (parameter.aliases || []).concat(
-                                Object.keys(
-                                    this.parameters as ICommandParameters,
-                                ).find((name) =>
-                                    (
-                                        this.parameters as any
-                                    )[name] === parameter,
-                                ) || [],
-                            ).sort((a, b) => a.length - b.length)[0]
-                        } <${
-                            parameter.type || "@string"
-                        }>`,
-                    ).join(" ")
-                :
-                    ""
-            }${ // Full arguments
-                this.arguments ?
-                    "\n\nArguments:\n\t" + (() => {
-                        const names: string[] =
-                            this.arguments.map((argument) =>
-                                (
-                                    argument.name
-                                    || "arg" + (
-                                        (
-                                            this.arguments as any
-                                        ).indexOf(argument) + 1
-                                    )
-                                ) + (
-                                    argument.default !== undefined ?
-                                        "=" + argument.default
-                                    : argument.optional ?
-                                        "?"
-                                    :
-                                        ""
-                                ),
-                            );
-                        const types: string[] =
-                            this.arguments.map((argument) =>
-                                argument.type || "@string",
-                            );
-                        const descriptions: string[] =
-                            this.arguments.map((argument) =>
-                                argument.description
-                                || "<no description available>",
-                            );
-                        const maxNameLength: number =
-                            names.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        const maxTypeLength: number =
-                            types.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        const maxDescriptionLength: number =
-                            descriptions.slice().sort((a, b) =>
-                                b.length - a.length,
-                            )[0].length;
-                        return names.map((name, index) =>
-                            name.padEnd(maxNameLength)
-                            + "      "
-                            + types[index].padEnd(maxTypeLength)
-                            + "      "
-                            + descriptions[index].padEnd(maxDescriptionLength),
-                        ).join("\n\t");
-                    })()
-                :
-                    ""
-            }${ // Full parameters
-                this.parameters ? "\n\nParameters:\n\t" + (() => {
-                    const aliases: string[] =
-                        Object.keys(this.parameters).map((name) => {
-                            const parameter: ICommandParameter = (
-                                this.parameters as ICommandParameters
-                            )[name];
-                            const _aliases: string[] = (
-                                parameter.aliases || []
-                            ).concat(name);
-                            return `-${
-                                _aliases.length > 1 ?
-                                    "(" + _aliases.filter((alias) =>
-                                        alias.length <= 15,
-                                    ).sort((a, b) =>
-                                        a.length - b.length,
-                                    ).join("|") + ")"
-                                :
-                                    _aliases[0]
-                            }${
-                                parameter.default !== undefined ?
-                                    "=" + parameter.default
-                                : parameter.optional ?
-                                    "?"
-                                :
-                                    ""
-                            }`;
-                        });
-                    const types: string[] =
-                        Object.values(this.parameters).map((parameter) =>
-                            parameter.type || "@string",
-                        );
-                    const descriptions: string[] =
-                        Object.values(this.parameters).map((parameter) =>
-                            parameter.description
-                            || "<no description available>",
-                        );
-                    const maxAliasLength: number =
-                        aliases.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    const maxTypeLength: number =
-                        types.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    const maxDescriptionLength: number =
-                        descriptions.slice().sort((a, b) =>
-                            b.length - a.length,
-                        )[0].length;
-                    return aliases.map((alias, index) =>
-                        alias.padEnd(maxAliasLength)
-                        + "      "
-                        + types[index].padEnd(maxTypeLength)
-                        + "      "
-                        + descriptions[index].padEnd(maxDescriptionLength),
-                    ).join("\n\t");
-                })() : ""
-            }`;
-        }
-        return this._help as string;
-    }
-
-    /**
-     * Check whether the context of a message has the necessary command
-     *   permission.
-     * @param message A Discord message
-     */
-    public isMessagePermitted(message: $Discord.Message): boolean {
-        // If permitted isn't initialized, assume everyone has permission.
-        if (this.permitted === undefined) {
-            return true;
-        }
-
-        // Check username.
-        if (this.permitted.includes(message.author)) {
-            return true;
-        }
-
-        // Check user ID.
-        if (this.permitted.includes(message.author.id)) {
-            return true;
-        }
-
-        // Check Discord role.
-        if (message.member.roles.array().some((role) =>
-            this.permitted && this.permitted.includes(role) || false,
-        )) {
-            return true;
-        }
-
-        // Check Discord permission.
-        if (this.permitted.some((permission) => {
-            try {
-                // This might throw an exception on error.
-                return message.member.hasPermission(
-                    $Discord.Permissions.resolve(permission as any),
-                    false, true, true,
-                );
-            } catch (_) {
-                return false;
-            }
-        })) {
-            return true;
-        }
-
-        // The user does not have permission to execute this command.
-        return false;
-    }
-
-    /**
      * Destroy the Command instance.
      */
     public destroy(): void {
-        // Do nothing for now.
         return;
     }
 
     // @Override
-    public abstract async handler(context: ICommandCallContext): Promise<void>;
+    public abstract async handler(
+        context: ICommandCallContext,
+    ): Promise<ICommandCallResult>;
 
     /**
      * Build a call context from a parsed command descriptor.
@@ -271,11 +56,9 @@ export abstract class Command extends DisableableComponent {
      */
     public buildCallContext(
         descriptor: ICommandParsedDescriptor,
-        message: $Discord.Message,
     ): ICommandCallContext {
         return {
             arguments: this.buildCallContextArguments(descriptor),
-            message,
             parameters: this.buildCallContextParameters(descriptor),
         };
     }

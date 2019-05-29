@@ -2,7 +2,9 @@
 import { IDiscordGuildAttachable } from "@/common/interfaces/traits/discord";
 import { Doppelgangster } from "@/core";
 import { Controller, ControllerConstructor } from "@/core/base/controllers";
-import { Command, CommandConstructor } from "@/core/interaction/command";
+import {
+    Command, CommandConstructor, ICommandCallResult,
+} from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
 // Import external libraries.
@@ -15,27 +17,26 @@ export abstract class CommandController extends Controller implements IDiscordGu
     // Public properties
     public readonly commands: readonly Command[];
 
-    // Private properties
-    protected readonly _attachedGuilds: $Discord.Guild[] = [];
+    // Protected properties
+    protected readonly attachedGuilds: $Discord.Guild[] = [];
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
         // Instantiate all commands.
-        this.commands =
-            getCommands().map((_Command) => new _Command(this));
+        this.commands = getCommands().map((_Command) => new _Command(this));
     }
 
     public attachGuild(guild: $Discord.Guild): this {
         if (!this.isGuildAttached(guild)) {
-            this._attachedGuilds.push(guild);
+            this.attachedGuilds.push(guild);
         }
         return this;
     }
 
     public detachGuild(guild: $Discord.Guild): this {
         if (this.isGuildAttached(guild)) {
-            this._attachedGuilds.splice(this._attachedGuilds.indexOf(guild), 1);
+            this.attachedGuilds.splice(this.attachedGuilds.indexOf(guild), 1);
         }
         return this;
     }
@@ -51,8 +52,14 @@ export abstract class CommandController extends Controller implements IDiscordGu
     }
 
     public isGuildAttached(guild: $Discord.Guild): boolean {
-        return this._attachedGuilds.includes(guild);
+        return this.attachedGuilds.includes(guild);
     }
+
+    // @Override
+    protected abstract async handleCommandCall(
+        result: ICommandCallResult,
+        ...args: any[]
+    ): Promise<void>;
 }
 
 /**

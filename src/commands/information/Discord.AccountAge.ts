@@ -1,4 +1,6 @@
-import { Command, ICommandCallContext } from "@/core/interaction/command";
+import {
+    Command, CommandCallResultType, ICommandCallContext, ICommandCallResult,
+} from "@/core/interaction/command";
 import { DiscordUtils } from "@/utilities";
 
 export default class extends Command {
@@ -13,27 +15,34 @@ export default class extends Command {
         },
     ];
 
-    public async handler(context: ICommandCallContext): Promise<void> {
+    public async handler(
+        context: ICommandCallContext,
+    ): Promise<ICommandCallResult> {
         const createdAt: Date =
             DiscordUtils.getAccountCreationDate(context.arguments.named.userID);
-        const now: number = Date.now();
 
         if (isNaN(createdAt.valueOf())) {
-            context.message.reply(
-                `the user ID \`${
-                    context.arguments.named.userID
-                }\` did not return a valid account creation date!`,
-            );
-        } else {
-            context.message.reply(
+            return {
+                message: (
+                    `the user ID \`${
+                        context.arguments.named.userID
+                    }\` did not return a valid account creation date!`
+                ),
+                type: CommandCallResultType.FAILURE,
+            };
+        }
+
+        return {
+            message: (
                 `the user with the ID \`${
                     context.arguments.named.userID
                 }\` was created at \`${
                     createdAt.toUTCString()
                 }\`, which was \`${
-                    (now - createdAt.valueOf()) / 60000
-                }\` minutes ago.`,
-            );
-        }
+                    (Date.now() - createdAt.valueOf()) / 60000
+                }\` minutes ago.`
+            ),
+            type: CommandCallResultType.SUCCESS,
+        };
     }
 }

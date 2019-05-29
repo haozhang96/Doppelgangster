@@ -13,7 +13,7 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
     private _analysis: Optional<CharacteristicAnalysis<ExampleT>>;
 
     /**
-     * Construct a Characteristic instance.
+     * Construct an IncomparableCharacteristic instance.
      * @param profile A Profile instance
      */
     constructor(public readonly profile: Profile) {
