@@ -44,16 +44,11 @@ export abstract class Command extends DisableableComponent {
     }
 
     /**
-     * Destroy the Command instance.
+     * Return the command's name, which would be its first alias.
      */
-    public destroy(): void {
-        return;
+    public get name(): string {
+        return this.aliases[0];
     }
-
-    // @Override
-    public abstract async handler(
-        context: ICommandCallContext,
-    ): Promise<ICommandCallResult>;
 
     /**
      * Build a call context from a parsed command descriptor.
@@ -68,6 +63,18 @@ export abstract class Command extends DisableableComponent {
             parameters: this.buildCallContextParameters(descriptor),
         };
     }
+
+    /**
+     * Destroy the Command instance.
+     */
+    public destroy(): void {
+        return;
+    }
+
+    // @Override
+    public abstract async handler(
+        context: ICommandCallContext,
+    ): Promise<ICommandCallResult>;
 
     /**
      * Build a call context's arguments from a parsed command descriptor.

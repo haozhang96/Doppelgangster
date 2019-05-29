@@ -24,7 +24,7 @@ export default class extends Command {
         if (isNaN(createdAt.valueOf())) {
             return {
                 message: (
-                    `the user ID \`${
+                    `The user ID \`${
                         context.arguments.named.userID
                     }\` did not return a valid account creation date!`
                 ),
@@ -34,7 +34,7 @@ export default class extends Command {
 
         return {
             message: (
-                `the user with the ID \`${
+                `The user with the ID \`${
                     context.arguments.named.userID
                 }\` was created at \`${
                     createdAt.toUTCString()

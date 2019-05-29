@@ -70,6 +70,10 @@ export class Profile extends Mix(DisableableComponent)
         return this._analysis;
     }
 
+    public get comparisons(): ProfileComparison[] {
+        return this.controller.getComparisonsWithProfile(this);
+    }
+
     public get expired(): boolean {
         if (this._analysis && this._analysis.expired) {
             // The profile's analysis has expired.
@@ -92,23 +96,18 @@ export class Profile extends Mix(DisableableComponent)
         return this._report;
     }
 
-    public get comparisons(): ProfileComparison[] {
-        return this.controller.getComparisonsWithProfile(this);
-    }
-
     public compareTo(otherProfile: Profile): ProfileComparison {
         return this.controller.compareProfiles(this, otherProfile);
-    }
-
-    public runReportAgainst(against: Profile[]): ProfileReport {
-
     }
 
     /**
      * Destroy the Profile instance.
      */
     public destroy(): void {
-        // Do nothing for now.
         return;
+    }
+
+    public runReportAgainst(against: Profile[]): ProfileReport {
+
     }
 }
