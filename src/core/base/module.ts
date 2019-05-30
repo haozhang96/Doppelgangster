@@ -1,6 +1,7 @@
 // Import internal components.
 import { DisableableComponent } from "@/core/base/components";
 import { ModuleController } from "@/core/base/controllers";
+import { CommandConstructor } from "@/core/interaction/command";
 
 /**
  * STUB
@@ -16,6 +17,9 @@ export abstract class Module extends DisableableComponent {
             this.constructor.name
         } module...`);
     }
+
+    // @Override
+    public abstract getCommands(): CommandConstructor[];
 }
 
 /**

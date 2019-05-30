@@ -1,10 +1,8 @@
 // Import internal components.
 import { ILogger, IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import { Callback, Optional } from "@/common/types";
-import {
-    Controller, ControllerConstructor, LoggingController,
-} from "@/core/base/controllers";
+import { Callback } from "@/common/types";
+import * as Controllers from "@/core/base/controllers";
 import * as Utilities from "@/utilities";
 
 // Import external libraries.
@@ -40,18 +38,24 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
     // Public variables
     public readonly discord: $Discord.Client;
-    public readonly controllers: Readonly<IMappedObject<Controller>>;
+    public readonly controllers: Readonly<IControllers>;
+    public readonly logger: Readonly<ILogger> = {
+        debug: (...args) => this._loggers.forEach((_) => _.debug(...args)),
+        error: (...args) => this._loggers.forEach((_) => _.error(...args)),
+        fatal: (...args) => this._loggers.forEach((_) => _.fatal(...args)),
+        info: (...args) => this._loggers.forEach((_) => _.info(...args)),
+        log: (...args) => this._loggers.forEach((_) => _.log(...args)),
+        trace: (...args) => this._loggers.forEach((_) => _.trace(...args)),
+        warn: (...args) => this._loggers.forEach((_) => _.warn(...args)),
+    };
+
+    // Private variables
+    private readonly _loggers: readonly ILogger[] = [Utilities.logging];
 
     /**
-     * STUB
+     * Construct a Doppelgangster instance.
      */
-    public get logger(): ILogger {
-        return Object.values(this.controllers).find((_controller) =>
-            _controller instanceof LoggingController,
-        ) as Optional<LoggingController> || Utilities.logging;
-    }
-
-    constructor() {
+    constructor(apiToken: string = DiscordConfigs.apiToken) {
         super();
 
         // Display runtime environment version information.
@@ -66,16 +70,25 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
         // Instantiate all controllers.
         this.controllers =
-            Utilities.object.mapValues<ControllerConstructor, Controller>(
+            Utilities.object.mapValues<
+                Controllers.ControllerConstructor[], Controllers.Controller[]
+            >(
                 ControllerConfigs.controllers,
-                (_Controller) => new _Controller(this),
-            );
+                (ControllerArray) => ControllerArray.map((_Controller) =>
+                    new _Controller(this),
+                ),
+            ) as IControllers;
+
+        // Set up logging with multiple logging controllers.
+        if (this.controllers.logging.length) {
+            this._loggers = this.controllers.logging as unknown as ILogger[];
+        }
 
         // Create a new discord.js client.
         const discord: $Discord.Client = this.discord = new $Discord.Client();
 
         // Log into Discord.
-        discord.login(DiscordConfigs.api_token);
+        discord.login(apiToken);
     }
 
     /**
@@ -83,13 +96,28 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
      */
     public async destroy(): Promise<void> {
         // Destroy all controller instances.
-        for (const controller of Object.values(this.controllers)) {
-            await controller.destroy();
+        for (const typedControllers of Object.values(this.controllers)) {
+            for (const controller of typedControllers) {
+                await controller.destroy();
+            }
         }
 
         // Destroy the discord.js client.
         await this.discord.destroy();
     }
+}
+
+/**
+ * Define a map holding multiple instances of different types of controllers.
+ */
+interface IControllers extends IMappedObject<Controllers.Controller[]> {
+    authorization: Controllers.AuthorizationController[];
+    characteristic: Controllers.CharacteristicController[];
+    command: Controllers.CommandController[];
+    logging: Controllers.LoggingController[];
+    module: Controllers.ModuleController[];
+    persistence: Controllers.PersistenceController[];
+    profile: Controllers.ProfileController[];
 }
 
 /**

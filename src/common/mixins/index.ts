@@ -1,3 +1,4 @@
+export * from "./discord";
 export * from "./event_emitter";
 export * from "./expirable";
 

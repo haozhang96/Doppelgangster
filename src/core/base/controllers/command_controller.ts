@@ -1,5 +1,5 @@
 // Import internal components.
-import { IDiscordGuildAttachable } from "@/common/interfaces/traits/discord";
+import { DiscordGuildAttachable, Mix } from "@/common/mixins";
 import { Doppelgangster } from "@/core";
 import { Controller, ControllerConstructor } from "@/core/base/controllers";
 import {
@@ -7,38 +7,26 @@ import {
 } from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
-// Import external libraries.
-import * as $Discord from "discord.js";
-
 /**
  * STUB
  */
-export abstract class CommandController extends Controller implements IDiscordGuildAttachable {
+export abstract class CommandController extends Mix(Controller)
+    .with(DiscordGuildAttachable)
+.compose() {
     // Public properties
-    public readonly commands: readonly Command[];
+    public readonly commands: Command[] = [];
 
-    // Protected properties
-    protected readonly attachedGuilds: $Discord.Guild[] = [];
-
+    /**
+     * Construct a CommandController instance.
+     * @param doppelgangster A Doppelgangster instance to attach to
+     */
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
         // Instantiate all commands.
-        this.commands = getCommands().map((_Command) => new _Command(this));
-    }
-
-    public attachGuild(guild: $Discord.Guild): this {
-        if (!this.isGuildAttached(guild)) {
-            this.attachedGuilds.push(guild);
+        for (const _Command of getCommands()) {
+            this.registerCommand(_Command);
         }
-        return this;
-    }
-
-    public detachGuild(guild: $Discord.Guild): this {
-        if (this.isGuildAttached(guild)) {
-            this.attachedGuilds.splice(this.attachedGuilds.indexOf(guild), 1);
-        }
-        return this;
     }
 
     /**
@@ -51,8 +39,12 @@ export abstract class CommandController extends Controller implements IDiscordGu
         }
     }
 
-    public isGuildAttached(guild: $Discord.Guild): boolean {
-        return this.attachedGuilds.includes(guild);
+    /**
+     * Register a command.
+     * @param _Command A Command class
+     */
+    public registerCommand(_Command: CommandConstructor) {
+        this.commands.push(new _Command(this));
     }
 
     // @Override

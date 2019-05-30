@@ -54,7 +54,6 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
      * Destroy the Characteristic instance.
      */
     public destroy(): void {
-        // Do nothing for now.
         return;
     }
 
@@ -85,13 +84,13 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
         this._data = data;
 
         // Notify listeners of data change.
-        if (data !== oldData) {
+        if (data !== oldData && this.enabled) {
             this.emit("data");
         }
     }
 
     // @Override
-    protected async initializer?(): Promise<void>;
+    protected initializer?(): Promise<void>;
     protected abstract async collector(): Promise<void>;
 }
 

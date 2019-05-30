@@ -1,12 +1,13 @@
 // Import internal components.
 import { Callback } from "@/common/types";
+import { IMappedObject } from ".";
 
-export interface ILogger {
-    readonly debug: Callback;
-    readonly error: Callback;
-    readonly fatal: Callback;
-    readonly info: Callback;
-    readonly log: Callback;
-    readonly trace: Callback;
-    readonly warn: Callback;
+export interface ILogger extends IMappedObject<Callback> {
+    debug: Callback;
+    error: Callback;
+    fatal: Callback;
+    info: Callback;
+    log: Callback;
+    trace: Callback;
+    warn: Callback;
 }
