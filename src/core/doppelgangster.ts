@@ -40,13 +40,13 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
     public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IControllers>;
     public readonly logger: Readonly<ILogger> = {
-        debug: (...args) => this._loggers.forEach((_) => _.debug(...args)),
-        error: (...args) => this._loggers.forEach((_) => _.error(...args)),
-        fatal: (...args) => this._loggers.forEach((_) => _.fatal(...args)),
-        info: (...args) => this._loggers.forEach((_) => _.info(...args)),
-        log: (...args) => this._loggers.forEach((_) => _.log(...args)),
-        trace: (...args) => this._loggers.forEach((_) => _.trace(...args)),
-        warn: (...args) => this._loggers.forEach((_) => _.warn(...args)),
+        debug: (...$) => this._loggers.forEach(async (_) => _.debug(...$)),
+        error: (...$) => this._loggers.forEach(async (_) => _.error(...$)),
+        fatal: (...$) => this._loggers.forEach(async (_) => _.fatal(...$)),
+        info: (...$) => this._loggers.forEach(async (_) => _.info(...$)),
+        log: (...$) => this._loggers.forEach(async (_) => _.log(...$)),
+        trace: (...$) => this._loggers.forEach(async (_) => _.trace(...$)),
+        warn: (...$) => this._loggers.forEach(async (_) => _.warn(...$)),
     };
 
     // Private variables
@@ -79,7 +79,7 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
                 ),
             ) as IControllers;
 
-        // Set up logging with multiple logging controllers.
+        // Replace the default logger with the logging controllers.
         if (this.controllers.logging.length) {
             this._loggers = this.controllers.logging as unknown as ILogger[];
         }
