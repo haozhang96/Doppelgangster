@@ -404,7 +404,7 @@ export class TextCommandController extends CommandController {
         // Listen for Discord messages.
         doppelgangster.discord.on("message", async (message) => {
             // Ignore messages in detached guilds.
-            if (!this.attachedGuilds.includes(message.guild)) {
+            if (!this.isGuildAttached(message.guild)) {
                 return;
             }
 

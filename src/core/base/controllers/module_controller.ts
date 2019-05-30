@@ -1,9 +1,14 @@
 // Import internal components.
 import { IMappedObject } from "@/common/interfaces";
-import { Doppelgangster } from "@/core";
-import { Controller, ControllerConstructor } from "@/core/base/controllers";
+import {
+    Controller, ControllerConstructor,
+} from "@/core/base/controllers/controller";
 import { Module, ModuleConstructor } from "@/core/base/module";
+import { Doppelgangster } from "@/core/doppelgangster";
 import * as Utilities from "@/utilities";
+
+// Import built-in libraries.
+import * as $FileSystem from "fs";
 
 /**
  * STUB
@@ -43,14 +48,19 @@ export type ModuleControllerConstructor =
  * Return all the available modules found in /src/modules.
  */
 function getModules(): IMappedObject<ModuleConstructor> {
-    const moduleMap: IMappedObject<ModuleConstructor> = {};
-    const modules: ModuleConstructor[] =
-        Utilities.reflection.getClassesInDirectory(
-            Utilities.path.sourceRootResolve("modules"),
-        );
+    // Resolve the absolute path to /src/modules.
+    const modulesPath: string = Utilities.path.sourceRootResolve("modules");
+
+    // Make sure that the /src/modules folder exists.
+    if (!$FileSystem.existsSync(modulesPath)) {
+        return {};
+    }
 
     // Create a module map with the first character of the modules' names
     //   uncapitalized.
+    const moduleMap: IMappedObject<ModuleConstructor> = {};
+    const modules: ModuleConstructor[] =
+        Utilities.reflection.getClassesInDirectory(modulesPath);
     for (const module of modules) {
         moduleMap[Utilities.string.uncapitalize(module.name)] = module;
     }

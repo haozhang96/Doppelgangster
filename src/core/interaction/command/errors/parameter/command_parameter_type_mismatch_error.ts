@@ -1,6 +1,13 @@
+// Import internal components.
 import { Optional } from "@/common/types";
-import { Command, CommandParameterError } from "@/core/interaction/command";
+import { Command } from "@/core/interaction/command/command";
+import {
+    CommandParameterError,
+} from "@/core/interaction/command/errors/parameter/command_parameter_error";
 
+/**
+ * STUB
+ */
 export class CommandParameterTypeMismatchError extends CommandParameterError {
     public readonly expectedType: Optional<string>;
 

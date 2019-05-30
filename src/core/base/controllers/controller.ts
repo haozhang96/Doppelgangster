@@ -12,7 +12,7 @@ export abstract class Controller extends Component {
      */
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
-        doppelgangster.logger.info(`Instantiating the ${
+        doppelgangster.logger.info(`Initializing the ${
             this.constructor.name
         } controller...`);
     }

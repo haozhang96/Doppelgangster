@@ -2,7 +2,7 @@
 import { Callback } from "@/common/types";
 import { IMappedObject } from ".";
 
-export interface ILogger extends IMappedObject<Callback> {
+export interface ILogger extends Readonly<IMappedObject<Callback>> {
     debug: Callback;
     error: Callback;
     fatal: Callback;

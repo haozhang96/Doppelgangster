@@ -8,13 +8,13 @@ import * as $Tracer from "tracer";
  * STUB
  */
 export class ConsoleLoggingController extends LoggingController {
-    public debug = Tracer.log;
-    public error = Tracer.error;
-    public fatal = Tracer.fatal;
-    public info = Tracer.info;
-    public log = Tracer.log;
-    public trace = Tracer.trace;
-    public warn = Tracer.warn;
+    public readonly debug = Tracer.debug;
+    public readonly error = Tracer.error;
+    public readonly fatal = Tracer.fatal;
+    public readonly info = Tracer.info;
+    public readonly log = Tracer.log;
+    public readonly trace = Tracer.trace;
+    public readonly warn = Tracer.warn;
 
     /**
      * Destroy the ConsoleLoggingController instance.
@@ -27,13 +27,12 @@ export class ConsoleLoggingController extends LoggingController {
 // Create a Tracer logger.
 const Tracer: $Tracer.Tracer.Logger = $Tracer.colorConsole({
     dateformat: "mm/dd HH:MM:ss.l",
-    // format: "[{{timestamp}}][{{title}}][{{file}}] {{message}}",
     format: [
         "[{{timestamp}}][{{title}}][{{file}}] {{message}}",
         {
             error: (
-                "[{{timestamp}}][{{title}}][{{file}}][{{line}}:"
-                + "{{pos}}][{{method}}] {{message}}\n{{stack}}"
+                "[{{timestamp}}][{{title}}][{{file}}][{{method}}:{{line}}:"
+                + "{{pos}}] {{message}}\n{{stack}}"
             ),
         },
     ],

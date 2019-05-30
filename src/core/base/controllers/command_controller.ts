@@ -1,7 +1,9 @@
 // Import internal components.
 import { DiscordGuildAttachable, Mix } from "@/common/mixins";
-import { Doppelgangster } from "@/core";
-import { Controller, ControllerConstructor } from "@/core/base/controllers";
+import {
+    Controller, ControllerConstructor,
+} from "@/core/base/controllers/controller";
+import { Doppelgangster } from "@/core/doppelgangster";
 import {
     Command, CommandConstructor, ICommandCallResult,
 } from "@/core/interaction/command";

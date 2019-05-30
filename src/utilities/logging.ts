@@ -19,15 +19,13 @@ let Logger: ILogger = {
  * @param logger A logger
  */
 function setLogger(logger: ILogger): void {
-    const oldLoggerName: string =
-        Logger.constructor ? Logger.constructor.name : "" + Logger;
-    Logging.info(`Switching to the ${logger.constructor.name} logger.`);
+    Logging.info(`Switching to the ${logger.constructor.name} logger...`);
     Logger = logger;
-    Logging.info(`Switched from the ${oldLoggerName} logger.`);
+    Logging.info(`Successfully switched from another logger.`);
 }
 
 // Expose components.
-export const Logging: ILogger & { readonly setLogger: typeof setLogger } = {
+export const Logging: ILogger & { setLogger: typeof setLogger } = {
     debug: (...args: any[]) => Logger.debug(...args),
     error: (...args: any[]) => Logger.error(...args),
     fatal: (...args: any[]) => Logger.fatal(...args),

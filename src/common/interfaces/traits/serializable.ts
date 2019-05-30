@@ -1,4 +1,4 @@
-export interface ISerializable {
-    serialize(): string;
-    deserialize(data: string): void;
+export interface ISerializable<T> {
+    serialize(): T;
+    deserialize(data: T): void;
 }

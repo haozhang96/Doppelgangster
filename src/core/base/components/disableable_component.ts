@@ -1,6 +1,8 @@
 // Import internal components.
 import { IDisableable } from "@/common/interfaces/traits";
-import { Component, ComponentConstructor } from "@/core/base/components";
+import {
+    Component, ComponentConstructor,
+} from "@/core/base/components/component";
 
 /**
  * STUB

@@ -28,11 +28,12 @@ export class CharacteristicAnalysis<ExampleT> extends Mix(Component)
     ) {
         super(characteristic.doppelgangster);
 
+        // TODO: Score
         this.weight = characteristic.weight;
-        this.suspicious = score >= ;
+        this.suspicious = score >= 0;
 
         // TODO: Write string formatter utilities for this.
-        this._stringified = ;
+        this._stringified = exampleStringifier ? "" : "";
     }
 
     /**

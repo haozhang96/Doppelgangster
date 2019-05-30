@@ -59,7 +59,6 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         super();
 
         // Display runtime environment version information.
-        this.logger.info("Initializing Doppelgangster...");
         this.logger.info(`Runtime environment: Doppelgangster v${
             Doppelgangster.version
         }, Node.js v${
@@ -67,8 +66,16 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         }, discord.js v${
             $Discord.version
         }`);
+        this.logger.info("Initializing Doppelgangster...");
+
+        // Call the destructor on Node process exit.
+        process.on("exit", this.destroy);
+
+        // Create a new discord.js client.
+        this.discord = new $Discord.Client();
 
         // Instantiate all controllers.
+        this.logger.info("Initializing controllers...");
         this.controllers =
             Utilities.object.mapValues<
                 Controllers.ControllerConstructor[], Controllers.Controller[]
@@ -82,10 +89,8 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         // Replace the default logger with the logging controllers.
         if (this.controllers.logging.length) {
             this._loggers = this.controllers.logging as unknown as ILogger[];
+            Utilities.logging.setLogger(this._loggers[0]);
         }
-
-        // Create a new discord.js client.
-        this.discord = new $Discord.Client();
 
         // Create a login callback that can be used for reconnection in case of
         //   disconnection.
@@ -119,8 +124,6 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
                     } seconds...`,
                 );
                 setTimeout(connectToDiscord, DiscordConfigs.reconnectTimeout);
-            } else {
-                this.logger.info("Waiting to reconnect to Discord shortly...");
             }
         });
 

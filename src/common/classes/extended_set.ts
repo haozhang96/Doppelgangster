@@ -1,4 +1,4 @@
-import { Set as SetUtilities } from "@/utilities/set";
+import { SetUtils } from "@/utilities";
 
 /**
  * The ExtendedSet class extends the built-in Set class to provide set
@@ -8,7 +8,7 @@ export class ExtendedSet<T> extends Set<T> {
     public static fromIterables<T>(
         ...iterables: Array<Iterable<T>>
     ): ExtendedSet<T> {
-        return ExtendedSet.fromCoercedCall<T>(SetUtilities.union, ...iterables);
+        return ExtendedSet.fromCoercedCall<T>(SetUtils.union, ...iterables);
     }
 
     private static fromCoercedCall<T>(
@@ -16,13 +16,13 @@ export class ExtendedSet<T> extends Set<T> {
         ...iterables: Array<Iterable<T>>
     ): ExtendedSet<T> {
         return new ExtendedSet(
-            callback(...SetUtilities.coerceIterables(iterables)),
+            callback(...SetUtils.coerceIterables(iterables)),
         );
     }
 
     public difference(...iterables: Array<Iterable<T>>): ExtendedSet<T> {
         return ExtendedSet.fromCoercedCall<T>(
-            SetUtilities.difference,
+            SetUtils.difference,
             this, ...iterables,
         );
     }
@@ -30,7 +30,7 @@ export class ExtendedSet<T> extends Set<T> {
     public differenceUpdate(...iterables: Array<Iterable<T>>): this {
         // Find the union of all the iterables.
         const union: Set<T> = ExtendedSet.fromCoercedCall<T>(
-            SetUtilities.union,
+            SetUtils.union,
             ...iterables,
         );
 
@@ -44,14 +44,14 @@ export class ExtendedSet<T> extends Set<T> {
 
     public intersect(...iterables: Array<Iterable<T>>): ExtendedSet<T> {
         return ExtendedSet.fromCoercedCall<T>(
-            SetUtilities.intersect,
+            SetUtils.intersect,
             this, ...iterables,
         );
     }
 
     public union(...iterables: Array<Iterable<T>>): ExtendedSet<T> {
         return ExtendedSet.fromCoercedCall<T>(
-            SetUtilities.union,
+            SetUtils.union,
             this, ...iterables,
         );
     }

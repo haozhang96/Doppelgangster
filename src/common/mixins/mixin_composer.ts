@@ -14,7 +14,7 @@ export class MixInComposer<ClassT extends InstantiableClass> {
      * @param Base The base class to apply the mix-ins to
      */
     public static mix<ClassT extends Class | InstantiableClass>(Base: ClassT) {
-        return new this(Base as ClassT & InstantiableClass);
+        return new MixInComposer(Base as ClassT & InstantiableClass);
     }
 
     private constructor(private _Base: ClassT) { }

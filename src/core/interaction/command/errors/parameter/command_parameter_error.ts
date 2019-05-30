@@ -1,7 +1,13 @@
+// Import internal components.
+import { Command } from "@/core/interaction/command/command";
+import { CommandError } from "@/core/interaction/command/errors/command_error";
 import {
-    Command, CommandError, ICommandParameter, ICommandParameters,
-} from "@/core/interaction/command";
+    ICommandParameter, ICommandParameters,
+} from "@/core/interaction/command/interfaces/command_parameter";
 
+/**
+ * STUB
+ */
 export class CommandParameterError extends CommandError {
     public readonly parameter: ICommandParameter;
 

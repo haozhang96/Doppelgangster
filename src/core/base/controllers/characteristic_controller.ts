@@ -1,5 +1,7 @@
 // Import internal components.
-import { Controller, ControllerConstructor } from "@/core/base/controllers";
+import {
+    Controller, ControllerConstructor,
+} from "@/core/base/controllers/controller";
 
 /**
  * STUB

@@ -1,8 +1,8 @@
 // Import internal components.
-import { Set } from "./set";
+import { SetUtils } from "./set";
 
 function hasIntersection<T>(...iterables: Array<Iterable<T>>): boolean {
-    return Set.intersect(...Set.coerceIterables(iterables)).size > 0;
+    return SetUtils.intersect(...SetUtils.coerceIterables(iterables)).size > 0;
 }
 
 // Expose components.
