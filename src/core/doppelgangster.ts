@@ -85,10 +85,55 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         }
 
         // Create a new discord.js client.
-        const discord: $Discord.Client = this.discord = new $Discord.Client();
+        this.discord = new $Discord.Client();
+
+        // Create a login callback that can be used for reconnection in case of
+        //   disconnection.
+        let reconnecting: boolean;
+        const connectToDiscord: Callback = async () => {
+            try {
+                this.logger.info("Connecting to Discord...");
+                await this.discord.login(apiToken);
+                this.logger.info("Successfully connected to Discord.");
+                this.emit("ready");
+            } catch (error) {
+                this.logger.error(
+                    "Failed to connect to Discord:",
+                    Utilities.misc.stringifyError(error),
+                );
+            } finally {
+                reconnecting = false;
+            }
+        };
+
+        // Attempt to reconnect to Discord if the bot becomes disconnected.
+        this.discord.on("disconnect", () => {
+            if (!reconnecting) {
+                reconnecting = true;
+                this.logger.error(
+                    "Doppelgangster has been disconnected from Discord!",
+                );
+                this.logger.info(
+                    `Attempting to reconnect to Discord in ${
+                        Math.round(DiscordConfigs.reconnectTimeout / 1000)
+                    } seconds...`,
+                );
+                setTimeout(connectToDiscord, DiscordConfigs.reconnectTimeout);
+            } else {
+                this.logger.info("Waiting to reconnect to Discord shortly...");
+            }
+        });
+
+        // Log Discord errors to the logger.
+        this.discord.on("error", (error) => {
+            this.logger.error(
+                "Discord has encountered an error:",
+                Utilities.misc.stringifyError(error),
+            );
+        });
 
         // Log into Discord.
-        discord.login(apiToken);
+        connectToDiscord();
     }
 
     /**
