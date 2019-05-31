@@ -24,9 +24,13 @@ function caseInsensitiveEquals(a: string, b: string): boolean {
     return a.toLowerCase() === b.toLowerCase();
 }
 
-function tabulate(string: string, level: number = 1): string {
+function pluralize(word: string, count: number, pluralForm?: string) {
+    return count === 1 ? word : (pluralForm || word + "s");
+}
+
+function tabulate(_string: string, level: number = 1): string {
     return (
-        "\t".repeat(level) + string.replace(/\n/g, "\n" + "\t".repeat(level))
+        "\t".repeat(level) + _string.replace(/\n/g, "\n" + "\t".repeat(level))
     );
 }
 
@@ -39,6 +43,7 @@ export const StringUtils = {
     backslashUnescape,
     capitalize,
     caseInsensitiveEquals,
+    pluralize,
     tabulate,
     uncapitalize,
 };

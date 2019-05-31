@@ -30,7 +30,9 @@ export abstract class CommandController extends Mix(Controller)
             this.registerCommand(_Command);
         }
         doppelgangster.logger.log(
-            `Successfully registered ${this.commands.length} command(s).`,
+            `Successfully registered ${this.commands.length} ${
+                Utilities.string.pluralize("command", this.commands.length)
+            }.`,
         );
     }
 
