@@ -1,5 +1,4 @@
 // Import internal components.
-import { Optional } from "@/common/types";
 import { Command } from "@/core/interaction/command/command";
 import {
     CommandArgumentError,
@@ -9,7 +8,7 @@ import {
  * STUB
  */
 export class CommandArgumentTypeMismatchError extends CommandArgumentError {
-    public readonly expectedType: Optional<string>;
+    public readonly expectedType?: string;
 
     constructor(
         command: Command,

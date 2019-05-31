@@ -154,7 +154,7 @@ export class Doppelgangster extends Mix(EventEmitter)
         connectToDiscord();
     }
 
-    public attachGuild(guild: $Discord.Guild): this {
+    public attachGuild(guild: $Discord.Guild): void {
         this.logger.log(
             `Attaching to guild "${guild.name}" with ID ${guild.id}...`,
         );
@@ -164,7 +164,7 @@ export class Doppelgangster extends Mix(EventEmitter)
             CommandController.attachGuild(guild);
         }
 
-        return super.attachGuild(guild);
+        super.attachGuild(guild);
     }
 
     /**
@@ -182,7 +182,7 @@ export class Doppelgangster extends Mix(EventEmitter)
         await this.discord.destroy();
     }
 
-    public detachGuild(guild: $Discord.Guild): this {
+    public detachGuild(guild: $Discord.Guild): void {
         this.logger.log(
             `Detaching from guild "${guild.name}" with ID ${guild.id}...`,
         );
@@ -192,7 +192,7 @@ export class Doppelgangster extends Mix(EventEmitter)
             CommandController.detachGuild(guild);
         }
 
-        return super.detachGuild(guild);
+        super.detachGuild(guild);
     }
 }
 

@@ -1,42 +1,40 @@
-import { IExpirable } from "@/common/interfaces/traits";
-import { InstantiableClass, Optional } from "@/common/types";
-import {
-    IRefreshCallbackDescriptor, RefreshCallback,
-} from "./refresh_callback";
+// Import internal components.
+import { Expirable } from "@/common/mixins/expirable/expirable";
+import { Callback, InstantiableClass } from "@/common/types";
 
+/**
+ * STUB
+ * @param Base The base class to mix into
+ * @param refreshCallback The callback to call when refreshing
+ * @param refreshInterval The regular interval in milliseconds to refresh in
+ */
 export function RefreshableExpirable<ClassT extends InstantiableClass>(
     Base: ClassT,
-    refreshCallback?: IRefreshCallbackDescriptor,
+    refreshCallback?: Callback,
+    refreshInterval?: number,
 ) {
-    return class extends Base implements IExpirable {
-        // Protected properties
-        protected readonly refreshCallback: Optional<RefreshCallback>;
-
-        // Private properties
-        private _expired: boolean = false;
-
-        public get expired(): boolean {
-            return this._expired;
-        }
+    return class extends Expirable(Base as InstantiableClass) {
+        protected _refreshing: boolean = false;
 
         constructor(...args: any[]) {
             super(...args);
-            if (refreshCallback) {
-                this.refreshCallback = refreshCallback.callback;
-                if (refreshCallback.interval) {
-                    setInterval(this.refresh, refreshCallback.interval, true);
-                }
+
+            if (refreshInterval) {
+                setInterval(this.refresh, refreshInterval, true);
             }
         }
 
-        public refresh(force: boolean = false): this {
-            if (force || this._expired) {
-                if (this.refreshCallback) {
-                    this.refreshCallback();
-                }
-                this._expired = false;
+        public async refresh(force: boolean = false): Promise<void> {
+            if (
+                refreshCallback
+                && !this._refreshing
+                && (this._expired || force)
+            ) {
+                this._refreshing = true;
+                await refreshCallback();
+                this._refreshing = false;
             }
-            return this;
+            this._expired = false;
         }
     };
 }

@@ -1,4 +1,5 @@
-import { SetUtils } from "@/utilities";
+// Import internal components.
+import { IterableUtils, SetUtils } from "@/utilities";
 
 /**
  * The ExtendedSet class extends the built-in Set class to provide set
@@ -16,7 +17,7 @@ export class ExtendedSet<T> extends Set<T> {
         ...iterables: Array<Iterable<T>>
     ): ExtendedSet<T> {
         return new ExtendedSet(
-            callback(...SetUtils.coerceIterables(iterables)),
+            callback(...IterableUtils.coerceTypes(ExtendedSet, ...iterables)),
         );
     }
 

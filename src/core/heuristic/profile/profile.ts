@@ -1,6 +1,5 @@
 // Import internal components.
 import { EventEmitter, Expirable, Mix } from "@/common/mixins";
-import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
@@ -26,8 +25,8 @@ export class Profile extends Mix(DisableableComponent)
     public readonly userID: string;
 
     // Private properties
-    private _analysis: Optional<ProfileAnalysis>;
-    private _report: Optional<ProfileReport>;
+    private _analysis?: ProfileAnalysis;
+    private _report?: ProfileReport;
     private readonly _reportsAgainst: Map<string, ProfileReport> = new Map();
 
     /**

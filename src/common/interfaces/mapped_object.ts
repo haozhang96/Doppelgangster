@@ -1,3 +1,3 @@
-export interface IMappedObject<T = any> {
+export interface IMappedObject<T> {
     [key: string]: T;
 }

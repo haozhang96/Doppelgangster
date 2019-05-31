@@ -1,8 +1,8 @@
 // Import internal components.
+import { IMappedObject } from "@/common/interfaces/mapped_object";
 import { Callback } from "@/common/types";
-import { IMappedObject } from ".";
 
-export interface ILogger extends Readonly<IMappedObject<Callback>> {
+export interface ILogger extends IMappedObject<Callback> {
     debug: Callback;
     error: Callback;
     fatal: Callback;

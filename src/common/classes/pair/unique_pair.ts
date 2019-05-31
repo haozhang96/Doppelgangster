@@ -1,10 +1,11 @@
-import { Pair } from "./pair";
+import { Pair } from "@/common/classes/pair/pair";
 
 export class UniquePair<T> extends Pair<T> {
     constructor(one: T, two: T) {
         if (one === two) {
             throw new Error(`"${one}" and "${two}" cannot be the same!`);
         }
+
         super(one, two);
     }
 }

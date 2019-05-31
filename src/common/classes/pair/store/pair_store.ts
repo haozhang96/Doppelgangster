@@ -1,6 +1,5 @@
-import { Pair } from "../pair";
-
-import { ICollection } from "@/common/interfaces/collection";
+import { Pair } from "@/common/classes/pair/pair";
+import { ICollection } from "@/common/interfaces";
 
 export abstract class PairStore<T> implements ICollection<Pair<T>> {
     protected pairs: Array<Pair<T>> = [];

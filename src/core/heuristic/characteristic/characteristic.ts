@@ -20,7 +20,7 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
     public abstract readonly weight: number;
 
     // Private properties
-    private _data: Optional<DataT>;
+    private _data?: DataT;
 
     /**
      * Construct a Characteristic instance.

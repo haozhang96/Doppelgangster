@@ -1,55 +1,53 @@
 import {
-    IRefreshCallbackDescriptor, RefreshableExpirable, RefreshCallback,
-} from "@/common/mixins/expirable";
-import { InstantiableClass, Optional } from "@/common/types";
+    RefreshableExpirable,
+} from "@/common/mixins/expirable/refreshable_expirable";
+import { Callback, InstantiableClass } from "@/common/types";
 
+/**
+ * STUB
+ * @param Base The base class to mix into
+ * @param timeout 
+ * @param refreshCallback The callback to call when refreshing
+ */
 export function TimeExpirable<ClassT extends InstantiableClass>(
     Base: ClassT,
     timeout: number,
-    refreshCallback?: IRefreshCallbackDescriptor,
+    refreshCallback?: Callback,
 ) {
-    return class extends (
-        RefreshableExpirable(Base, refreshCallback) as ClassT
-    ) {
-        // Protected properties
-        protected readonly refreshCallback: Optional<RefreshCallback>;
-
+    return class extends RefreshableExpirable(Base, refreshCallback) {
         // Private properties
-        private readonly timeout: number;
-        private _time: Optional<Date>;
-        private _expires: Optional<Date>;
+        private _expires: Date;
+        private _refreshedAt: Date;
 
         constructor(...args: any[]) {
             super(...args);
-            this.timeout = timeout;
-            this.refreshExpiration();
+
+            this._refreshedAt = new Date();
+            this._expires = new Date(this._refreshedAt.valueOf() + timeout);
         }
 
-        // Public methods
-        public get time(): Optional<Date> { return this._time; }
-        public get expires(): Optional<Date> { return this._expires; }
         public get expired(): boolean {
-            return this._expires && new Date() >= this._expires || false;
+            return new Date() >= this._expires;
         }
 
-        public refresh(force: boolean = false): this {
-            if (force || this.expired) {
-                if (this.refreshCallback) {
-                    this.refreshCallback();
-                }
-                this.refreshExpiration();
+        public get expires(): Date {
+            return this._expires;
+        }
+
+        public get refreshedAt(): Date {
+            return this._refreshedAt;
+        }
+
+        public expire(): void {
+            this._expires = this._refreshedAt;
+        }
+
+        public async refresh(force: boolean = false): Promise<void> {
+            if (!this._refreshing && (this._expired || force)) {
+                await super.refresh();
+                this._refreshedAt = new Date();
+                this._expires = new Date(this._refreshedAt.valueOf() + timeout);
             }
-            return this;
-        }
-
-        // Private methods
-        private refreshExpiration(): this {
-            this._time = new Date();
-            this._expires = new Date(this._time);
-            this._expires.setMilliseconds(
-                this._expires.getMilliseconds() + this.timeout,
-            );
-            return this;
         }
     };
 }

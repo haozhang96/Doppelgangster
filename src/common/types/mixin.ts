@@ -1,5 +1,5 @@
-import { Callback } from "./callback";
-import { InstantiableClass } from "./class";
+import { Callback } from "@/common/types/callback";
+import { InstantiableClass } from "@/common/types/class";
 
 export type MixIn<MixInT extends Callback> =
     <ClassT extends InstantiableClass>(Base: ClassT, ...args: any[]) =>

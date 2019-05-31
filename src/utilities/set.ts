@@ -1,14 +1,4 @@
 /**
- * Return an array of sets given an array of iterables.
- * @param iterables An array of iterables to coerce into sets
- */
-function coerceIterables<T>(iterables: Array<Iterable<T>>): Array<Set<T>> {
-    return iterables.map((iterable) =>
-        iterable instanceof Set ? iterable : new Set(iterable),
-    );
-}
-
-/**
  * Return the difference between a main set and an array of sets.
  * @param sets An array of sets to find the difference between the main set
  */
@@ -52,7 +42,6 @@ function union<T>(...sets: Array<Set<T>>): Set<T> {
 
 // Expose components.
 export const SetUtils = {
-    coerceIterables,
     difference,
     intersect,
     union,

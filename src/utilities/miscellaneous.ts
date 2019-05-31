@@ -7,7 +7,7 @@ import * as $Utilities from "util";
  * @param extended Whether to include extended error information
  */
 function stringifyError(
-    error: Error | undefined,
+    error?: Error,
     extended: boolean = true,
 ): string {
     // If no error object was given, then the reason is not known.

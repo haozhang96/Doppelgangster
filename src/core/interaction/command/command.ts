@@ -135,7 +135,9 @@ export abstract class Command extends DisableableComponent {
 
                         // Determine its type.
                         evaluatedArgumentType =
-                            Utilities.reflection.getTypeOf(evaluatedArgument);
+                            Utilities.reflection.getTypeNames(
+                                evaluatedArgument,
+                            );
                     } catch (error) {
                         throw new CommandArgumentEvaluationError(
                             this,
@@ -356,7 +358,7 @@ export abstract class Command extends DisableableComponent {
                                 { timeout: 100 },
                             );
                             evaluatedParameterType =
-                                Utilities.reflection.getTypeOf(
+                                Utilities.reflection.getTypeNames(
                                     evaluatedParameter,
                                 );
                         } catch (error) {

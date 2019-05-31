@@ -1,4 +1,4 @@
-// tslint:disable: ban-types
+// tslint:disable:ban-types
 
 export type TypeName<T> = (
     T extends string ?

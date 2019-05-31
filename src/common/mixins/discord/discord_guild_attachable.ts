@@ -5,6 +5,10 @@ import { InstantiableClass } from "@/common/types";
 // Import external libraries.
 import * as $Discord from "discord.js";
 
+/**
+ * STUB
+ * @param Base 
+ */
 export function DiscordGuildAttachable<ClassT extends InstantiableClass>(
     Base: ClassT,
 ) {
@@ -12,21 +16,19 @@ export function DiscordGuildAttachable<ClassT extends InstantiableClass>(
         // Private properties
         private readonly _attachedGuilds: $Discord.Guild[] = [];
 
-        public attachGuild(guild: $Discord.Guild): this {
+        public attachGuild(guild: $Discord.Guild): void {
             if (!this._attachedGuilds.includes(guild)) {
                 this._attachedGuilds.push(guild);
             }
-            return this;
         }
 
-        public detachGuild(guild: $Discord.Guild): this {
+        public detachGuild(guild: $Discord.Guild): void {
             if (this._attachedGuilds.includes(guild)) {
                 this._attachedGuilds.splice(
                     this._attachedGuilds.indexOf(guild),
                     1,
                 );
             }
-            return this;
         }
 
         public isGuildAttached(guild: $Discord.Guild): boolean {

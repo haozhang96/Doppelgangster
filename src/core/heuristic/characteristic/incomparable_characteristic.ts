@@ -10,7 +10,7 @@ import { Profile } from "@/core/heuristic/profile";
  */
 export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Characteristic<DataT> {
     // Private properties
-    private _analysis: Optional<CharacteristicAnalysis<ExampleT>>;
+    private _analysis?: CharacteristicAnalysis<ExampleT>;
 
     /**
      * Construct an IncomparableCharacteristic instance.

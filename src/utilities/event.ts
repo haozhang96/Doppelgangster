@@ -1,3 +1,4 @@
+// Import internal components.
 import { Callback, Optional } from "@/common/types";
 
 // Import built-in libraries.

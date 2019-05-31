@@ -1,9 +1,13 @@
-import { Pair } from "../pair";
-import { PairStore } from "./pair_store";
+import { Pair } from "@/common/classes/pair/pair";
+import { PairStore } from "@/common/classes/pair/store/pair_store";
+import { Optional } from "@/common/types";
 
+/**
+ * STUB
+ */
 export class UnorderedPairStore<T> extends PairStore<T> {
     public get(one: T, two: T): Pair<T> {
-        const pair: Pair<T> | undefined = this.pairs.find((_pair) =>
+        const pair: Optional<Pair<T>> = this.pairs.find((_pair) =>
             (_pair.one === one && _pair.two === two)
             || (_pair.one === two && _pair.two === one),
         );

@@ -1,7 +1,7 @@
 export interface ICollection<T> {
-    get(...args: any[]): T;
-    remove(...args: any[]): boolean;
     clear(): void;
     contains(...args: any[]): boolean;
+    get(...args: any[]): T;
     indexOf(...args: any[]): number;
+    remove(...args: any[]): boolean;
 }

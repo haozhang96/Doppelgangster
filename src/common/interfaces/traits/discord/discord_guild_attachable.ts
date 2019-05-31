@@ -2,7 +2,7 @@
 import * as $Discord from "discord.js";
 
 export interface IDiscordGuildAttachable {
-    attachGuild(guild: $Discord.Guild): this | Promise<this>;
-    detachGuild(guild: $Discord.Guild): this | Promise<this>;
+    attachGuild(guild: $Discord.Guild): void;
+    detachGuild(guild: $Discord.Guild): void;
     isGuildAttached(guild: $Discord.Guild): boolean;
 }
