@@ -1,7 +1,8 @@
 // Import internal components.
 import { ILogger, IMappedObject } from "@/common/interfaces";
 import { IDestructible } from "@/common/interfaces/traits";
-import { Callback } from "@/common/types";
+import { DiscordGuildAttachable, Mix } from "@/common/mixins";
+import { Callback, Optional } from "@/common/types";
 import * as Controllers from "@/core/base/controllers";
 import * as Utilities from "@/utilities";
 
@@ -15,6 +16,7 @@ import * as $Utilities from "util";
 // Import configurations.
 import * as ControllerConfigs from "?/controllers";
 import * as DiscordConfigs from "?/discord";
+import * as Configs from "?/doppelgangster";
 
 // Import the application version from package.json.
 import { version as application_version } from "@/../package.json";
@@ -22,7 +24,9 @@ import { version as application_version } from "@/../package.json";
 /**
  * STUB
  */
-export class Doppelgangster extends EventEmitter implements IDestructible {
+export class Doppelgangster extends Mix(EventEmitter)
+    .with(DiscordGuildAttachable)
+.compose() implements IDestructible {
     // Public constants
     public static readonly version: string = application_version;
 
@@ -75,7 +79,6 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
         this.discord = new $Discord.Client();
 
         // Instantiate all controllers.
-        this.logger.info("Initializing controllers...");
         this.controllers =
             Utilities.object.mapValues<
                 Controllers.ControllerConstructor[], Controllers.Controller[]
@@ -135,8 +138,31 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
             );
         });
 
+        // Attach a listener to perform actions after logging into Discord.
+        this.discord.on("ready", () => {
+            for (const guildID of Configs.guildIDs) {
+                const guild: Optional<$Discord.Guild> =
+                    this.discord.guilds.get(guildID);
+
+                if (guild) {
+                    this.attachGuild(guild);
+                }
+            }
+        });
+
         // Log into Discord.
         connectToDiscord();
+    }
+
+    public attachGuild(guild: $Discord.Guild): this {
+        this.logger.log(`Attaching to Discord guild "${guild.name}"...`);
+
+        // Attach command controllers.
+        for (const CommandController of this.controllers.command) {
+            CommandController.attachGuild(guild);
+        }
+
+        return super.attachGuild(guild);
     }
 
     /**
@@ -152,6 +178,17 @@ export class Doppelgangster extends EventEmitter implements IDestructible {
 
         // Destroy the discord.js client.
         await this.discord.destroy();
+    }
+
+    public detachGuild(guild: $Discord.Guild): this {
+        this.logger.log(`Detaching from Discord guild "${guild.name}"...`);
+
+        // Detach command controllers.
+        for (const CommandController of this.controllers.command) {
+            CommandController.detachGuild(guild);
+        }
+
+        return super.detachGuild(guild);
     }
 }
 

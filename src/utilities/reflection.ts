@@ -21,7 +21,7 @@ function deabstractifyClass<ClassT extends Class>(AbstractClass: ClassT) {
  */
 function getClassesInDirectory<T>(directory: string): T[] {
     return FileSystemUtils.getAllFilePaths(directory).filter((file) =>
-        file.endsWith(".ts"),
+        file.endsWith(".js"),
     ).map((file) =>
         require(file.slice(0, -3)).default,
     );

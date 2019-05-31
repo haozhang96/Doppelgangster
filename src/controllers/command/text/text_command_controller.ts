@@ -485,17 +485,21 @@ export class TextCommandController extends CommandController {
                 context = command.buildCallContext(descriptor);
             } catch (error) {
                 this.doppelgangster.logger.warn(
-                    "An error has occurred while building the call context for"
+                    "An error has occurred while building the call context for "
                     + "a command:",
                     Utilities.misc.stringifyError(error),
                 );
-                // TODO: error.message.includes("`")??? Check old code.
                 message.reply(
                     "an error has occurred while processing your command's "
                     + "arguments/parameters:"
-                    + `\`\`\`\n${
-                        error.message || error
-                    }\`\`\`\n`
+                    + ( // Don't format the message if it comes pre-formatted.
+                        error.message.includes("`") ?
+                            `\n${error.message}\n`
+                        :
+                            `\`\`\`\n${
+                                error.message || error
+                            }\`\`\`\n`
+                    )
                     + "If you need help, use the `--help` switch.",
                 );
                 return;
@@ -530,12 +534,16 @@ export class TextCommandController extends CommandController {
     ): Promise<void> {
         switch (result.type) {
             case CommandCallResultType.SUCCESS: {
-                message.reply(result.message);
+                message.reply(
+                    `your command executed successfully:\n${result.message}`,
+                );
                 return;
             }
 
             case CommandCallResultType.FAILURE: {
-                message.reply(result.message);
+                message.reply(
+                    `your command failed to execute:\n${result.message}`,
+                );
                 return;
             }
         }

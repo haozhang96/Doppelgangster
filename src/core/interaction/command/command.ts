@@ -140,7 +140,23 @@ export abstract class Command extends DisableableComponent {
                         throw new CommandArgumentEvaluationError(
                             this,
                             index,
-                            error.message,
+                            (
+                                "An error has occurred while evaluating "
+                                + `argument \`${
+                                    index + 1
+                                }\`${
+                                    commandArgument.name !== undefined ?
+                                        ` (\`${commandArgument.name}\`)`
+                                    :
+                                        ""
+                                } for the \`${
+                                    this.name
+                                }\` command:\`\`\`\n${
+                                    error.message || error
+                                }\`\`\``
+                                + "If you do not want the argument to be "
+                                + "evaluated, prefix it with \`@\`."
+                            ),
                         );
                         /*throw new TypeError(
                             "an error has occurred while evaluating argument "
@@ -173,6 +189,22 @@ export abstract class Command extends DisableableComponent {
                             this,
                             index,
                             evaluatedArgumentType,
+                            (
+                                `Argument \`${
+                                    index + 1
+                                }\`${
+                                    commandArgument.name !== undefined ?
+                                        ` (\`${commandArgument.name}\`)`
+                                    :
+                                        ""
+                                } for the \`${
+                                    this.name
+                                }\` command expects the type \`${
+                                    commandArgument.type.toLowerCase()
+                                }\`, but \`${
+                                    evaluatedArgumentType.toLowerCase()
+                                }\` was given!`
+                            ),
                         );
                         /*throw new TypeError(
                             `argument \`${
@@ -203,7 +235,23 @@ export abstract class Command extends DisableableComponent {
                 if (!commandArgument.optional) {
                     // Check if the current argument is required but wasn't
                     //   passed.
-                    throw new CommandArgumentMissingError(this, index);
+                    throw new CommandArgumentMissingError(this, index,
+                        `Argument \`${
+                            index + 1
+                        }\`${
+                            commandArgument.name ?
+                                ` (\`${commandArgument.name}\`)`
+                            :
+                                ""
+                        }${
+                            commandArgument.type ?
+                                ` of the type \`${commandArgument.type}\``
+                            :
+                                ""
+                        } is required for the \`${
+                            this.name
+                        }\` command!`,
+                    );
                     /*throw new TypeError(
                         `argument \`${
                             index + 1
@@ -315,7 +363,18 @@ export abstract class Command extends DisableableComponent {
                             throw new CommandParameterEvaluationError(
                                 this,
                                 commandParameterName,
-                                error.message,
+                                (
+                                    "An error has occurred while evaluating the"
+                                    + ` parameter \`${
+                                        commandParameterName
+                                    }\` for the \`${
+                                        this.name
+                                    }\` command:\`\`\`\n${
+                                        error.message
+                                    }\`\`\``
+                                    + "If you do not want the parameter to be "
+                                    + "evaluated, prefix it with `@`."
+                                ),
                             );
                             /*throw new TypeError(
                                 "an error has occurred while evaluating the"
@@ -343,6 +402,17 @@ export abstract class Command extends DisableableComponent {
                                 this,
                                 commandParameterName,
                                 evaluatedParameterType,
+                                (
+                                    `The parameter \`${
+                                        commandParameterName
+                                    }\` for the \`${
+                                        this.name
+                                    }\` command expects the type \`${
+                                        commandParameter.type.toLowerCase()
+                                    }\`, but \`${
+                                        evaluatedParameterType.toLowerCase()
+                                    }\` was given!`
+                                ),
                             );
                             /*throw new TypeError(
                                 `the parameter \`${
@@ -372,6 +442,13 @@ export abstract class Command extends DisableableComponent {
                 throw new CommandParameterNameError(
                     this,
                     descriptorParameterName,
+                    (
+                        `The \`${
+                            this.name
+                        }\` command does not have a parameter named \`${
+                            descriptorParameterName
+                        }\`!`
+                    ),
                 );
                 /*throw new TypeError(
                     `the \`${
@@ -395,6 +472,20 @@ export abstract class Command extends DisableableComponent {
                         throw new CommandParameterMissingError(
                             this,
                             commandParameterName,
+                            (
+                                `The parameter \`${
+                                    commandParameterName
+                                }\`${
+                                    commandParameter.type ?
+                                        ` of the type \`${
+                                            commandParameter.type
+                                        }\``
+                                    :
+                                        ""
+                                } is required for the \`${
+                                    this.name
+                                }\` command!`
+                            ),
                         );
                         /*throw new TypeError(
                             `the parameter \`${

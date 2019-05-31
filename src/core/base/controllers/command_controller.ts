@@ -29,6 +29,9 @@ export abstract class CommandController extends Mix(Controller)
         for (const _Command of getCommands()) {
             this.registerCommand(_Command);
         }
+        doppelgangster.logger.log(
+            `Successfully registered ${this.commands.length} command(s).`,
+        );
     }
 
     /**

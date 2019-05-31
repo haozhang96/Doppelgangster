@@ -2,7 +2,7 @@
 import { Command } from "@/core/interaction/command/command";
 import { CommandError } from "@/core/interaction/command/errors/command_error";
 import {
-    ICommandParameter, ICommandParameters,
+    ICommandParameter,
 } from "@/core/interaction/command/interfaces/command_parameter";
 
 /**
@@ -17,7 +17,6 @@ export class CommandParameterError extends CommandError {
         message?: string,
     ) {
         super(command, message);
-        this.parameter =
-            (command.parameters as ICommandParameters)[parameterName];
+        this.parameter = (command.parameters || {})[parameterName];
     }
 }
