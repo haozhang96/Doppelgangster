@@ -155,7 +155,7 @@ export class Doppelgangster extends Mix(EventEmitter)
     }
 
     public attachGuild(guild: $Discord.Guild): void {
-        this.logger.log(
+        this.logger.info(
             `Attaching to guild "${guild.name}" with ID ${guild.id}...`,
         );
 
@@ -172,6 +172,7 @@ export class Doppelgangster extends Mix(EventEmitter)
      */
     public async destroy(): Promise<void> {
         // Mark the instance as being in the process of destruction.
+        this.logger.info("Exiting...");
         this._destroying = true;
 
         // Destroy all controller instances.
@@ -183,10 +184,14 @@ export class Doppelgangster extends Mix(EventEmitter)
 
         // Destroy the discord.js client.
         await this.discord.destroy();
+
+        // Reset the global logger to the default logger.
+        Utilities.logging.setLogger();
+        Utilities.logging.info("Doppelgangster has exited.");
     }
 
     public detachGuild(guild: $Discord.Guild): void {
-        this.logger.log(
+        this.logger.info(
             `Detaching from guild "${guild.name}" with ID ${guild.id}...`,
         );
 
