@@ -21,7 +21,7 @@ export class Profile extends Mix(DisableableComponent)
 .compose() {
     // Public properties
     public readonly characteristics: ReadonlyArray<Characteristic<any>>;
-    public readonly user: $Discord.User;
+    public readonly user?: $Discord.User;
     public readonly userID: string;
 
     // Private properties

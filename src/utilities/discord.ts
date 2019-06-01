@@ -23,8 +23,8 @@ function formatMessage(message: $Discord.Message): string {
     return `[${message.createdAt.toLocaleString()}] ${message.content}`;
 }
 
-function getAccountCreationDate(userID: number): Date {
-    return new Date((userID / 4194304) + 1420070400000);
+function getAccountCreationDate(userID: string): Date {
+    return new Date((+userID / 4194304) + 1420070400000);
 }
 
 function matchMessages(
