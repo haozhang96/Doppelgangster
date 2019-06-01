@@ -1,26 +1,29 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    // Compilation paths
+    "rootDir": "",
+    "outDir": "dist",
+    
+    // Module resolution paths
+    "baseUrl": "",
+    "paths": {
+      "?/*": ["conf/*"], // Configurations root
+      "$/*": ["data/*"], // Data root
+      "@/*": ["src/*"], // Source code root
+    },
+
+    // Compilation parameters
     "module": "commonjs",
     "target": "esnext",
     "sourceMap": true,
     "watch": true,
     "removeComments": true,
+    "resolveJsonModule": true,
     
+    // Type-checking options
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "baseUrl": ".",
-    "paths": {
-      "$/*": ["./*"], // App root
-      "@": ["modules/."], // Doppelgangster main
-      "@/*": ["modules/*"], // Doppelgangster components
-      "Configurations": ["Configurations"] // Configurations
-    }
-  },
-  "exclude": [
-    "node_modules",
-    "database"
-  ]
+    "noUnusedParameters": true
+  }
 }

@@ -1,6 +1,6 @@
 # Environment-specifics
 node_modules/
-database/
+dist/
 *.code-workspace
 
 # Compiled JavaScript files
@@ -8,4 +8,5 @@ database/
 *.js.map
 
 # Temporary
+conf/
 Configurations.ts
