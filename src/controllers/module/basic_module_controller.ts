@@ -11,8 +11,7 @@ import * as $FileSystem from "fs";
 import * as $Path from "path";
 
 /**
- * The BasicModuleController provides basic functionalities defined in the base
- *   ModuleController.
+ * The BasicModuleController provides basic module-loading functionalities.
  */
 export class BasicModuleController extends ModuleController {
     // Public properties

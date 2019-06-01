@@ -7,6 +7,9 @@ import { CommandConstructor } from "@/core/interaction/command";
  * STUB
  */
 export abstract class Module extends DisableableComponent {
+    // @Override
+    public abstract readonly commands: CommandConstructor[];
+
     /**
      * Construct a Module instance.
      * @param controller A ModuleController instance to attach to
@@ -18,9 +21,6 @@ export abstract class Module extends DisableableComponent {
             this.constructor.name
         } module...`);
     }
-
-    // @Override
-    public abstract get commands(): CommandConstructor[];
 }
 
 /**
