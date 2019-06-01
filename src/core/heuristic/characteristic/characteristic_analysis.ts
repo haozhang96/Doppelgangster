@@ -4,7 +4,9 @@ import {
 } from "@/common/interfaces/traits";
 import { Expirable, Mix } from "@/common/mixins";
 import { Component } from "@/core/base/components";
-import { IncomparableCharacteristic } from "./incomparable_characteristic";
+import {
+    IncomparableCharacteristic,
+} from "@/core/heuristic/characteristic/incomparable_characteristic";
 
 /**
  * STUB
