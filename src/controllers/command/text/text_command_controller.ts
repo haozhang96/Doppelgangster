@@ -532,20 +532,24 @@ export class TextCommandController extends CommandController {
         result: ICommandCallResult,
         message: $Discord.Message,
     ): Promise<void> {
-        switch (result.type) {
-            case CommandCallResultType.SUCCESS: {
-                message.reply(
-                    `your command executed successfully:\n${result.message}`,
-                );
-                return;
-            }
+        if (result.type === CommandCallResultType.SUCCESS) {
+            await message.reply(
+                result.message ?
+                    `your command executed successfully:\n${result.message}`
+                :
+                    "your command executed successfully.",
+            );
+        } else if (result.type === CommandCallResultType.FAILURE) {
+            await message.reply(
+                result.message ?
+                    `your command failed to execute:\n${result.message}`
+                :
+                    "your command failed to execute.",
+            );
+        }
 
-            case CommandCallResultType.FAILURE: {
-                message.reply(
-                    `your command failed to execute:\n${result.message}`,
-                );
-                return;
-            }
+        if (result.callback) {
+            result.callback();
         }
     }
 }

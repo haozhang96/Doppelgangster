@@ -1,3 +1,4 @@
+// Import Doppelgangster components.
 import {
     Command, CommandCallResultType, ICommandCallContext, ICommandCallResult,
 } from "@/core/interaction/command";
