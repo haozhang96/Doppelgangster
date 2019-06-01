@@ -1,8 +1,9 @@
 // Import internal components.
 import { Optional } from "@/common/types";
+import { Characteristic } from "@/core/heuristic/characteristic/characteristic";
 import {
-    Characteristic, CharacteristicAnalysis,
-} from "@/core/heuristic/characteristic";
+    CharacteristicAnalysis,
+} from "@/core/heuristic/characteristic/characteristic_analysis";
 import { Profile } from "@/core/heuristic/profile";
 
 /**
@@ -30,7 +31,7 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
         });
     }
 
-    public get analysis(): CharacteristicAnalysis<ExampleT> {
+    public get analysis(): Optional<CharacteristicAnalysis<ExampleT>> {
         if (!this._analysis || this._analysis.expired) {
             if (this.hasData) {
                 this._analysis = this.analyzer();
@@ -42,5 +43,5 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
     }
 
     // @Override
-    protected abstract analyzer(): Optional<CharacterAnalysis<ExampleT>>;
+    protected abstract analyzer(): Optional<CharacteristicAnalysis<ExampleT>>;
 }

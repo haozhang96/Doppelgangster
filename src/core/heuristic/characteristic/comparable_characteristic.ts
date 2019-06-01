@@ -1,8 +1,9 @@
 // Import internal components.
 import { Optional } from "@/common/types";
+import { Characteristic } from "@/core/heuristic/characteristic/characteristic";
 import {
-    Characteristic, CharacteristicComparison,
-} from "@/core/heuristic/characteristic";
+    CharacteristicComparison,
+} from "@/core/heuristic/characteristic/characteristic_comparison";
 import { Profile } from "@/core/heuristic/profile";
 
 /**

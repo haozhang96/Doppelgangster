@@ -24,13 +24,13 @@ export class CharacteristicAnalysis<ExampleT> extends Mix(Component)
     constructor(
         public readonly characteristic:
             IncomparableCharacteristic<any, ExampleT>,
-        public readonly score: number,
+        public readonly score: number = 0,
         public readonly examples: ExampleT[] = [],
         exampleStringifier?: (example: ExampleT) => string,
     ) {
         super(characteristic.doppelgangster);
 
-        // TODO: Score
+        // TODO: Score threshold configs
         this.weight = characteristic.weight;
         this.suspicious = score >= 0;
 

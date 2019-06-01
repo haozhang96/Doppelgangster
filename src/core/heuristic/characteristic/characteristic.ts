@@ -40,12 +40,12 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
      */
     public get hasData(): boolean {
         const data: any = this._data;
-        return data !== undefined && !!(
-            typeof data.length === "number" ?
+        return data !== undefined && data !== null && !!(
+            typeof data.length === "number" ? // Data with length property
                 data.length
-            : typeof data.size === "number" ?
+            : typeof data.size === "number" ? // Data with size property
                 data.size
-            :
+            : // Any defined and non-null data
                 true
         );
     }
@@ -106,7 +106,7 @@ export type CharacteristicConstructor<DataT = any> = typeof Characteristic & (
  * Return all the available characteristics found in /src/characteristics.
  */
 export function getCharacteristics(): CharacteristicConstructor[] {
-    return ReflectionUtils.getClassesInDirectory(
+    return ReflectionUtils.getDefaultClassesInDirectory(
         PathUtils.sourceRootResolve("characteristics"),
     );
 }

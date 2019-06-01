@@ -60,7 +60,7 @@ function getModules(): IMappedObject<ModuleConstructor> {
     //   uncapitalized.
     const moduleMap: IMappedObject<ModuleConstructor> = {};
     const modules: ModuleConstructor[] =
-        Utilities.reflection.getClassesInDirectory(modulesPath);
+        Utilities.reflection.getDefaultClassesInDirectory(modulesPath);
     for (const module of modules) {
         moduleMap[Utilities.string.uncapitalize(module.name)] = module;
     }

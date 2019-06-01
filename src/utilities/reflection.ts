@@ -16,7 +16,7 @@ function deabstractifyClass<ClassT extends Class>(AbstractClass: ClassT) {
  * Return all the default classes in every file found within a given directory.
  * @param directory The directory to recursively scan for classes
  */
-function getClassesInDirectory<T>(directory: string): T[] {
+function getDefaultClassesInDirectory<T>(directory: string): T[] {
     return FileSystemUtils.getAllFilePaths(directory).filter((file) =>
         file.endsWith(".js"),
     ).map((file) =>
@@ -61,6 +61,6 @@ function getTypeNames(
 // Expose components.
 export const ReflectionUtils = {
     deabstractifyClass,
-    getClassesInDirectory,
+    getDefaultClassesInDirectory,
     getTypeNames,
 };

@@ -72,7 +72,7 @@ export type CommandControllerConstructor =
  * Return all the available commands found in /src/commands.
  */
 export function getCommands(): CommandConstructor[] {
-    return Utilities.reflection.getClassesInDirectory(
+    return Utilities.reflection.getDefaultClassesInDirectory(
         Utilities.path.sourceRootResolve("commands"),
     );
 }

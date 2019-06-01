@@ -41,8 +41,8 @@ export class Doppelgangster extends Mix(EventEmitter)
     }
 
     // Public variables
-    public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IControllers>;
+    public readonly discord: $Discord.Client = new $Discord.Client();
     public readonly logger: Readonly<ILogger> = {
         debug: (...$) => this._loggers.forEach(async (_) => _.debug(...$)),
         error: (...$) => this._loggers.forEach(async (_) => _.error(...$)),
@@ -82,12 +82,12 @@ export class Doppelgangster extends Mix(EventEmitter)
         // Instantiate all controllers.
         this.controllers =
             Utilities.object.mapValues<
-                Controllers.ControllerConstructor[], Controllers.Controller[]
+                Controllers.ControllerConstructor[],
+                Controllers.Controller[]
             >(
                 ControllerConfigs.controllers,
-                (ControllerArray) => ControllerArray.map((_Controller) =>
-                    new _Controller(this),
-                ),
+                (ControllerArray) =>
+                    ControllerArray.map((_Controller) => new _Controller(this)),
             ) as IControllers;
 
         // Replace the default logger with the logging controllers.
@@ -115,7 +115,8 @@ export class Doppelgangster extends Mix(EventEmitter)
             }
         };
 
-        // Attempt to reconnect to Discord if the bot becomes disconnected.
+        // Attempt to reconnect to Discord if the bot becomes disconnected
+        //   unexpectedly.
         this.discord.on("disconnect", () => {
             if (!reconnecting && !this._destroying) {
                 reconnecting = true;
