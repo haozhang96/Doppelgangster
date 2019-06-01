@@ -76,9 +76,6 @@ export class Doppelgangster extends Mix(EventEmitter)
         // Call the destructor on Node process exit.
         process.on("exit", this.destroy);
 
-        // Create a new discord.js client.
-        this.discord = new $Discord.Client();
-
         // Instantiate all controllers.
         this.controllers =
             Utilities.object.mapValues<
@@ -89,6 +86,7 @@ export class Doppelgangster extends Mix(EventEmitter)
                 (ControllerArray) =>
                     ControllerArray.map((_Controller) => new _Controller(this)),
             ) as IControllers;
+        this.emit("controllersReady", this.controllers);
 
         // Replace the default logger with the logging controllers.
         if (this.controllers.logging.length) {

@@ -3,6 +3,7 @@ import { IMappedObject } from "@/common/interfaces";
 import { ModuleController } from "@/core/base/controllers";
 import { Module, ModuleConstructor } from "@/core/base/module";
 import { Doppelgangster } from "@/core/doppelgangster";
+import { CommandConstructor } from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
 // Import built-in libraries.
@@ -28,6 +29,19 @@ export class BasicModuleController extends ModuleController {
         this.modules = Utilities.object.mapValues<ModuleConstructor, Module>(
             getModules(), (_Module) => new _Module(doppelgangster),
         );
+
+        // Register all module commands.
+        const moduleCommands: CommandConstructor[][] =
+            Object.values(this.modules).map((module) => module.commands);
+        doppelgangster.once("controllersReady", (controllers) => {
+            for (const CommandController of controllers.command) {
+                for (const commands of moduleCommands) {
+                    for (const command of commands) {
+                        CommandController.registerCommand(command);
+                    }
+                }
+            }
+        });
     }
 }
 
