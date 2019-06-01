@@ -6,13 +6,13 @@ import { CommandConstructor } from "@/core/interaction/command";
 /**
  * STUB
  */
-export class Gatekeeper extends Module {
+export class Guardian extends Module {
     public readonly commands: CommandConstructor[] = [];
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.log("Gatekeeper says hello!");
+        doppelgangster.logger.log("Guardian says hello!");
     }
 
     public destroy(): void {
