@@ -21,6 +21,8 @@ function getDefaultClassesInDirectory<T>(directory: string): T[] {
         file.endsWith(".js"),
     ).map((file) =>
         require(file.slice(0, -3)).default,
+    ).filter((_Class) =>
+        _Class !== undefined,
     );
 }
 
