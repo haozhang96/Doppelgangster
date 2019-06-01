@@ -13,7 +13,7 @@ import {
 import * as $Discord from "discord.js";
 
 /**
- * STUB
+ * TODO
  */
 export class Profile extends Mix(DisableableComponent)
     .with(EventEmitter)

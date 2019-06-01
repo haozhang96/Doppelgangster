@@ -6,7 +6,7 @@ import {
 } from "@/core/interaction/command/interfaces/command_parameter";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandParameterError extends CommandError {
     public readonly parameter: ICommandParameter;

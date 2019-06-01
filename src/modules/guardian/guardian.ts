@@ -4,7 +4,7 @@ import { Module } from "@/core/base/module";
 import { CommandConstructor } from "@/core/interaction/command";
 
 /**
- * STUB
+ * TODO
  */
 export class Guardian extends Module {
     public readonly commands: CommandConstructor[] = [];

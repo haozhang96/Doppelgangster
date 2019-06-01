@@ -22,7 +22,7 @@ import * as Configs from "?/doppelgangster";
 import { version as application_version } from "@/../package.json";
 
 /**
- * STUB
+ * TODO
  */
 export class Doppelgangster extends Mix(EventEmitter)
     .with(DiscordGuildAttachable)

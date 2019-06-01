@@ -4,7 +4,7 @@ import {
 import { Callback, InstantiableClass } from "@/common/types";
 
 /**
- * STUB
+ * TODO
  * @param Base The base class to mix into
  * @param timeout 
  * @param refreshCallback The callback to call when refreshing

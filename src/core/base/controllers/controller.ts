@@ -3,7 +3,7 @@ import { Component, ComponentConstructor } from "@/core/base/components";
 import { Doppelgangster } from "@/core/doppelgangster";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Controller extends Component {
     /**

@@ -9,7 +9,7 @@ import {
 } from "@/core/heuristic/characteristic/incomparable_characteristic";
 
 /**
- * STUB
+ * TODO
  */
 export class CharacteristicAnalysis<ExampleT> extends Mix(Component)
     .with(Expirable)

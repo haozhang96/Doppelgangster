@@ -7,7 +7,7 @@ import {
 import { Profile } from "@/core/heuristic/profile";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class ComparableCharacteristic<DataT, ExampleT> extends Characteristic<DataT> {
     // Private properties

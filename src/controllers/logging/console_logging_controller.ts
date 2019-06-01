@@ -5,7 +5,7 @@ import { LoggingController } from "@/core/base/controllers";
 import * as $Tracer from "tracer";
 
 /**
- * STUB
+ * TODO
  */
 export class ConsoleLoggingController extends LoggingController {
     public readonly debug = Tracer.debug;

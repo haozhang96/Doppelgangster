@@ -20,7 +20,7 @@ import * as $Discord from "discord.js";
 import * as Configs from "?/controllers/command/text_command_controller";
 
 /**
- * STUB
+ * TODO
  */
 export class TextCommandController extends CommandController {
     private static _help: Map<Command, string> = new Map();
@@ -524,7 +524,7 @@ export class TextCommandController extends CommandController {
     }
 
     /**
-     * STUB
+     * TODO
      * @param result 
      * @param message 
      */

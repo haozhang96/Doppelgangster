@@ -7,7 +7,7 @@ import { Profile } from "@/core/heuristic/profile";
 import { PathUtils, ReflectionUtils } from "@/utilities";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
     .with(EventEmitter)

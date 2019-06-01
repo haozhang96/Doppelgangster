@@ -10,7 +10,7 @@ import {
 import * as Utilities from "@/utilities";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class CommandController extends Mix(Controller)
     .with(DiscordGuildAttachable)

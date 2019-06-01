@@ -25,7 +25,7 @@ import * as Utilities from "@/utilities";
 import { runInNewContext as safeEval } from "vm";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Command extends DisableableComponent {
     // Public constants

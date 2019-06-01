@@ -5,7 +5,7 @@ import {
 } from "@/core/interaction/command/errors/argument/command_argument_error";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandArgumentTypeMismatchError extends CommandArgumentError {
     public readonly expectedType?: string;

@@ -6,7 +6,7 @@ import { InstantiableClass } from "@/common/types";
 import * as $Discord from "discord.js";
 
 /**
- * STUB
+ * TODO
  * @param Base 
  */
 export function DiscordGuildAttachable<ClassT extends InstantiableClass>(

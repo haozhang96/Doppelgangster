@@ -8,12 +8,12 @@ import * as Utilities from "@/utilities";
 // Import configurations.
 import * as Configs from "?/characteristics/incomparable/account/age";
 
-// STUB
+// TODO
 type Data = Date;
 type Example = Date;
 
 /**
- * STUB
+ * TODO
  */
 export default class extends IncomparableCharacteristic<Data, Example> {
     public name = "Account.Age";

@@ -5,7 +5,7 @@ import {
 } from "@/core/base/components/component";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class DisableableComponent extends Component implements IDisableable {
     // Private variables

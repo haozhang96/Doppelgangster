@@ -5,7 +5,7 @@ import {
 } from "@/core/interaction/command/errors/parameter/command_parameter_error";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandParameterTypeMismatchError extends CommandParameterError {
     public readonly expectedType?: string;

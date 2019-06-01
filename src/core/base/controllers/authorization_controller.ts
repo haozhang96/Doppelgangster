@@ -4,7 +4,7 @@ import {
 } from "@/core/base/controllers/controller";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class AuthorizationController extends Controller { }
 

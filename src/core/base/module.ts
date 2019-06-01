@@ -4,7 +4,7 @@ import { Doppelgangster } from "@/core/doppelgangster";
 import { CommandConstructor } from "@/core/interaction/command";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Module extends DisableableComponent {
     // @Override

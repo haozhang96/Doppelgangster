@@ -6,7 +6,7 @@ import {
 } from "@/core/interaction/command/interfaces/command_argument";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandArgumentError extends CommandError {
     public readonly argument: ICommandArgument;

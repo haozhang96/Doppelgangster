@@ -6,7 +6,7 @@ import {
 import { Module } from "@/core/base/module";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class ModuleController extends Controller {
     // Public properties
