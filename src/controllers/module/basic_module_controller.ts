@@ -26,7 +26,7 @@ export class BasicModuleController extends ModuleController {
 
         // Instantiate all modules.
         this.modules = Utilities.object.mapValues<ModuleConstructor, Module>(
-            getModules(), (_Module) => new _Module(this),
+            getModules(), (_Module) => new _Module(doppelgangster),
         );
     }
 }
