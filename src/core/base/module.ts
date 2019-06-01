@@ -20,7 +20,7 @@ export abstract class Module extends DisableableComponent {
     }
 
     // @Override
-    public abstract getCommands(): CommandConstructor[];
+    public abstract get commands(): CommandConstructor[];
 }
 
 /**

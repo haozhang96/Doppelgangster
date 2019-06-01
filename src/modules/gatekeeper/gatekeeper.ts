@@ -15,7 +15,7 @@ export class Gatekeeper extends Module {
         return;
     }
 
-    public getCommands(): CommandConstructor[] {
+    public get commands(): CommandConstructor[] {
         return [];
     }
 }
