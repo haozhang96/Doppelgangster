@@ -55,6 +55,7 @@ export class Doppelgangster extends Mix(EventEmitter)
 
     // Private variables
     private readonly _loggers: readonly ILogger[] = [Utilities.logging];
+    private _destroying: boolean = false;
 
     /**
      * Construct a Doppelgangster instance.
@@ -116,7 +117,7 @@ export class Doppelgangster extends Mix(EventEmitter)
 
         // Attempt to reconnect to Discord if the bot becomes disconnected.
         this.discord.on("disconnect", () => {
-            if (!reconnecting) {
+            if (!reconnecting && !this._destroying) {
                 reconnecting = true;
                 this.logger.error(
                     "Doppelgangster has been disconnected from Discord!",
@@ -171,6 +172,9 @@ export class Doppelgangster extends Mix(EventEmitter)
      * Destroy the Doppelgangster instance.
      */
     public async destroy(): Promise<void> {
+        // Mark the instance as being in the process of destruction.
+        this._destroying = true;
+
         // Destroy all controller instances.
         for (const typedControllers of Object.values(this.controllers)) {
             for (const controller of typedControllers) {
