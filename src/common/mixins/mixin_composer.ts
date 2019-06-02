@@ -36,16 +36,18 @@ export class MixInComposer<ClassT extends InstantiableClass> {
      */
     public compose() {
         // Keep a count of mix-ins waiting for initialization.
-        let mixinsRemaining: number = this._count;
+        const mixinsRemaining: number = this._count;
 
         // tslint:disable-next-line:max-classes-per-file
         return class extends this._Base {
+            private _mixinsRemaining: number = mixinsRemaining;
+
             constructor(...args: any[]) {
                 super(...args);
 
                 // Decrement the number of mix-inxs that are waiting on
                 //   initialization.
-                --mixinsRemaining;
+                --this._mixinsRemaining;
             }
 
             /**
@@ -54,12 +56,12 @@ export class MixInComposer<ClassT extends InstantiableClass> {
              *   initialized
              */
             public onMixInComplete(callback: Callback) {
-                if (mixinsRemaining === 0) {
+                if (this._mixinsRemaining === 0) {
                     return callback();
                 }
 
                 const checker = setInterval(() => {
-                    if (mixinsRemaining === 0) {
+                    if (this._mixinsRemaining === 0) {
                         clearInterval(checker);
                         return callback();
                     }

@@ -43,32 +43,32 @@ export default class extends Command {
                 )
         );
 
-        if (member) {
-            const profile: Profile =
-                this.doppelgangster.controllers.profile[0].getUserProfile(
-                    member.user,
-                    true,
-                ) as Profile;
-
+        if (!member) {
             return {
                 message: (
-                    "```"
-                    + profile.analysis.toString(
-                        context.parameters.suspiciousCharacteristicsOnly,
-                    ).slice(0, 1970)
-                    + "```"
+                    `No user with "\`${
+                        context.arguments.named.user
+                    }\`" in their name could be found for analysis!`
                 ),
-                type: CommandCallResultType.SUCCESS,
+                type: CommandCallResultType.FAILURE,
             };
         }
 
+        const profile: Profile =
+            this.doppelgangster.controllers.profile[0].getUserProfile(
+                member.user,
+                true,
+            ) as Profile;
+
         return {
             message: (
-                `No user with "\`${
-                    context.arguments.named.user
-                }\`" in their name could be found for analysis!`
+                "```"
+                + profile.analysis.toString(
+                    context.parameters.suspiciousCharacteristicsOnly,
+                ).slice(0, 1970)
+                + "```"
             ),
-            type: CommandCallResultType.FAILURE,
+            type: CommandCallResultType.SUCCESS,
         };
     }
 }
