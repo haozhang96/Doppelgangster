@@ -21,7 +21,7 @@ export class BasicProfileController extends ProfileController {
         let comparison: Optional<ProfileComparison> =
             this.profileComparisons.get(pair);
 
-        this.doppelgangster.logger.info(
+        this.doppelgangster.logger.debug(
             `Comparing "${
                 profileOne.user ? profileOne.user.username : profileOne.userID
             }" and "${
