@@ -26,10 +26,9 @@ function findMemberInGuildByName(
     return guild.members.find((member) =>
         member.user.username.toLowerCase().includes(name.toLowerCase())
         || (
-            member.nickname.length // Nickname might be empty.
+            member.nickname
             && member.nickname.toLowerCase().includes(name.toLowerCase())
-        )
-        || false,
+        ) || false,
     );
 }
 

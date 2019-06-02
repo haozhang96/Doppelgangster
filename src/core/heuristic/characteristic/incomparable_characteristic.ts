@@ -20,14 +20,16 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
     constructor(public readonly profile: Profile) {
         super(profile);
 
-        this.on("data", () => {
-            // Expire the characteristic analysis.
-            if (this._analysis) {
-                this._analysis.expire();
-            }
+        this.onMixInComplete(() => {
+            this.on("data", () => {
+                // Expire the characteristic analysis.
+                if (this._analysis) {
+                    this._analysis.expire();
+                }
 
-            // Expire the profile analysis.
-            profile.analysis.expire();
+                // Expire the profile analysis.
+                profile.analysis.expire();
+            });
         });
     }
 

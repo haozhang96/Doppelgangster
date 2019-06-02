@@ -29,10 +29,12 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
     constructor(public readonly profile: Profile) {
         super(profile.doppelgangster);
 
-        if (this.initializer) {
-            this.initializer();
-        }
-        this.collector();
+        this.onMixInComplete(() => {
+            if (this.initializer) {
+                this.initializer();
+            }
+            this.collector();
+        });
     }
 
     /**
