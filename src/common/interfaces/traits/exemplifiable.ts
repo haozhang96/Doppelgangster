@@ -1,3 +1,3 @@
 export interface IExemplifiable<T> {
-    examples: T[];
+    examples: T[] | readonly T[];
 }

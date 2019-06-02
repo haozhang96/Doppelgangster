@@ -1,5 +1,7 @@
 // Import internal components.
+import { IMappedObject } from "@/common/interfaces";
 import { EventEmitter, Expirable, Mix } from "@/common/mixins";
+import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
@@ -27,7 +29,7 @@ export class Profile extends Mix(DisableableComponent)
     // Private properties
     private _analysis?: ProfileAnalysis;
     private _report?: ProfileReport;
-    private readonly _reportsAgainst: Map<string, ProfileReport> = new Map();
+    private readonly _reportsAgainst: IMappedObject<ProfileReport> = {};
 
     /**
      * Construct a Profile instance.
@@ -107,6 +109,21 @@ export class Profile extends Mix(DisableableComponent)
     }
 
     public runReportAgainst(against: Profile[]): ProfileReport {
+        // TODO
+        const againstGroupID: string =
+            against.map((profile) => profile.userID).sort().join(",");
 
+        // TODO
+        let report: Optional<ProfileReport> =
+            this._reportsAgainst[againstGroupID];
+
+        // TODO
+        if (report && !report.expired) {
+            return report;
+        } else {
+            report = new ProfileReport(this, against);
+            this._reportsAgainst[againstGroupID] = report;
+            return report;
+        }
     }
 }

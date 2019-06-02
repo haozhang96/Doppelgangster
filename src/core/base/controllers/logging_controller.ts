@@ -18,7 +18,7 @@ export abstract class LoggingController extends Controller {
 }
 
 /**
- * Define the logging controller's constructor type with the abstract property
+ * Define the LoggingController's constructor type with the abstract property
  *   removed.
  */
 export type LoggingControllerConstructor =

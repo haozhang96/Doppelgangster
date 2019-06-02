@@ -6,7 +6,7 @@ import { Callback, InstantiableClass } from "@/common/types";
 /**
  * TODO
  * @param Base The base class to mix into
- * @param timeout 
+ * @param timeout ?
  * @param refreshCallback The callback to call when refreshing
  */
 export function TimeExpirable<ClassT extends InstantiableClass>(

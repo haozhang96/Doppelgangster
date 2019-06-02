@@ -9,7 +9,7 @@ import {
 export abstract class PersistenceController extends Controller { }
 
 /**
- * Define the persistence controller's constructor type with the abstract
+ * Define the PersistenceController's constructor type with the abstract
  *   property removed.
  */
 export type PersistenceControllerConstructor =

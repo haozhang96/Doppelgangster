@@ -482,7 +482,7 @@ export class TextCommandController extends CommandController {
             // Build the command's call context from the descriptor
             let context: ICommandCallContext;
             try {
-                context = command.buildCallContext(descriptor);
+                context = command.buildCallContext(message, descriptor);
             } catch (error) {
                 this.doppelgangster.logger.warn(
                     "An error has occurred while building the call context for "
@@ -525,8 +525,8 @@ export class TextCommandController extends CommandController {
 
     /**
      * TODO
-     * @param result 
-     * @param message 
+     * @param result ?
+     * @param message ?
      */
     protected async handleCommandCall(
         result: ICommandCallResult,

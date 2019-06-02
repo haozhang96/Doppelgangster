@@ -21,6 +21,9 @@ import {
 import { CommandPermissible } from "@/core/interaction/command/types";
 import * as Utilities from "@/utilities";
 
+// Import external libraries.
+import * as $Discord from "discord.js";
+
 // Import built-in libraries.
 import { runInNewContext as safeEval } from "vm";
 
@@ -57,10 +60,13 @@ export abstract class Command extends DisableableComponent {
      * @param message The Discord message that was used to create the descriptor
      */
     public buildCallContext(
+        message: $Discord.Message,
         descriptor: ICommandParsedDescriptor,
     ): ICommandCallContext {
         return {
             arguments: this.buildCallContextArguments(descriptor),
+            doppelgangster: this.doppelgangster,
+            message,
             parameters: this.buildCallContextParameters(descriptor),
         };
     }
@@ -160,23 +166,6 @@ export abstract class Command extends DisableableComponent {
                                 + "evaluated, prefix it with \`@\`."
                             ),
                         );
-                        /*throw new TypeError(
-                            "an error has occurred while evaluating argument "
-                            + `\`${
-                                index + 1
-                            }\`${
-                                commandArgument.name !== undefined ?
-                                    ` (\`${commandArgument.name}\`)`
-                                :
-                                    ""
-                            } for the \`${
-                                commandName
-                            }\` command:\`\`\`\n${
-                                error.message
-                            }\`\`\``
-                            + "If you do not want the argument to be evaluated,"
-                            + " prefix it with \`@\`.",
-                        );*/
                     }
 
                     // If a specific type is required for the argument, make
@@ -208,22 +197,6 @@ export abstract class Command extends DisableableComponent {
                                 }\` was given!`
                             ),
                         );
-                        /*throw new TypeError(
-                            `argument \`${
-                                index + 1
-                            }\`${
-                                commandArgument.name !== undefined ?
-                                    ` (\`${commandArgument.name}\`)`
-                                :
-                                    ""
-                            } for the \`${
-                                commandName
-                            }\` command expects the type \`${
-                                commandArgument.type.toLowerCase()
-                            }\`, but \`${
-                                evaluatedArgumentType.toLowerCase()
-                            }\` was given!`,
-                        );*/
                     } else {
                         rawArguments[index] = evaluatedArgument;
                     }
@@ -254,23 +227,6 @@ export abstract class Command extends DisableableComponent {
                             this.name
                         }\` command!`,
                     );
-                    /*throw new TypeError(
-                        `argument \`${
-                            index + 1
-                        }\`${
-                            commandArgument.name ?
-                                ` (\`${commandArgument.name}\`)`
-                            :
-                                ""
-                        }${
-                            commandArgument.type ?
-                                ` of the type \`${commandArgument.type}\``
-                            :
-                                ""
-                        } is required for the \`${
-                            commandName
-                        }\` command!`,
-                    );*/
                 } else if (commandArgument.default !== undefined) {
                     // If nothing was passed for the current argument and it
                     //   isn't required, set it to its default value.
@@ -378,18 +334,6 @@ export abstract class Command extends DisableableComponent {
                                     + "evaluated, prefix it with `@`."
                                 ),
                             );
-                            /*throw new TypeError(
-                                "an error has occurred while evaluating the"
-                                + ` parameter \`${
-                                    commandParameterName
-                                }\` for the \`${
-                                    commandName
-                                }\` command:\`\`\`\n${
-                                    error.message
-                                }\`\`\``
-                                + "If you do not want the parameter to be "
-                                + "evaluated, prefix it with `@`.",
-                            );*/
                         }
 
                         // If a specific type is required for the argument,
@@ -416,17 +360,6 @@ export abstract class Command extends DisableableComponent {
                                     }\` was given!`
                                 ),
                             );
-                            /*throw new TypeError(
-                                `the parameter \`${
-                                    commandParameterName
-                                }\` for the \`${
-                                    commandName
-                                }\` command expects the type \`${
-                                    commandParameter.type.toLowerCase()
-                                }\`, but \`${
-                                    evaluatedParameterType.toLowerCase()
-                                }\` was given!`,
-                            );*/
                         } else {
                             parameters[commandParameterName] =
                                 evaluatedParameter;
@@ -452,13 +385,6 @@ export abstract class Command extends DisableableComponent {
                         }\`!`
                     ),
                 );
-                /*throw new TypeError(
-                    `the \`${
-                        commandName
-                    }\` command does not have a parameter named \`${
-                        descriptorParameterName
-                    }\`!`,
-                );*/
             }
         }
 
@@ -489,18 +415,6 @@ export abstract class Command extends DisableableComponent {
                                 }\` command!`
                             ),
                         );
-                        /*throw new TypeError(
-                            `the parameter \`${
-                                commandParameterName
-                            }\`${
-                                commandParameter.type ?
-                                    ` of the type \`${commandParameter.type}\``
-                                :
-                                    ""
-                            } is required for the \`${
-                                commandName
-                            }\` command!`,
-                        );*/
                     } else if (commandParameter.default !== undefined) {
                         parameters[commandParameterName] =
                             commandParameter.default;

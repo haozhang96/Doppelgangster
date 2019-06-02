@@ -16,6 +16,10 @@ export function DiscordGuildAttachable<ClassT extends InstantiableClass>(
         // Private properties
         private readonly _attachedGuilds: $Discord.Guild[] = [];
 
+        public get attachedGuilds(): $Discord.Guild[] {
+            return this._attachedGuilds.slice();
+        }
+
         public attachGuild(guild: $Discord.Guild): void {
             if (!this._attachedGuilds.includes(guild)) {
                 this._attachedGuilds.push(guild);

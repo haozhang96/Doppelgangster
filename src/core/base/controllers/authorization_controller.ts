@@ -9,7 +9,7 @@ import {
 export abstract class AuthorizationController extends Controller { }
 
 /**
- * Define the authorization controller's constructor type with the abstract
+ * Define the AuthorizationController's constructor type with the abstract
  *   property removed.
  */
 export type AuthorizationControllerConstructor = ControllerConstructor<

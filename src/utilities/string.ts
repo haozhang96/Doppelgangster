@@ -1,6 +1,9 @@
 // Import internal components.
 import { IMappedObject } from "@/common/interfaces";
 
+// Import built-in libraries.
+import * as $Utilities from "util";
+
 const unescapeMap: Readonly<IMappedObject<string>> = {
     "\\\"": "\"",
     "\\\'": "\'",
@@ -24,6 +27,10 @@ function caseInsensitiveEquals(a: string, b: string): boolean {
     return a.toLowerCase() === b.toLowerCase();
 }
 
+function format(_format: string, ...formatters: any[]): string {
+    return $Utilities.format(_format, ...formatters);
+}
+
 function pluralize(word: string, count: number, pluralForm?: string) {
     return count === 1 ? word : (pluralForm || word + "s");
 }
@@ -43,7 +50,11 @@ export const StringUtils = {
     backslashUnescape,
     capitalize,
     caseInsensitiveEquals,
+    format,
     pluralize,
     tabulate,
     uncapitalize,
 };
+
+// Expose a short-hand variable to the string formatter.
+export const $ = format;

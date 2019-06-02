@@ -1,9 +1,23 @@
 // Import internal components.
 import { UniquePair } from "@/common/classes/pair";
 import { Optional } from "@/common/types";
+import { Doppelgangster } from "@/core/doppelgangster";
 
 // Import external libraries.
 import * as $Discord from "discord.js";
+
+function findMemberByUserID(
+    doppelgangster: Doppelgangster,
+    userID: string,
+): Optional<$Discord.GuildMember> {
+    for (const guild of doppelgangster.attachedGuilds) {
+        for (const [memberID, member] of guild.members) {
+            if (memberID === userID) {
+                return member;
+            }
+        }
+    }
+}
 
 function findMemberInGuildByName(
     guild: $Discord.Guild,
@@ -57,6 +71,7 @@ function matchMessages(
 
 // Expose components.
 export const DiscordUtils = {
+    findMemberByUserID,
     findMemberInGuildByName,
     formatMessage,
     getAccountCreationDate,

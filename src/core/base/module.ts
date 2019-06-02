@@ -17,14 +17,14 @@ export abstract class Module extends DisableableComponent {
     constructor(public readonly doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.info(`Instantiating the ${
-            this.constructor.name
-        } module...`);
+        doppelgangster.logger.info(
+            `Instantiating the ${this.constructor.name} module...`,
+        );
     }
 }
 
 /**
- * Define the module's constructor type with the abstract property removed.
+ * Define the Module's constructor type with the abstract property removed.
  */
 export type ModuleConstructor = typeof Module & (
     new (doppelgangster: Doppelgangster) => Module

@@ -17,7 +17,7 @@ export abstract class Component implements IDestructible {
 }
 
 /**
- * Define the component's constructor type with the abstract property removed.
+ * Define the Component's constructor type with the abstract property removed.
  */
 export type ComponentConstructor<
     ConstructorT = typeof Component,
