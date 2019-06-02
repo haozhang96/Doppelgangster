@@ -1,6 +1,7 @@
 # Environment-specifics
 node_modules/
 dist/
+logs/
 *.code-workspace
 
 # Compiled JavaScript files
