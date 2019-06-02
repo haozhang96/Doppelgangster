@@ -91,7 +91,7 @@ export class Doppelgangster extends Mix(EventEmitter)
         // Replace the default logger with the logging controllers.
         if (this.controllers.logging.length) {
             this._loggers = this.controllers.logging as unknown as ILogger[];
-            Utilities.logging.setLogger(this._loggers[0]);
+            Utilities.logging.setLogger(this.logger);
         }
 
         // Create a login callback that can be used for reconnection in case of
