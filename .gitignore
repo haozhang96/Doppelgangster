@@ -3,11 +3,8 @@ node_modules/
 dist/
 logs/
 *.code-workspace
+*.env
 
 # Compiled JavaScript files
 *.js
 *.js.map
-
-# Temporary
-conf/
-Configurations.ts
