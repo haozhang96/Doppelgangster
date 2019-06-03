@@ -40,14 +40,6 @@ export abstract class Command extends DisableableComponent {
     public readonly permitted?: CommandPermissible[];
 
     /**
-     * Construct a Command instance.
-     * @param controller A CommandController instance to attach to
-     */
-    constructor(public readonly controller: CommandController) {
-        super(controller.doppelgangster);
-    }
-
-    /**
      * Return the command's name, which would be its first alias.
      */
     public get name(): string {

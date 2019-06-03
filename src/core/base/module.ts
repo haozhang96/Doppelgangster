@@ -1,6 +1,9 @@
 // Import internal components.
 import { DisableableComponent } from "@/core/base/components";
 import { Doppelgangster } from "@/core/doppelgangster";
+import {
+    CharacteristicConstructor,
+} from "@/core/heuristic/characteristic/characteristic";
 import { CommandConstructor } from "@/core/interaction/command";
 
 /**
@@ -8,13 +11,14 @@ import { CommandConstructor } from "@/core/interaction/command";
  */
 export abstract class Module extends DisableableComponent {
     // @Override
+    public abstract readonly characteristics: CharacteristicConstructor[];
     public abstract readonly commands: CommandConstructor[];
 
     /**
      * Construct a Module instance.
      * @param controller A ModuleController instance to attach to
      */
-    constructor(public readonly doppelgangster: Doppelgangster) {
+    constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
         doppelgangster.logger.info(

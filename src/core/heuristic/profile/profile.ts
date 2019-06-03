@@ -5,7 +5,7 @@ import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
-    Characteristic, getCharacteristics,
+    Characteristic, CharacteristicConstructor,
 } from "@/core/heuristic/characteristic";
 import {
     ProfileAnalysis, ProfileComparison, ProfileReport,
@@ -42,9 +42,16 @@ export class Profile extends Mix(DisableableComponent)
         super(controller.doppelgangster);
 
         // Instantiate all characteristics.
-        this.characteristics = getCharacteristics().map((_Characteristic) =>
-            new _Characteristic(this),
-        );
+        const allCharacteristics: CharacteristicConstructor[][] =
+            this.doppelgangster.controllers.characteristic.map((_controller) =>
+                [..._controller.registry.keys()],
+            );
+        this.characteristics =
+            [...new Set(allCharacteristics)].map((characteristics) =>
+                characteristics.map((_Characteristic) =>
+                    new _Characteristic(this),
+                ),
+            ).flat();
 
         // Set the user and userID properties based on the passed argument.
         if (user instanceof $Discord.User) {

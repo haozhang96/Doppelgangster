@@ -4,7 +4,6 @@ import { EventEmitter, Expirable, Mix } from "@/common/mixins";
 import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { Profile } from "@/core/heuristic/profile";
-import { PathUtils, ReflectionUtils } from "@/utilities";
 
 /**
  * TODO
@@ -103,12 +102,3 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
 export type CharacteristicConstructor<DataT = any> = typeof Characteristic & (
     new (profile: Profile) => Characteristic<DataT>
 );
-
-/**
- * Return all the available characteristics found in /src/characteristics.
- */
-export function getCharacteristics(): CharacteristicConstructor[] {
-    return ReflectionUtils.getDefaultClassesInDirectory(
-        PathUtils.sourceRootResolve("characteristics"),
-    );
-}

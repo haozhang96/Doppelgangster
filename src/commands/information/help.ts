@@ -12,12 +12,14 @@ export default class extends Command {
     ): Promise<ICommandCallResult> {
         const commands: string[] =
             context.doppelgangster.controllers.command.map((controller) =>
-                controller.commands.map((command) =>
-                    command.name + ":\t" + (
-                        command.description || "No description available."
+                [...controller.registry.values()].map((_commands) =>
+                    _commands.map((command) =>
+                        command.name + ":\t" + (
+                            command.description || "No description available."
+                        ),
                     ),
                 ),
-            ).flat().sort();
+            ).flat(2).sort();
 
         return {
             message: (

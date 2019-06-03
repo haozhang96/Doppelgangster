@@ -6,3 +6,4 @@ export * from "./logging_controller";
 export * from "./module_controller";
 export * from "./persistence_controller";
 export * from "./profile_controller";
+export * from "./registry_controller";

@@ -1,8 +1,11 @@
 // Import internal components.
 import { IMappedObject } from "@/common/interfaces";
+import { DiscordGuildAttachable, Mix } from "@/common/mixins";
 import { Nullable, Optional } from "@/common/types";
 import { Doppelgangster } from "@/core";
-import { CommandController } from "@/core/base/controllers";
+import {
+    CommandController, getBuiltInCommandClasses,
+} from "@/core/base/controllers";
 import {
     Command,
     CommandCallResultType,
@@ -22,7 +25,9 @@ import * as Configs from "?/controllers/command/text_command_controller";
 /**
  * TODO
  */
-export class TextCommandController extends CommandController {
+export class TextCommandController extends Mix(CommandController)
+    .with(DiscordGuildAttachable)
+.compose() {
     private static _help: Map<Command, string> = new Map();
 
     /**
@@ -401,6 +406,20 @@ export class TextCommandController extends CommandController {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
+        // Register built-in commands.
+        for (const _Command of getBuiltInCommandClasses()) {
+            this.registerInstance(new _Command(doppelgangster));
+        }
+        doppelgangster.logger.info(
+            `Successfully registered ${this.registry.size} built-in ${
+                Utilities.string.pluralize("command", this.registry.size)
+            }.`,
+        );
+
+        // Listen for Doppelgangster guild attachments/detachments.
+        doppelgangster.on("guildAttach", (guild) => this.attachGuild(guild));
+        doppelgangster.on("guildDetach", (guild) => this.detachGuild(guild));
+
         // Listen for Discord messages.
         doppelgangster.discord.on("message", async (message) => {
             // Ignore messages in detached guilds.
@@ -433,7 +452,7 @@ export class TextCommandController extends CommandController {
             }
 
             // Find the command that matches the descriptor's.
-            const command: Optional<Command> = this.commands.find((_command) =>
+            const command: Optional<Command> = this.findInstance((_command) =>
                 _command.aliases.some((alias) =>
                     Configs.partialCommandMatch ?
                         alias.toLowerCase().startsWith(

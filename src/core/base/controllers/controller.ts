@@ -20,7 +20,7 @@ export abstract class Controller extends Component {
 }
 
 /**
- * Define the controller's constructor type with the abstract property removed.
+ * Define the Controller's constructor type with the abstract property removed.
  */
 export type ControllerConstructor<
     ClassT = typeof Controller,

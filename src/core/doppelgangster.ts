@@ -158,13 +158,8 @@ export class Doppelgangster extends Mix(EventEmitter)
         this.logger.info(
             `Attaching to guild "${guild.name}" with ID ${guild.id}...`,
         );
-
-        // Attach command controllers.
-        for (const CommandController of this.controllers.command) {
-            CommandController.attachGuild(guild);
-        }
-
         super.attachGuild(guild);
+        this.emit("guildAttach", guild);
     }
 
     /**
@@ -194,13 +189,8 @@ export class Doppelgangster extends Mix(EventEmitter)
         this.logger.info(
             `Detaching from guild "${guild.name}" with ID ${guild.id}...`,
         );
-
-        // Detach command controllers.
-        for (const CommandController of this.controllers.command) {
-            CommandController.detachGuild(guild);
-        }
-
         super.detachGuild(guild);
+        this.emit("guildDetach", guild);
     }
 }
 
