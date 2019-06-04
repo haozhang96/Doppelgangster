@@ -31,28 +31,45 @@ export class BasicModuleController extends ModuleController {
         // Register all module characteristics and commands.
         doppelgangster.once("controllersReady", (controllers) => {
             // Register module characteristics.
-            const moduleCharacteristics: CharacteristicConstructor[][] =
+            const moduleCharacteristics: CharacteristicConstructor[] =
                 [...this.registry.values()].map((modules) =>
                     modules.map((module) => module.characteristics),
-                ).flat();
+                ).flat(Infinity).filter((characteristics) =>
+                    characteristics !== undefined,
+                );
             for (const CharacteristicController of controllers.characteristic) {
-                for (const characteristics of moduleCharacteristics) {
-                    characteristics.forEach(
-                        CharacteristicController.registerClass,
-                    );
+                for (const characteristic of moduleCharacteristics) {
+                    CharacteristicController.registerClass(characteristic);
                 }
             }
+            doppelgangster.logger.info(
+                `Successfully registered ${
+                    moduleCharacteristics.length
+                } module ${
+                    Utilities.string.pluralize(
+                        "characteristic",
+                        moduleCharacteristics.length,
+                    )
+                }.`,
+            );
 
             // Register module commands.
-            const moduleCommands: CommandConstructor[][] =
+            const moduleCommands: CommandConstructor[] =
                 [...this.registry.values()].map((modules) =>
                     modules.map((module) => module.commands),
-                ).flat();
+                ).flat(Infinity).filter((commands) =>
+                    commands !== undefined,
+                );
             for (const CommandController of controllers.command) {
-                for (const commands of moduleCommands) {
-                    commands.forEach(CommandController.registerClass);
+                for (const command of moduleCommands) {
+                    CommandController.registerClass(command);
                 }
             }
+            doppelgangster.logger.info(
+                `Successfully registered ${moduleCommands.length} module ${
+                    Utilities.string.pluralize("command", moduleCommands.length)
+                }.`,
+            );
         });
     }
 }
