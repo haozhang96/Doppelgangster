@@ -68,7 +68,7 @@ export class ProfileAnalysis extends Mix(Component)
     }
 
     /**
-     * Destroy the CharacteristicAnalysis instance.
+     * Destroy the ProfileAnalysis instance.
      */
     public destroy(): void {
         return;

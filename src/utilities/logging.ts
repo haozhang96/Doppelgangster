@@ -20,23 +20,32 @@ const defaultLogger: ILogger = {
 let logger: ILogger = defaultLogger;
 
 /**
+ * Get the name of an arbitrary logger object.
+ * @param _logger A logger object
+ */
+function getLoggerName(_logger: ILogger): string {
+    if (_logger === defaultLogger) {
+        return "the default";
+    } else if (_logger.log.constructor === Function) {
+        return "another";
+    } else {
+        return "the " + _logger.log.constructor.name;
+    }
+}
+
+/**
  * Set the logger to be used globally.
- * @param logger A logger
+ * @param logger A logger object
  */
 function setLogger(_logger: ILogger = defaultLogger): void {
-    Logging.info(
-        `Switching to the ${
-            _logger === defaultLogger ? "default" : _logger.constructor.name
-        } logger...`,
-    );
-    const oldLoggerName: string =
-        logger === defaultLogger ? "default" : logger.constructor.name;
+    Logging.info(`Switching to ${getLoggerName(_logger)} logger...`);
+    const oldLoggerName: string = getLoggerName(logger);
     logger = _logger;
-    Logging.info(`Successfully switched from the ${oldLoggerName} logger.`);
+    Logging.info(`Successfully switched from ${oldLoggerName} logger.`);
 }
 
 // Expose components.
-export const Logging: ILogger & { setLogger: typeof setLogger } = {
+export const Logging: ILogger = {
     debug: (...args: any[]) => logger.debug(...args),
     error: (...args: any[]) => logger.error(...args),
     fatal: (...args: any[]) => logger.fatal(...args),

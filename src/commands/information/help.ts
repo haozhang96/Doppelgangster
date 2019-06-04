@@ -14,7 +14,7 @@ export default class extends Command {
             context.doppelgangster.controllers.command.map((controller) =>
                 [...controller.registry.values()].map((_commands) =>
                     _commands.map((command) =>
-                        command.name + ":\t" + (
+                        (command.name + ":").padEnd(15) + (
                             command.description || "No description available."
                         ),
                     ),
