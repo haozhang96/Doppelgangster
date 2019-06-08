@@ -46,7 +46,7 @@ const Tracer: $Tracer.Tracer.Logger = $Tracer.colorConsole({
             ),
         },
     ],
-    stackIndex: 4,
+    stackIndex: 3,
 
     preprocess: (data: $Tracer.Tracer.LogOutput) => {
         data.title = data.title.toUpperCase().padStart(5);
