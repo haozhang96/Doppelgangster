@@ -14,7 +14,7 @@ export class Guardian extends Module {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.log("Guardian says hello!");
+        doppelgangster.logger.info("Guardian says hello!");
     }
 
     public destroy(): void {

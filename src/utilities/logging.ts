@@ -45,7 +45,7 @@ export function setLogger(_logger: ILogger = defaultLogger): void {
 }
 
 // Expose components.
-export const Logging: ILogger = {
+export const Logging: ILogger & { setLogger: typeof setLogger; } = {
     debug: (...args: any[]) => logger.debug(...args),
     error: (...args: any[]) => logger.error(...args),
     fatal: (...args: any[]) => logger.fatal(...args),

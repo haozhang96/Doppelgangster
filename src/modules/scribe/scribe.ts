@@ -14,7 +14,7 @@ export class Scribe extends Module {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.log("Scribe says hello!");
+        doppelgangster.logger.info("Scribe says hello!");
     }
 
     public destroy(): void {

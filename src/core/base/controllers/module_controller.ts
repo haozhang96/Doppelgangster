@@ -5,6 +5,10 @@ import {
 import { Module, ModuleConstructor } from "@/core/base/module";
 import * as Utilities from "@/utilities";
 
+// Import built-in libraries.
+import * as $FileSystem from "fs";
+import * as $Path from "path";
+
 /**
  * TODO
  */
@@ -22,9 +26,18 @@ export type ModuleControllerConstructor =
 
 /**
  * Return all the built-in module classes found in /src/modules.
+ * The modules must export a default class from their index.ts.
  */
 export function getBuiltInModuleClasses(): ModuleConstructor[] {
-    return Utilities.reflection.getDefaultClassesInDirectory(
-        Utilities.path.sourceRootResolve("modules"),
+    const modulesDirectory: string =
+        Utilities.path.sourceRootResolve("modules");
+    return $FileSystem.readdirSync(
+        modulesDirectory,
+    ).map((file) =>
+        $Path.resolve(modulesDirectory, file),
+    ).filter((file) =>
+        $FileSystem.statSync(file).isDirectory(),
+    ).map((directory) =>
+        require(directory).default,
     );
 }

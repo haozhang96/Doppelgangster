@@ -16,7 +16,7 @@ export class Gatekeeper extends Module {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.log("Gatekeeper says hello!");
+        doppelgangster.logger.info("Gatekeeper says hello!");
     }
 
     public destroy(): void {

@@ -14,7 +14,7 @@ export class Informer extends Module {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
-        doppelgangster.logger.log("Informer says hello!");
+        doppelgangster.logger.info("Informer says hello!");
     }
 
     public destroy(): void {

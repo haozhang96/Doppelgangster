@@ -4,7 +4,7 @@ import * as $Path from "path";
 
 export function getAllFilePaths(root: string): string[] {
     return $FileSystem.readdirSync(root).map((file) =>
-        $Path.join(root, file),
+        $Path.resolve(root, file),
     ).map((file) =>
         $FileSystem.statSync(file).isDirectory() ? getAllFilePaths(file) : file,
     ).flat();
