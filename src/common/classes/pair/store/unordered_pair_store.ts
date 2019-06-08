@@ -3,7 +3,7 @@ import { PairStore } from "@/common/classes/pair/store/pair_store";
 import { Optional } from "@/common/types";
 
 /**
- * STUB
+ * TODO
  */
 export class UnorderedPairStore<T> extends PairStore<T> {
     public get(one: T, two: T): Pair<T> {

@@ -1,9 +1,11 @@
 // Import internal components.
+import { IMappedObject } from "@/common/interfaces";
 import { EventEmitter, Expirable, Mix } from "@/common/mixins";
+import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
-    Characteristic, getCharacteristics,
+    Characteristic, CharacteristicConstructor,
 } from "@/core/heuristic/characteristic";
 import {
     ProfileAnalysis, ProfileComparison, ProfileReport,
@@ -13,7 +15,7 @@ import {
 import * as $Discord from "discord.js";
 
 /**
- * STUB
+ * TODO
  */
 export class Profile extends Mix(DisableableComponent)
     .with(EventEmitter)
@@ -21,13 +23,13 @@ export class Profile extends Mix(DisableableComponent)
 .compose() {
     // Public properties
     public readonly characteristics: ReadonlyArray<Characteristic<any>>;
-    public readonly user: $Discord.User;
+    public readonly user?: $Discord.User;
     public readonly userID: string;
 
     // Private properties
     private _analysis?: ProfileAnalysis;
     private _report?: ProfileReport;
-    private readonly _reportsAgainst: Map<string, ProfileReport> = new Map();
+    private readonly _reportsAgainst: IMappedObject<ProfileReport> = {};
 
     /**
      * Construct a Profile instance.
@@ -40,9 +42,16 @@ export class Profile extends Mix(DisableableComponent)
         super(controller.doppelgangster);
 
         // Instantiate all characteristics.
-        this.characteristics = getCharacteristics().map((_Characteristic) =>
-            new _Characteristic(this),
-        );
+        const allCharacteristics: CharacteristicConstructor[][] =
+            this.doppelgangster.controllers.characteristic.map((_controller) =>
+                [..._controller.registry.keys()],
+            );
+        this.characteristics =
+            [...new Set(allCharacteristics)].map((characteristics) =>
+                characteristics.map((_Characteristic) =>
+                    new _Characteristic(this),
+                ),
+            ).flat();
 
         // Set the user and userID properties based on the passed argument.
         if (user instanceof $Discord.User) {
@@ -107,6 +116,21 @@ export class Profile extends Mix(DisableableComponent)
     }
 
     public runReportAgainst(against: Profile[]): ProfileReport {
+        // TODO
+        const againstGroupID: string =
+            against.map((profile) => profile.userID).sort().join(",");
 
+        // TODO
+        let report: Optional<ProfileReport> =
+            this._reportsAgainst[againstGroupID];
+
+        // TODO
+        if (report && !report.expired) {
+            return report;
+        } else {
+            report = new ProfileReport(this, against);
+            this._reportsAgainst[againstGroupID] = report;
+            return report;
+        }
     }
 }

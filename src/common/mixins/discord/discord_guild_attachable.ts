@@ -6,7 +6,7 @@ import { InstantiableClass } from "@/common/types";
 import * as $Discord from "discord.js";
 
 /**
- * STUB
+ * TODO
  * @param Base 
  */
 export function DiscordGuildAttachable<ClassT extends InstantiableClass>(
@@ -15,6 +15,10 @@ export function DiscordGuildAttachable<ClassT extends InstantiableClass>(
     return class extends Base implements IDiscordGuildAttachable {
         // Private properties
         private readonly _attachedGuilds: $Discord.Guild[] = [];
+
+        public get attachedGuilds(): $Discord.Guild[] {
+            return this._attachedGuilds.slice();
+        }
 
         public attachGuild(guild: $Discord.Guild): void {
             if (!this._attachedGuilds.includes(guild)) {

@@ -4,7 +4,7 @@ import { Callback, Optional } from "@/common/types";
 // Import built-in libraries.
 import { EventEmitter } from "events";
 
-async function listenWithTimeout<T>(
+export async function listenWithTimeout<T>(
     emitter: EventEmitter,
     event: string,
     handler: Callback<any, Optional<T>>,

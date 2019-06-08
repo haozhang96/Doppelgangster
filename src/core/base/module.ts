@@ -1,30 +1,35 @@
 // Import internal components.
 import { DisableableComponent } from "@/core/base/components";
-import { ModuleController } from "@/core/base/controllers";
+import { Doppelgangster } from "@/core/doppelgangster";
+import {
+    CharacteristicConstructor,
+} from "@/core/heuristic/characteristic/characteristic";
 import { CommandConstructor } from "@/core/interaction/command";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Module extends DisableableComponent {
+    // @Override
+    public abstract readonly characteristics: CharacteristicConstructor[];
+    public abstract readonly commands: CommandConstructor[];
+
     /**
      * Construct a Module instance.
      * @param controller A ModuleController instance to attach to
      */
-    constructor(public readonly controller: ModuleController) {
-        super(controller.doppelgangster);
-        controller.doppelgangster.logger.info(`Instantiating the ${
-            this.constructor.name
-        } module...`);
-    }
+    constructor(doppelgangster: Doppelgangster) {
+        super(doppelgangster);
 
-    // @Override
-    public abstract getCommands(): CommandConstructor[];
+        doppelgangster.logger.info(
+            `Instantiating the ${this.constructor.name} module...`,
+        );
+    }
 }
 
 /**
- * Define the module's constructor type with the abstract property removed.
+ * Define the Module's constructor type with the abstract property removed.
  */
 export type ModuleConstructor = typeof Module & (
-    new (controller: ModuleController) => Module
+    new (doppelgangster: Doppelgangster) => Module
 );

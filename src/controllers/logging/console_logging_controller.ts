@@ -1,11 +1,14 @@
 // Import internal components.
+import { ILogger } from "@/common/interfaces";
+import { Doppelgangster } from "@/core";
 import { LoggingController } from "@/core/base/controllers";
+import { Logging } from "@/utilities";
 
 // Import external libraries.
 import * as $Tracer from "tracer";
 
 /**
- * STUB
+ * TODO
  */
 export class ConsoleLoggingController extends LoggingController {
     public readonly debug = Tracer.debug;
@@ -15,6 +18,13 @@ export class ConsoleLoggingController extends LoggingController {
     public readonly log = Tracer.log;
     public readonly trace = Tracer.trace;
     public readonly warn = Tracer.warn;
+
+    constructor(doppelgangster: Doppelgangster) {
+        super(doppelgangster);
+
+        // Replace the default logger early.
+        Logging.setLogger(this as unknown as ILogger);
+    }
 
     /**
      * Destroy the ConsoleLoggingController instance.
@@ -36,12 +46,13 @@ const Tracer: $Tracer.Tracer.Logger = $Tracer.colorConsole({
             ),
         },
     ],
+    stackIndex: 3,
 
     preprocess: (data: $Tracer.Tracer.LogOutput) => {
         data.title = data.title.toUpperCase().padStart(5);
 
         const file: string = data.file.replace(/\.js$/, "");
         data.file =
-            file.length > 20 ? file.slice(0, 19) + "…" : file.padStart(20);
+            file.length > 25 ? file.slice(0, 24) + "…" : file.padStart(25);
     },
 });

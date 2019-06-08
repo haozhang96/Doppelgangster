@@ -6,7 +6,7 @@ import * as $Utilities from "util";
  * @param error The error object to stringify
  * @param extended Whether to include extended error information
  */
-function stringifyError(
+export function stringifyError(
     error?: Error,
     extended: boolean = true,
 ): string {

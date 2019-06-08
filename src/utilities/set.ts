@@ -2,7 +2,10 @@
  * Return the difference between a main set and an array of sets.
  * @param sets An array of sets to find the difference between the main set
  */
-function difference<T>(mainSet: Set<T>, ...otherSets: Array<Set<T>>): Set<T> {
+export function difference<T>(
+    mainSet: Set<T>,
+    ...otherSets: Array<Set<T>>
+): Set<T> {
     const unionOthers: Set<T> = union(...otherSets);
     return new Set([...mainSet].filter((value) => !unionOthers.has(value)));
 }
@@ -11,7 +14,7 @@ function difference<T>(mainSet: Set<T>, ...otherSets: Array<Set<T>>): Set<T> {
  * Return the intersection of a given array of sets.
  * @param sets An array of sets to intersect
  */
-function intersect<T>(...sets: Array<Set<T>>): Set<T> {
+export function intersect<T>(...sets: Array<Set<T>>): Set<T> {
     // Use the smallest set as the initial intersection set. Note that both
     //   Array.sort() and Array.splice() mutate the original array.
     const intersection: Set<T> = (
@@ -36,7 +39,7 @@ function intersect<T>(...sets: Array<Set<T>>): Set<T> {
  * Return the union of a given array of sets.
  * @param sets An array of sets to union together
  */
-function union<T>(...sets: Array<Set<T>>): Set<T> {
+export function union<T>(...sets: Array<Set<T>>): Set<T> {
     return new Set(sets.map((set) => [...set]).flat());
 }
 

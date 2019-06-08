@@ -4,6 +4,6 @@ import {
 } from "@/core/interaction/command/errors/parameter/command_parameter_error";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandParameterMissingError extends CommandParameterError { }

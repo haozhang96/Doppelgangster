@@ -4,6 +4,6 @@ import {
 } from "@/core/interaction/command/errors/argument/command_argument_error";
 
 /**
- * STUB
+ * TODO
  */
 export class CommandArgumentEvaluationError extends CommandArgumentError { }

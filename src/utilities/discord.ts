@@ -1,33 +1,46 @@
 // Import internal components.
 import { UniquePair } from "@/common/classes/pair";
 import { Optional } from "@/common/types";
+import { Doppelgangster } from "@/core/doppelgangster";
 
 // Import external libraries.
 import * as $Discord from "discord.js";
 
-function findMemberInGuildByName(
+export function findMemberByUserID(
+    doppelgangster: Doppelgangster,
+    userID: string,
+): Optional<$Discord.GuildMember> {
+    for (const guild of doppelgangster.attachedGuilds) {
+        for (const [memberID, member] of guild.members) {
+            if (memberID === userID) {
+                return member;
+            }
+        }
+    }
+}
+
+export function findMemberInGuildByName(
     guild: $Discord.Guild,
     name: string,
 ): Optional<$Discord.GuildMember> {
     return guild.members.find((member) =>
         member.user.username.toLowerCase().includes(name.toLowerCase())
         || (
-            member.nickname.length // Nickname might be empty.
+            member.nickname
             && member.nickname.toLowerCase().includes(name.toLowerCase())
-        )
-        || false,
+        ) || false,
     );
 }
 
-function formatMessage(message: $Discord.Message): string {
+export function formatMessage(message: $Discord.Message): string {
     return `[${message.createdAt.toLocaleString()}] ${message.content}`;
 }
 
-function getAccountCreationDate(userID: number): Date {
-    return new Date((userID / 4194304) + 1420070400000);
+export function getAccountCreationDate(userID: string): Date {
+    return new Date((+userID / 4194304) + 1420070400000);
 }
 
-function matchMessages(
+export function matchMessages(
     groupOne: $Discord.Message[],
     groupTwo: $Discord.Message[],
     predicate: (
@@ -57,6 +70,7 @@ function matchMessages(
 
 // Expose components.
 export const DiscordUtils = {
+    findMemberByUserID,
     findMemberInGuildByName,
     formatMessage,
     getAccountCreationDate,

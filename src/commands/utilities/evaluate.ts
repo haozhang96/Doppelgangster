@@ -9,7 +9,8 @@ import { runInNewContext as safeEval } from "vm";
 
 export default class extends Command {
     public aliases = ["evaluate", "js", "console"];
-    public description = "Evaluate JavaScript code and pretty-print its result.";
+    public description =
+        "Evaluate JavaScript code and pretty-print its result.";
     public permitted = [
         "147458853456314368",
     ];
@@ -21,8 +22,11 @@ export default class extends Command {
     ];
     public parameters = {
         newContext: {
-            aliases: ["nc"],
-            description: "Run in a new context",
+            aliases: ["nc", "unsafe"],
+            description: (
+                "Run in a new context without access to Doppelgangster "
+                + "components"
+            ),
             optional: true,
             type: "boolean",
         },

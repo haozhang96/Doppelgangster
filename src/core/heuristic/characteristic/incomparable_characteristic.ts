@@ -1,12 +1,13 @@
 // Import internal components.
 import { Optional } from "@/common/types";
+import { Characteristic } from "@/core/heuristic/characteristic/characteristic";
 import {
-    Characteristic, CharacteristicAnalysis,
-} from "@/core/heuristic/characteristic";
+    CharacteristicAnalysis,
+} from "@/core/heuristic/characteristic/characteristic_analysis";
 import { Profile } from "@/core/heuristic/profile";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Characteristic<DataT> {
     // Private properties
@@ -19,18 +20,20 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
     constructor(public readonly profile: Profile) {
         super(profile);
 
-        this.on("data", () => {
-            // Expire the characteristic analysis.
-            if (this._analysis) {
-                this._analysis.expire();
-            }
+        this.onMixInComplete(() => {
+            this.on("data", () => {
+                // Expire the characteristic analysis.
+                if (this._analysis) {
+                    this._analysis.expire();
+                }
 
-            // Expire the profile analysis.
-            profile.analysis.expire();
+                // Expire the profile analysis.
+                profile.analysis.expire();
+            });
         });
     }
 
-    public get analysis(): CharacteristicAnalysis<ExampleT> {
+    public get analysis(): Optional<CharacteristicAnalysis<ExampleT>> {
         if (!this._analysis || this._analysis.expired) {
             if (this.hasData) {
                 this._analysis = this.analyzer();
@@ -42,5 +45,5 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
     }
 
     // @Override
-    protected abstract analyzer(): Optional<CharacterAnalysis<ExampleT>>;
+    protected abstract analyzer(): Optional<CharacteristicAnalysis<ExampleT>>;
 }

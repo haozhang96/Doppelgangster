@@ -4,10 +4,9 @@ import { EventEmitter, Expirable, Mix } from "@/common/mixins";
 import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { Profile } from "@/core/heuristic/profile";
-import { PathUtils, ReflectionUtils } from "@/utilities";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
     .with(EventEmitter)
@@ -29,10 +28,12 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
     constructor(public readonly profile: Profile) {
         super(profile.doppelgangster);
 
-        if (this.initializer) {
-            this.initializer();
-        }
-        this.collector();
+        this.onMixInComplete(() => {
+            if (this.initializer) {
+                this.initializer();
+            }
+            this.collector();
+        });
     }
 
     /**
@@ -40,12 +41,12 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
      */
     public get hasData(): boolean {
         const data: any = this._data;
-        return data !== undefined && !!(
-            typeof data.length === "number" ?
+        return data !== undefined && data !== null && !!(
+            typeof data.length === "number" ? // Data with length property
                 data.length
-            : typeof data.size === "number" ?
+            : typeof data.size === "number" ? // Data with size property
                 data.size
-            :
+            : // Any defined and non-null data
                 true
         );
     }
@@ -101,12 +102,3 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
 export type CharacteristicConstructor<DataT = any> = typeof Characteristic & (
     new (profile: Profile) => Characteristic<DataT>
 );
-
-/**
- * Return all the available characteristics found in /src/characteristics.
- */
-export function getCharacteristics(): CharacteristicConstructor[] {
-    return ReflectionUtils.getClassesInDirectory(
-        PathUtils.sourceRootResolve("characteristics"),
-    );
-}

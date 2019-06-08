@@ -22,7 +22,7 @@ export class ProxiedTaggedEventEmitter<T extends EventEmitter> {
         let listeners: Optional<Map<any, Callback>> =
             this.taggedListeners.get(event);
 
-        // STUB
+        // TODO
         if (!listeners) {
             this.taggedListeners.set(event, listeners = new Map());
         } else if (listeners.has(tag)) {
@@ -33,7 +33,7 @@ export class ProxiedTaggedEventEmitter<T extends EventEmitter> {
             }" attached!`);
         }
 
-        // STUB
+        // TODO
         listeners.set(tag, listener);
         this.target.on(event, listener);
         return this;

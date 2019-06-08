@@ -22,7 +22,7 @@ import * as Configs from "?/doppelgangster";
 import { version as application_version } from "@/../package.json";
 
 /**
- * STUB
+ * TODO
  */
 export class Doppelgangster extends Mix(EventEmitter)
     .with(DiscordGuildAttachable)
@@ -41,8 +41,8 @@ export class Doppelgangster extends Mix(EventEmitter)
     }
 
     // Public variables
-    public readonly discord: $Discord.Client;
     public readonly controllers: Readonly<IControllers>;
+    public readonly discord: $Discord.Client = new $Discord.Client();
     public readonly logger: Readonly<ILogger> = {
         debug: (...$) => this._loggers.forEach(async (_) => _.debug(...$)),
         error: (...$) => this._loggers.forEach(async (_) => _.error(...$)),
@@ -54,7 +54,7 @@ export class Doppelgangster extends Mix(EventEmitter)
     };
 
     // Private variables
-    private readonly _loggers: readonly ILogger[] = [Utilities.logging];
+    private readonly _loggers: ILogger[] = [Utilities.logging];
     private _destroying: boolean = false;
 
     /**
@@ -76,25 +76,17 @@ export class Doppelgangster extends Mix(EventEmitter)
         // Call the destructor on Node process exit.
         process.on("exit", this.destroy);
 
-        // Create a new discord.js client.
-        this.discord = new $Discord.Client();
-
         // Instantiate all controllers.
         this.controllers =
             Utilities.object.mapValues<
-                Controllers.ControllerConstructor[], Controllers.Controller[]
+                Controllers.ControllerConstructor[],
+                Controllers.Controller[]
             >(
                 ControllerConfigs.controllers,
-                (ControllerArray) => ControllerArray.map((_Controller) =>
-                    new _Controller(this),
-                ),
+                (ControllerArray) =>
+                    ControllerArray.map((_Controller) => new _Controller(this)),
             ) as IControllers;
-
-        // Replace the default logger with the logging controllers.
-        if (this.controllers.logging.length) {
-            this._loggers = this.controllers.logging as unknown as ILogger[];
-            Utilities.logging.setLogger(this._loggers[0]);
-        }
+        this.emit("controllersReady", this.controllers);
 
         // Create a login callback that can be used for reconnection in case of
         //   disconnection.
@@ -115,7 +107,8 @@ export class Doppelgangster extends Mix(EventEmitter)
             }
         };
 
-        // Attempt to reconnect to Discord if the bot becomes disconnected.
+        // Attempt to reconnect to Discord if the bot becomes disconnected
+        //   unexpectedly.
         this.discord.on("disconnect", () => {
             if (!reconnecting && !this._destroying) {
                 reconnecting = true;
@@ -156,16 +149,11 @@ export class Doppelgangster extends Mix(EventEmitter)
     }
 
     public attachGuild(guild: $Discord.Guild): void {
-        this.logger.log(
+        this.logger.info(
             `Attaching to guild "${guild.name}" with ID ${guild.id}...`,
         );
-
-        // Attach command controllers.
-        for (const CommandController of this.controllers.command) {
-            CommandController.attachGuild(guild);
-        }
-
         super.attachGuild(guild);
+        this.emit("guildAttach", guild);
     }
 
     /**
@@ -173,6 +161,7 @@ export class Doppelgangster extends Mix(EventEmitter)
      */
     public async destroy(): Promise<void> {
         // Mark the instance as being in the process of destruction.
+        this.logger.info("Exiting...");
         this._destroying = true;
 
         // Destroy all controller instances.
@@ -184,19 +173,27 @@ export class Doppelgangster extends Mix(EventEmitter)
 
         // Destroy the discord.js client.
         await this.discord.destroy();
+
+        // Reset the global logger to the default logger.
+        Utilities.logging.setLogger();
+        Utilities.logging.info("Doppelgangster has exited.");
     }
 
     public detachGuild(guild: $Discord.Guild): void {
-        this.logger.log(
+        this.logger.info(
             `Detaching from guild "${guild.name}" with ID ${guild.id}...`,
         );
+        super.detachGuild(guild);
+        this.emit("guildDetach", guild);
+    }
 
-        // Detach command controllers.
-        for (const CommandController of this.controllers.command) {
-            CommandController.detachGuild(guild);
+    public registerLogger(logger: ILogger): void {
+        // Remove the default logger first if it's still in use.
+        if (this._loggers.includes(Utilities.logging)) {
+            this._loggers.splice(this._loggers.indexOf(Utilities.logging), 1);
         }
 
-        super.detachGuild(guild);
+        this._loggers.push(logger);
     }
 }
 

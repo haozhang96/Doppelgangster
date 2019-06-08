@@ -1,13 +1,13 @@
 /**
  * Define the fields for a command argument.
  */
-export interface ICommandArgument extends Readonly<{
-    name?: string;
-    description?: string;
-    type?: string;
-    optional?: boolean;
-    default?: any;
-}> { }
+export interface ICommandArgument {
+    readonly name?: string;
+    readonly description?: string;
+    readonly type?: string;
+    readonly optional?: boolean;
+    readonly default?: any;
+}
 
 /**
  * Define an array holding multiple command arguments

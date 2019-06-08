@@ -3,7 +3,7 @@ import { Expirable } from "@/common/mixins/expirable/expirable";
 import { Callback, InstantiableClass } from "@/common/types";
 
 /**
- * STUB
+ * TODO
  * @param Base The base class to mix into
  * @param refreshCallback The callback to call when refreshing
  * @param refreshInterval The regular interval in milliseconds to refresh in

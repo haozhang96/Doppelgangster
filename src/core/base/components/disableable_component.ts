@@ -5,7 +5,7 @@ import {
 } from "@/core/base/components/component";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class DisableableComponent extends Component implements IDisableable {
     // Private variables
@@ -34,7 +34,7 @@ export abstract class DisableableComponent extends Component implements IDisable
 }
 
 /**
- * Define the disableable component's constructor type with the abstract
+ * Define the DisableableComponent's constructor type with the abstract
  *   property removed.
  */
 export type DisableableComponentConstructor<

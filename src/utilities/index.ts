@@ -9,4 +9,4 @@ export { ObjectUtils, ObjectUtils as object } from "./object";
 export { PathUtils, PathUtils as path } from "./path";
 export { ReflectionUtils, ReflectionUtils as reflection } from "./reflection";
 export { SetUtils, SetUtils as set } from "./set";
-export { StringUtils, StringUtils as string } from "./string";
+export { StringUtils, StringUtils as string, $ } from "./string";
