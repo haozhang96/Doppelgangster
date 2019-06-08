@@ -54,7 +54,7 @@ export class Doppelgangster extends Mix(EventEmitter)
     };
 
     // Private variables
-    private readonly _loggers: readonly ILogger[] = [Utilities.logging];
+    private readonly _loggers: ILogger[] = [Utilities.logging];
     private _destroying: boolean = false;
 
     /**
@@ -87,12 +87,6 @@ export class Doppelgangster extends Mix(EventEmitter)
                     ControllerArray.map((_Controller) => new _Controller(this)),
             ) as IControllers;
         this.emit("controllersReady", this.controllers);
-
-        // Replace the default logger with the logging controllers.
-        if (this.controllers.logging.length) {
-            this._loggers = this.controllers.logging as unknown as ILogger[];
-            // Utilities.logging.setLogger(this.logger);
-        }
 
         // Create a login callback that can be used for reconnection in case of
         //   disconnection.
@@ -191,6 +185,15 @@ export class Doppelgangster extends Mix(EventEmitter)
         );
         super.detachGuild(guild);
         this.emit("guildDetach", guild);
+    }
+
+    public registerLogger(logger: ILogger): void {
+        // Remove the default logger first if it's still in use.
+        if (this._loggers.includes(Utilities.logging)) {
+            this._loggers.splice(this._loggers.indexOf(Utilities.logging), 1);
+        }
+
+        this._loggers.push(logger);
     }
 }
 

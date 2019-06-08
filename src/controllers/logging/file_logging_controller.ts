@@ -85,7 +85,7 @@ export class FileLoggingController extends LoggingController {
             `[${
                 new Date().toJSON()
             }][${
-                type.toUpperCase().padEnd(5)
+                type.toUpperCase().padStart(5)
             }] ${
                 args.join(" ")
             }\n`,

@@ -22,6 +22,7 @@ export class ConsoleLoggingController extends LoggingController {
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
 
+        // Replace the default logger early.
         Logging.setLogger(this as unknown as ILogger);
     }
 

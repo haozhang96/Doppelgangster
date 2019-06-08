@@ -1,12 +1,20 @@
 // Import internal components.
+import { ILogger } from "@/common/interfaces";
 import {
     Controller, ControllerConstructor,
 } from "@/core/base/controllers/controller";
+import { Doppelgangster } from "@/core/doppelgangster";
 
 /**
  * TODO
  */
 export abstract class LoggingController extends Controller {
+    constructor(doppelgangster: Doppelgangster) {
+        super(doppelgangster);
+
+        doppelgangster.registerLogger(this as unknown as ILogger);
+    }
+
     // @Override
     public abstract debug(...args: any[]): void;
     public abstract error(...args: any[]): void;
