@@ -9,7 +9,10 @@ import { Profile } from "@/core/heuristic/profile";
 /**
  * TODO
  */
-export abstract class ComparableCharacteristic<DataT, ExampleT> extends Characteristic<DataT> {
+export abstract class ComparableCharacteristic<
+    DataT,
+    ExampleT
+> extends Characteristic<DataT> {
     // Private properties
     private readonly _comparisons: Array<CharacteristicComparison<ExampleT>> =
         [];
@@ -18,7 +21,7 @@ export abstract class ComparableCharacteristic<DataT, ExampleT> extends Characte
      * Construct a ComparableCharacteristic instance.
      * @param profile A Profile instance
      */
-    constructor(public readonly profile: Profile) {
+    constructor(profile: Profile) {
         super(profile);
 
         this.on("data", () => {
