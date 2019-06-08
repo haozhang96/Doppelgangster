@@ -26,10 +26,10 @@ let logger: ILogger = defaultLogger;
 function getLoggerName(_logger: ILogger): string {
     if (_logger === defaultLogger) {
         return "the default";
-    } else if (_logger.log.constructor === Function) {
-        return "another";
+    } else if (_logger.constructor instanceof Function) {
+        return _logger.constructor.name;
     } else {
-        return "the " + _logger.log.constructor.name;
+        return "another";
     }
 }
 
