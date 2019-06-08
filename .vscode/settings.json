@@ -12,6 +12,5 @@
         "*.code-workspace": true,
         "package-lock.json": true,
         "LICENSE": true,
-        "README.md": true
     }
 }
