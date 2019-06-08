@@ -8,7 +8,9 @@ import { SetUtils } from "@/utilities/set";
  * @param Class An instantiable class that 
  * @param iterables An array of iterables to coerce into the given type
  */
-function coerceTypes<ClassT extends InstantiableClass<InstanceType<ClassT>>>(
+export function coerceTypes<
+    ClassT extends InstantiableClass<InstanceType<ClassT>>
+>(
     Class: ClassT,
     ...iterables: Array<Iterable<any>>
 ): Array<InstanceType<ClassT>> {
@@ -23,7 +25,7 @@ function coerceTypes<ClassT extends InstantiableClass<InstanceType<ClassT>>>(
     return coercedIterables;
 }
 
-function hasIntersection<T>(...iterables: Array<Iterable<T>>): boolean {
+export function hasIntersection<T>(...iterables: Array<Iterable<T>>): boolean {
     return SetUtils.intersect(
         ...IterableUtils.coerceTypes(Set, iterables)
     ).size > 0;

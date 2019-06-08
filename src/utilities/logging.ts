@@ -37,7 +37,7 @@ function getLoggerName(_logger: ILogger): string {
  * Set the logger to be used globally.
  * @param logger A logger object
  */
-function setLogger(_logger: ILogger = defaultLogger): void {
+export function setLogger(_logger: ILogger = defaultLogger): void {
     Logging.info(`Switching to ${getLoggerName(_logger)} logger...`);
     const oldLoggerName: string = getLoggerName(logger);
     logger = _logger;

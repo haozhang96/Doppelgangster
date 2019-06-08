@@ -6,7 +6,7 @@ import { Doppelgangster } from "@/core/doppelgangster";
 // Import external libraries.
 import * as $Discord from "discord.js";
 
-function findMemberByUserID(
+export function findMemberByUserID(
     doppelgangster: Doppelgangster,
     userID: string,
 ): Optional<$Discord.GuildMember> {
@@ -19,7 +19,7 @@ function findMemberByUserID(
     }
 }
 
-function findMemberInGuildByName(
+export function findMemberInGuildByName(
     guild: $Discord.Guild,
     name: string,
 ): Optional<$Discord.GuildMember> {
@@ -32,15 +32,15 @@ function findMemberInGuildByName(
     );
 }
 
-function formatMessage(message: $Discord.Message): string {
+export function formatMessage(message: $Discord.Message): string {
     return `[${message.createdAt.toLocaleString()}] ${message.content}`;
 }
 
-function getAccountCreationDate(userID: string): Date {
+export function getAccountCreationDate(userID: string): Date {
     return new Date((+userID / 4194304) + 1420070400000);
 }
 
-function matchMessages(
+export function matchMessages(
     groupOne: $Discord.Message[],
     groupTwo: $Discord.Message[],
     predicate: (

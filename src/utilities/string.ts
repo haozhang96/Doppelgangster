@@ -13,35 +13,35 @@ const unescapeMap: Readonly<IMappedObject<string>> = {
     "\\t": "\t",
 };
 
-function backslashUnescape(_string: string): string {
+export function backslashUnescape(_string: string): string {
     return _string.replace(/\\*\\[0nrt"']/g, (escapedCharacter) =>
         unescapeMap[escapedCharacter],
     );
 }
 
-function capitalize(_string: string): string {
+export function capitalize(_string: string): string {
     return _string[0].toUpperCase() + _string.slice(1);
 }
 
-function caseInsensitiveEquals(a: string, b: string): boolean {
+export function caseInsensitiveEquals(a: string, b: string): boolean {
     return a.toLowerCase() === b.toLowerCase();
 }
 
-function format(_format: string, ...formatters: any[]): string {
+export function format(_format: string, ...formatters: any[]): string {
     return $Utilities.format(_format, ...formatters);
 }
 
-function pluralize(word: string, count: number, pluralForm?: string) {
+export function pluralize(word: string, count: number, pluralForm?: string) {
     return count === 1 ? word : (pluralForm || word + "s");
 }
 
-function tabulate(_string: string, level: number = 1): string {
+export function tabulate(_string: string, level: number = 1): string {
     return (
         "\t".repeat(level) + _string.replace(/\n/g, "\n" + "\t".repeat(level))
     );
 }
 
-function uncapitalize(_string: string): string {
+export function uncapitalize(_string: string): string {
     return _string[0].toLowerCase() + _string.slice(1);
 }
 

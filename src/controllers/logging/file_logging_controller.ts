@@ -1,6 +1,6 @@
 // Import internal components.
 import { LoggingController } from "@/core/base/controllers";
-import { PathUtils } from "@/utilities";
+import { projectRoot } from "@/utilities/path";
 
 // Import built-in libraries.
 import * as $FileSystem from "fs";
@@ -25,7 +25,7 @@ export class FileLoggingController extends LoggingController {
 
         // Build the log folder's path.
         const logFolderPath: string = $Path.resolve(
-            PathUtils.getProjectRoot(),
+            projectRoot,
             "..", // root/dist/.. --> root
             Configs.loggingDirectory,
         );

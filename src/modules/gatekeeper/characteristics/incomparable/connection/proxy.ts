@@ -21,7 +21,7 @@ export default class extends IncomparableCharacteristic<Data, Example> {
     }
 
     protected analyzer(): Optional<CharacteristicAnalysis<Example>> {
-        if (!this.data) {
+        if (this.data === undefined) {
             return;
         }
 

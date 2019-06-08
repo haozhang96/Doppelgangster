@@ -2,7 +2,7 @@
 import * as $FileSystem from "fs";
 import * as $Path from "path";
 
-function getAllFilePaths(root: string): string[] {
+export function getAllFilePaths(root: string): string[] {
     return $FileSystem.readdirSync(root).map((file) =>
         $Path.join(root, file),
     ).map((file) =>

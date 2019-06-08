@@ -2,7 +2,7 @@
 import { IMappedObject } from "@/common/interfaces";
 import { Callback } from "@/common/types";
 
-function mapValues<T, U = T>(
+export function mapValues<T, U = T>(
     object: IMappedObject<T>,
     callback: Callback<T, U>,
 ): IMappedObject<U> {

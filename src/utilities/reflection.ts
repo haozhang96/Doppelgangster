@@ -1,23 +1,31 @@
 // Import internal components.
 import { Class, InstantiableClass } from "@/common/types";
+import { FileSystemUtils } from "@/utilities/file_system";
 
-// Import internal libraries.
-import { FileSystemUtils } from "./file_system";
+// Import built-in libraries.
+import * as $Path from "path";
 
 /**
  * Deabstractify an abstract class for TypeScript's type-checking system.
  * @param AbstractClass An abstract class to deabstractify
  */
-function deabstractifyClass<ClassT extends Class>(AbstractClass: ClassT) {
+export function deabstractifyClass<ClassT extends Class>(
+    AbstractClass: ClassT,
+) {
     return AbstractClass as ClassT & InstantiableClass;
 }
 
 /**
  * Return all the default classes in every file found within a given directory.
- * @param directory The directory to recursively scan for classes
+ * @param pathSegments The path segments to resolve for the directory to
+ *   recursively scan default classes for
  */
-function getDefaultClassesInDirectory<T>(directory: string): T[] {
-    return FileSystemUtils.getAllFilePaths(directory).filter((file) =>
+export function getDefaultClassesInDirectory<T>(
+    ...pathSegments: string[]
+): T[] {
+    return FileSystemUtils.getAllFilePaths(
+        $Path.resolve(...pathSegments),
+    ).filter((file) =>
         file.endsWith(".js"),
     ).map((file) =>
         require(file.slice(0, -3)).default,
@@ -31,7 +39,7 @@ function getDefaultClassesInDirectory<T>(directory: string): T[] {
  * @param object The object to return the type name of
  * @param spaceBetweenTypes Whether to put spaces between type names
  */
-function getTypeNames(
+export function getTypeNames(
     object: any,
     spaceBetweenTypes: boolean = true,
 ): string {
