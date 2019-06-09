@@ -9,3 +9,5 @@ Doppelgangster.suppressUncaughtExceptions();
 
 // Initialize the bot.
 export const doppelgangster: Doppelgangster = new Doppelgangster();
+
+// Below is the testing area.

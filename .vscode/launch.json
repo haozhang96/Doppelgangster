@@ -11,8 +11,29 @@
             "program": "${workspaceFolder}/dist/src/app.js",
             "envFile": "${workspaceFolder}/.env",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Doppelgangster in Docker",
+            "preLaunchTask": "tsc-watch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "docker-debug"],
+            "port": 9222,
+            "restart": true,
+            "timeout": 60000,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/doppelgangster",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
