@@ -18,7 +18,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Doppelgangster in Docker",
-            "preLaunchTask": "tsc-watch",
+            "preLaunchTask": "build",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "docker-debug"],
             "port": 9222,
