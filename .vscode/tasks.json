@@ -14,7 +14,7 @@
         {
             "label": "tsc-watch",
             "command": "npm",
-            "args": [ "run", "watch" ],
+            "args": ["run", "watch"],
             "type": "shell",
             "isBackground": true,
             "problemMatcher": "$tsc-watch",
