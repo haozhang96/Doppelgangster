@@ -16,8 +16,9 @@
     "devDependencies": {
         "@types/node": "^12.0.2",
         "@types/waterline": "^0.11.4",
-        "tslint-microsoft-contrib": "^6.1.1",
-        "nodemon": "^1.19.1"
+        "javascript-obfuscator": "^0.18.1",
+        "nodemon": "^1.19.1",
+        "tslint-microsoft-contrib": "^6.1.1"
     },
     "dependencies": {
         "tslib": "^1.9.3",

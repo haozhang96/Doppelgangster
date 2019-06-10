@@ -2,11 +2,8 @@
     "compileOnSave": true,
     "compilerOptions": {
         // Compilation paths
-        "rootDir": "",
+        "rootDir": "src",
         "outDir": "dist",
-        
-        // Module resolution paths
-        "baseUrl": "",
 
         // Compilation parameters
         "module": "commonjs",
