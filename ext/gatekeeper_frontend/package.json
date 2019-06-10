@@ -2,15 +2,15 @@
     "name": "doppelgangster_gatekeeper_frontend",
     "version": "0.0.0",
     "description": "Doppelgangster Gatekeeper front-end",
-    "main": "js/app.js",
+    "main": "js/server.js",
     "author": {
         "name": "Hao Zhang"
     },
     "scripts": {
-        "debug": "nodemon --watch js --inspect=0.0.0.0:9222 --nolazy js/app.js",
+        "debug": "nodemon --watch js --inspect=0.0.0.0:9222 --nolazy js/server.js",
         "docker-debug": "docker-compose up --build",
         "postinstall": "tsc",
-        "start": "node js/app.js",
+        "start": "node js/server.js",
         "watch": "tsc -w"
     },
     "devDependencies": {

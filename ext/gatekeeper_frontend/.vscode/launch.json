@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Doppelgangster Gatekeeper Front-end",
-            "program": "${workspaceFolder}/js/app.js",
+            "program": "${workspaceFolder}/js/server.js",
             "envFile": "${workspaceFolder}/.env",
             "outFiles": [
                 "${workspaceFolder}/js/**/*.js"

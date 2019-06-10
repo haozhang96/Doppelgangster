@@ -1,3 +1,3 @@
 "use strict";
-alert(5);
+alert(1);
 //# sourceMappingURL=include.js.map
