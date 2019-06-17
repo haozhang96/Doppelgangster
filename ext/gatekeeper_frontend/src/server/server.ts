@@ -1,11 +1,11 @@
 // Import internal components.
-import { getEndpoints } from "./endpoint";
+import { Endpoint, getEndpoints } from "./endpoint";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
 
 // Enumerate all the defined endpoints.
-const endpoints = getEndpoints();
+const endpoints: readonly Endpoint[] = getEndpoints();
 
 // Create the server and listen on the port set in the environment variable.
 $HTTP.createServer(async (request, response) => {
@@ -14,7 +14,7 @@ $HTTP.createServer(async (request, response) => {
         for (const endpoint of endpoints) {
             if (
                 (request.method || "") === endpoint.method.toUpperCase()
-                && endpoint.canHandle(request.url || "")
+                && endpoint.canHandle(request)
             ) {
                 response.setHeader("Content-Type", endpoint.mimeType);
                 return endpoint.handle(request, response);

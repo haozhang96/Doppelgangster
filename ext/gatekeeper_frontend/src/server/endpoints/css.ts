@@ -8,7 +8,7 @@ import * as $HTTP from "http";
 import * as $Path from "path";
 
 // Construct the main CSS source code to serve.
-export const source: string = $FileSystem.readFileSync(
+const source: string = $FileSystem.readFileSync(
     $Path.resolve(clientRootDirectory, "css", "styles.css"),
 ).toString();
 

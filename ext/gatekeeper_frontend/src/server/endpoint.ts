@@ -14,14 +14,14 @@ export abstract class Endpoint {
     public readonly mimeType: string = "text/plain";
     protected abstract readonly _url: string;
 
+    public canHandle(request: $HTTP.IncomingMessage): boolean {
+        return request.url === this._url;
+    }
+
     public abstract async handle(
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void>;
-
-    public canHandle(path: string): boolean {
-        return this._url ? path === this._url : false;
-    }
 }
 
 /**

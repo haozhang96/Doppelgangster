@@ -8,7 +8,7 @@ import * as $HTTP from "http";
 import * as $Path from "path";
 
 // Construct the main HTML source code to serve.
-export const source: string =
+const source: string =
     $FileSystem.readFileSync(
         $Path.resolve(clientRootDirectory, "index.html"),
     ).toString().replace(
