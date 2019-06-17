@@ -5,7 +5,7 @@ services:
     build: .
     command: npm run debug
     volumes:
-      - ./js:/doppelgangster_gatekeeper_frontend/js
+      - ./dist:/doppelgangster_gatekeeper_frontend/dist
     env_file:
       - .env
     ports:

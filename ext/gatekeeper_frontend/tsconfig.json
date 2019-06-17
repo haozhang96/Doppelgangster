@@ -3,7 +3,7 @@
     "compilerOptions": {
         // Compilation paths
         "rootDir": "src",
-        "outDir": "js",
+        "outDir": "dist",
 
         // Compilation parameters
         "module": "commonjs",
