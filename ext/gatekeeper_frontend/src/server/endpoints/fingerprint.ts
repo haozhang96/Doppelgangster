@@ -6,7 +6,7 @@ import * as $HTTP from "http";
 
 export default class extends Endpoint {
     public method = "POST";
-    protected _url = "/verify";
+    protected url = "/verify";
 
     public async handle(
         request: $HTTP.IncomingMessage,

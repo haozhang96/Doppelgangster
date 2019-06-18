@@ -18,7 +18,7 @@ const source: string =
 
 export default class extends Endpoint {
     public mimeType = "text/html";
-    protected _url = "/";
+    protected url = "/";
 
     public async handle(
         _request: $HTTP.IncomingMessage,

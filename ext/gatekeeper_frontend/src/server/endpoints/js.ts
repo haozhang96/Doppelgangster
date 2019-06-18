@@ -48,7 +48,7 @@ const source: string = $FileSystem.readFileSync(
 
 export default class extends Endpoint {
     public mimeType = "text/javascript";
-    protected _url = "/js/include.js";
+    protected url = "/js/include.js";
 
     public async handle(
         _request: $HTTP.IncomingMessage,

@@ -14,7 +14,7 @@ const source: string = $FileSystem.readFileSync(
 
 export default class extends Endpoint {
     public mimeType = "text/css";
-    protected _url = "/css/styles.css";
+    protected url = "/css/styles.css";
 
     public async handle(
         _request: $HTTP.IncomingMessage,

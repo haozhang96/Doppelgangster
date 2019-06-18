@@ -12,10 +12,10 @@ import * as $Path from "path";
 export abstract class Endpoint {
     public readonly method: string = "GET";
     public readonly mimeType: string = "text/plain";
-    protected abstract readonly _url: string;
+    protected abstract readonly url: string;
 
     public canHandle(request: $HTTP.IncomingMessage): boolean {
-        return request.url === this._url;
+        return request.url === this.url;
     }
 
     public abstract async handle(
@@ -34,8 +34,6 @@ export function getEndpoints(): Endpoint[] {
     return $FileSystem.readdirSync(endpointsDirectory).filter((file) =>
         file.endsWith(".js"),
     ).map((file) =>
-        $Path.resolve(endpointsDirectory, file),
-    ).map((file) =>
-        new (require(file).default)(),
+        new (require($Path.resolve(endpointsDirectory, file)).default)(),
     );
 }
