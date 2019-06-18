@@ -8,10 +8,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Doppelgangster Gatekeeper Front-end",
-            "program": "${workspaceFolder}/js/server.js",
+            "program": "${workspaceFolder}/dist/server/server.js",
             "envFile": "${workspaceFolder}/.env",
             "outFiles": [
-                "${workspaceFolder}/js/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ]
         },
         {
@@ -27,7 +27,7 @@
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/doppelgangster_gatekeeper_frontend",
             "outFiles": [
-                "${workspaceFolder}/js/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ],
             "skipFiles": [
                 "<node_internals>/**/*.js",

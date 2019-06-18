@@ -55,11 +55,11 @@ export default class extends Endpoint {
         response: $HTTP.ServerResponse,
     ): Promise<void> {
         if (process.env.OBFUSCATE_JAVASCRIPT) {
-            response.write(
+            response.end(
                 obfuscate(source, obfuscatorOptions).getObfuscatedCode(),
             );
         } else {
-            response.write(source);
+            response.end(source);
         }
     }
 }

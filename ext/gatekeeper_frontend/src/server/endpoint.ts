@@ -31,7 +31,9 @@ export function getEndpoints(): Endpoint[] {
     const endpointsDirectory: string =
         $Path.resolve(serverRootDirectory, "endpoints");
 
-    return $FileSystem.readdirSync(endpointsDirectory).map((file) =>
+    return $FileSystem.readdirSync(endpointsDirectory).filter((file) =>
+        file.endsWith(".js"),
+    ).map((file) =>
         $Path.resolve(endpointsDirectory, file),
     ).map((file) =>
         new (require(file).default)(),

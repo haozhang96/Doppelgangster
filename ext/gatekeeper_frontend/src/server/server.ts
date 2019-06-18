@@ -26,9 +26,8 @@ $HTTP.createServer(async (request, response) => {
     } catch (error) {
         console.error(error);
         response.statusCode = 403;
-    } finally {
-        response.end();
     }
+    response.end();
 }).listen(
     process.env.SERVER_PORT || 80,
 );

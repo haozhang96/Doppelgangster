@@ -12,6 +12,26 @@ export default class extends Endpoint {
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
-        return;
+        const chunks: Uint8Array[] = [];
+
+        request.on("data", (chunk) => chunks.push(chunk)).on("end", () => {
+            const data: string = Buffer.concat(chunks).toString();
+
+            // Drop fingerprint data that are larger than the maximum allowed
+            //   size.
+            if (data.length > 16 * 1024) {
+                return;
+            }
+
+            // TODO: Check max fingerprint count
+
+            // Add the fingerprint to the database.
+            try {
+                const fingerprint = JSON.parse(data);
+                response.end(fingerprint.toString());
+            } catch (error) {
+                console.error("Fingerprint error:", error);
+            }
+        });
     }
 }
