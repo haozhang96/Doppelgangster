@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "javascript-obfuscator": "^0.18.1",
+        "jsonschema": "^1.2.4",
         "tslib": "^1.9.3",
         "waterline": "^0.13.6"
     }
