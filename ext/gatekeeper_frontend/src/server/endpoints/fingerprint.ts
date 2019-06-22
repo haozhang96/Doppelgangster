@@ -6,7 +6,7 @@ import { dropConnection } from "../utilities";
 import * as $HTTP from "http";
 
 // Define configurations.
-const Configs = {
+const configurations = {
     maxFingerprintCount: 10,
     maxFingerprintSize: 16 * 1024,
 };
@@ -26,7 +26,7 @@ export default class extends Endpoint {
 
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
-            if (request.socket.bytesRead > Configs.maxFingerprintSize) {
+            if (request.socket.bytesRead > configurations.maxFingerprintSize) {
                 return dropConnection(request, response);
             }
 

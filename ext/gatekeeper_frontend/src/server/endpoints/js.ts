@@ -100,7 +100,7 @@ export default class extends Endpoint {
             request.headers.via === "1.1 Chrome-Compression-Proxy"
             && request.headers["save-data"] === "on"
             && (request.headers.forwarded || "").includes(
-                request.headers["x-forwarded-for"] as string,
+                request.headers["x-forwarded-for"] as string || "_",
             )
         ) {
             return response.end(chromeDataSaverResponse);
