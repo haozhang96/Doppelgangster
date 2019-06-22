@@ -7,15 +7,20 @@ import * as $HTTP from "http";
 import * as $Path from "path";
 
 /**
- * STUB
+ * TODO
  */
 export abstract class Endpoint {
     public readonly method: string = "GET";
     public readonly mimeType: string = "text/plain";
-    protected abstract readonly url: string;
+    protected abstract readonly url: string | RegExp;
 
     public canHandle(request: $HTTP.IncomingMessage): boolean {
-        return request.url === this.url;
+        return (
+            this.url instanceof RegExp ?
+                this.url.test(request.url || "")
+            :
+                request.url === this.url
+        );
     }
 
     public abstract async handle(
@@ -25,7 +30,7 @@ export abstract class Endpoint {
 }
 
 /**
- * STUB
+ * TODO
  */
 export function getEndpoints(): Endpoint[] {
     const endpointsDirectory: string =

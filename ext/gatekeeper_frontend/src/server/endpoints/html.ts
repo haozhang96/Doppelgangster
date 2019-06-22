@@ -18,7 +18,7 @@ const source: string =
 
 export default class extends Endpoint {
     public mimeType = "text/html";
-    protected url = "/";
+    protected url = /^\/[0-9a-f]{64}$/; // SHA-256 session token
 
     public async handle(
         _request: $HTTP.IncomingMessage,

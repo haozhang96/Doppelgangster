@@ -8,7 +8,15 @@ import { obfuscate } from "javascript-obfuscator";
 // Import built-in libraries.
 import * as $FileSystem from "fs";
 import * as $HTTP from "http";
+// import * as $OS from "os";
 import * as $Path from "path";
+
+// Define configurations.
+const Configs = {
+    debugAlert: true,
+    forceRecompilation: false,
+    obfuscate: !!process.env.OBFUSCATE_JAVASCRIPT,
+};
 
 // Define JavaScript obfuscator options.
 const obfuscatorOptions: any = {
@@ -41,6 +49,13 @@ const obfuscatorOptions: any = {
     unicodeEscapeSequence: false,
 };
 
+// TODO
+// const hostname: string = $OS.hostname();
+
+// TODO
+/*const refererRegex: RegExp =
+    new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
+
 // Construct the main JavaScript source code to serve.
 const source: string = $FileSystem.readFileSync(
     $Path.resolve(clientRootDirectory, "js", "include.js"),
@@ -51,10 +66,38 @@ export default class extends Endpoint {
     protected url = "/js/include.js";
 
     public async handle(
-        _request: $HTTP.IncomingMessage,
+        request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
-        if (process.env.OBFUSCATE_JAVASCRIPT) {
+        console.log("Host:", request.headers.host);
+        console.log("Referer:", request.headers.referer);
+
+        // Attempt to match the required referer URL format.
+        const refererMatch: RegExpMatchArray | null =
+            (request.headers.referer || "").match(
+                new RegExp(`^https?://${request.headers.host}/([0-9a-f]{64})$`),
+            );
+
+        // Make sure that the referer URL matches the required format.
+        if (!refererMatch) {
+            response.end();
+            return request.destroy();
+        }
+
+        // Retrieve the SHA-256 session ID from the referer URL.
+        const sessionID: string = refererMatch.slice(1)[0];
+
+        // Make sure that the client does not use cached responses.
+        response.setHeader(
+            "Cache-Control",
+            "no-cache, max-age=0, must-revalidate, no-store, no-transform",
+        );
+
+        // Check database to make sure that the session token is valid in the
+        //   database.
+
+        // Return the obfuscated response if needed.
+        if (Configs.obfuscate) {
             response.end(
                 obfuscate(source, obfuscatorOptions).getObfuscatedCode(),
             );
