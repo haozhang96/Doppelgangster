@@ -9,7 +9,7 @@ import * as $HTTP from "http";
 const endpoints: readonly Endpoint[] = getEndpoints();
 
 // Create the server and listen on the port set in the environment variable.
-$HTTP.createServer(async (request, response) => {
+$HTTP.createServer((request, response) => {
     try {
         // Find an endpoint that could handle the request.
         for (const endpoint of endpoints) {
