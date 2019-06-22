@@ -13,14 +13,14 @@ import * as $HTTP from "http";
 import * as $Path from "path";
 
 // Define configurations.
-const Configs = {
+const configurations = {
     debugAlert: true,
     forceRecompilation: false,
     obfuscate: !!process.env.OBFUSCATE_JAVASCRIPT,
 };
 
-// Define JavaScript obfuscator options.
-const obfuscatorOptions: any = {
+// Define the default JavaScript obfuscator options.
+const defaultObfuscatorOptions: any = {
     compact: true,
     controlFlowFlattening: true,
     controlFlowFlatteningThreshold: 0.75,
@@ -57,6 +57,17 @@ const obfuscatorOptions: any = {
 /*const refererRegex: RegExp =
     new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
 
+// Construct a response to handle requests made via Chrome Data Saver, which is
+//   unsupported.
+const chromeDataSaverResponse: string =
+    "window.onload = function () { "
+    + "document.getElementById(\"content\").innerHTML = "
+    + "\"<div class=\\\"primary\\\">Disable Chrome's data saver.<\/div>"
+    + "<a class=\\\"secondary\\\" href="
+    + "\\\"https:\\\/\\\/support.google.com\\\/chrome\\\/answer\\\/2392284\\\">"
+    + "Find out how<\/a>\"; "
+    + "}";
+
 // Construct the main JavaScript source code to serve.
 const source: string = $FileSystem.readFileSync(
     $Path.resolve(clientRootDirectory, "js", "include.js"),
@@ -84,6 +95,17 @@ export default class extends Endpoint {
             return dropConnection(request, response);
         }
 
+        // Check if the request was made via Chrome Data Saver.
+        if (
+            request.headers.via === "1.1 Chrome-Compression-Proxy"
+            && request.headers["save-data"] === "on"
+            && (request.headers.forwarded || "").includes(
+                request.headers["x-forwarded-for"] as string,
+            )
+        ) {
+            return response.end(chromeDataSaverResponse);
+        }
+
         // Retrieve the SHA-256 session ID from the referer URL.
         const sessionID: string = refererMatch.slice(1)[0];
 
@@ -97,9 +119,10 @@ export default class extends Endpoint {
         //   database.
 
         // Return the obfuscated response if needed.
-        if (Configs.obfuscate) {
+        if (configurations.obfuscate) {
+            // TODO: Check IE7 (doesn't like self-defense)
             response.end(
-                obfuscate(source, obfuscatorOptions).getObfuscatedCode(),
+                obfuscate(source, defaultObfuscatorOptions).getObfuscatedCode(),
             );
         } else {
             response.end(source);
