@@ -1,6 +1,7 @@
 // Import internal components.
 import { Endpoint } from "../endpoint";
 import { clientRootDirectory } from "../paths";
+import { dropConnection } from "../utilities";
 
 // Import external libraries.
 import { obfuscate } from "javascript-obfuscator";
@@ -80,8 +81,7 @@ export default class extends Endpoint {
 
         // Make sure that the referer URL matches the required format.
         if (!refererMatch) {
-            response.end();
-            return request.destroy();
+            return dropConnection(request, response);
         }
 
         // Retrieve the SHA-256 session ID from the referer URL.

@@ -1,5 +1,6 @@
 // Import internal components.
 import { Endpoint } from "../endpoint";
+import { dropConnection } from "../utilities";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
@@ -26,8 +27,7 @@ export default class extends Endpoint {
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
             if (request.socket.bytesRead > Configs.maxFingerprintSize) {
-                response.end();
-                return request.destroy();
+                return dropConnection(request, response);
             }
 
             chunks.push(chunk);

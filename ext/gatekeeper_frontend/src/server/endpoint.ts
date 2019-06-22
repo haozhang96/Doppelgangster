@@ -30,7 +30,7 @@ export abstract class Endpoint {
 }
 
 /**
- * TODO
+ * Return all the endpoint classes in /src/server/endpoints.
  */
 export function getEndpoints(): Endpoint[] {
     const endpointsDirectory: string =
