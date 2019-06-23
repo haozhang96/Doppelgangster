@@ -27,7 +27,7 @@ export function coerceTypes<
 
 export function hasIntersection<T>(...iterables: Array<Iterable<T>>): boolean {
     return SetUtils.intersect(
-        ...IterableUtils.coerceTypes(Set, iterables)
+        ...IterableUtils.coerceTypes(Set, iterables),
     ).size > 0;
 }
 

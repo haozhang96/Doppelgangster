@@ -2,16 +2,8 @@
     "compileOnSave": true,
     "compilerOptions": {
         // Compilation paths
-        "rootDir": "",
+        "rootDir": "src",
         "outDir": "dist",
-        
-        // Module resolution paths
-        "baseUrl": "",
-        "paths": {
-            "?/*": ["conf/*"], // Configurations root
-            "$/*": ["data/*"], // Data root
-            "@/*": ["src/*"], // Source code root
-        },
 
         // Compilation parameters
         "module": "commonjs",
@@ -30,9 +22,5 @@
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true
-    },
-    "include": [
-        "conf",
-        "src"
-    ]
+    }
 }

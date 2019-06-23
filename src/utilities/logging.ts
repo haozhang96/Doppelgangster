@@ -2,7 +2,7 @@
 import { ILogger } from "@/common/interfaces";
 
 // Define a basic console logger as the default global logger.
-// tslint:disable:no-console
+// tslint:disable: no-console
 const defaultLogger: ILogger = {
     debug: console.debug,
     error: console.error,
@@ -12,7 +12,7 @@ const defaultLogger: ILogger = {
     trace: console.trace,
     warn: console.warn,
 };
-// tslint:enable:no-console
+// tslint:enable: no-console
 
 /**
  * Define the interchangeable logger instance that will be used.
@@ -26,10 +26,10 @@ let logger: ILogger = defaultLogger;
 function getLoggerName(_logger: ILogger): string {
     if (_logger === defaultLogger) {
         return "the default";
-    } else if (_logger.log.constructor === Function) {
-        return "another";
+    } else if (_logger.constructor instanceof Function) {
+        return _logger.constructor.name;
     } else {
-        return "the " + _logger.log.constructor.name;
+        return "another";
     }
 }
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Doppelgangster</title>
+        <link rel="stylesheet" href="css/styles.css">
+        <script>/*@cc_on @if (@_jscript_version < 9) document.onreadystatechange = function () {
+            document.all.content.innerHTML = "<div class=\"primary\">Your browser is unsupported.<\/div><div class=\"secondary\"><a href=\"javascript: alert('Your browser does not support Google\\'s reCAPTCHA verification system.\\nYou need to either update your current browser to the latest version or find another up-to-date browser that supports your operating system.');\">Why?<\/a> | <a href=\"http://browser-update.org/update.html\" target=\"_blank\">Upgrade My Browser<\/a><\/div>"; document.onreadystatechange = null;
+        }; @end @*/</script><!--[if gte IE 9]><!-->
+        <script>
+            verify = (function () { var _this = function () {
+                var started = new Date(), poll = setInterval(function () {
+                    if (verify !== _this) {
+                        clearInterval(poll);
+                        verify(grecaptcha.getResponse());
+                    } else if (new Date() - started >= 5000) {
+                        clearInterval(poll);
+                        document.getElementById("content").innerHTML = "<div class=\"primary\">Failed to retrieve code.<\/div><a class=\"secondary\" href=\"javascript: location.reload(true)\">Reload Page<\/a>";
+                    }
+                }, 10);
+            }; return _this; })();
+        </script>
+        <script src="https://www.google.com/recaptcha/api.js" async></script><!--<![endif]-->
+        <script src="js/include.js" async></script>
+    </head>
+    
+    <body>
+        <table>
+            <td id="content">
+                <div class="g-recaptcha" data-sitekey="{% RECAPTCHA_SITE_KEY %}" data-callback="verify"></div>
+                <noscript class="primary">JavaScript is required.</noscript>
+            </td>
+        </table>
+    </body>
+</html>

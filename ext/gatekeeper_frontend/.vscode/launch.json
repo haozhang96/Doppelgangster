@@ -7,8 +7,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Doppelgangster",
-            "program": "${workspaceFolder}/dist/src/app.js",
+            "name": "Launch Doppelgangster Gatekeeper Front-end",
+            "program": "${workspaceFolder}/dist/server/server.js",
             "envFile": "${workspaceFolder}/.env",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
@@ -17,7 +17,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Doppelgangster in Docker",
+            "name": "Launch Doppelgangster Gatekeeper Front-end in Docker",
             "preLaunchTask": "build",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "docker-debug"],
@@ -25,7 +25,7 @@
             "restart": true,
             "timeout": 60000,
             "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/doppelgangster",
+            "remoteRoot": "/doppelgangster_gatekeeper_frontend",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ],

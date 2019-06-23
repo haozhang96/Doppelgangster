@@ -1,10 +1,5 @@
-# Environment-specifics
-node_modules/
-dist/
+**/node_modules/
+**/dist/
+**/*.env
+**/*.code-workspace
 logs/
-*.code-workspace
-*.env
-
-# Compiled JavaScript files
-*.js
-*.js.map

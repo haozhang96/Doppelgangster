@@ -18,8 +18,11 @@ import * as ControllerConfigs from "?/controllers";
 import * as DiscordConfigs from "?/discord";
 import * as Configs from "?/doppelgangster";
 
-// Import the application version from package.json.
-import { version as application_version } from "@/../package.json";
+// Import some application information from package.json.
+import {
+    dependencies as application_dependencies,
+    version as application_version,
+} from "@/../package.json";
 
 /**
  * TODO
@@ -56,11 +59,12 @@ export class Doppelgangster extends Mix(EventEmitter)
     // Private variables
     private readonly _loggers: ILogger[] = [Utilities.logging];
     private _destroying: boolean = false;
+    private _reconnecting: boolean = false;
 
     /**
      * Construct a Doppelgangster instance.
      */
-    constructor(apiToken: string = DiscordConfigs.apiToken) {
+    constructor(private readonly _apiToken: string = DiscordConfigs.apiToken) {
         super();
 
         // Display runtime environment version information.
@@ -70,6 +74,8 @@ export class Doppelgangster extends Mix(EventEmitter)
             process.version.slice(1)
         }, discord.js v${
             $Discord.version
+        }, MongoDB v${
+            application_dependencies.mongodb.replace("^", "")
         }`);
         this.logger.info("Initializing Doppelgangster...");
 
@@ -88,52 +94,26 @@ export class Doppelgangster extends Mix(EventEmitter)
             ) as IControllers;
         this.emit("controllersReady", this.controllers);
 
-        // Create a login callback that can be used for reconnection in case of
-        //   disconnection.
-        let reconnecting: boolean;
-        const connectToDiscord: Callback = async () => {
-            try {
-                this.logger.info("Connecting to Discord...");
-                await this.discord.login(apiToken);
-                this.logger.info("Successfully connected to Discord.");
-                this.emit("ready");
-            } catch (error) {
-                this.logger.error(
-                    "Failed to connect to Discord:",
-                    Utilities.misc.stringifyError(error),
-                );
-            } finally {
-                reconnecting = false;
-            }
-        };
-
         // Attempt to reconnect to Discord if the bot becomes disconnected
         //   unexpectedly.
         this.discord.on("disconnect", () => {
-            if (!reconnecting && !this._destroying) {
-                reconnecting = true;
-                this.logger.error(
-                    "Doppelgangster has been disconnected from Discord!",
-                );
-                this.logger.info(
-                    `Attempting to reconnect to Discord in ${
-                        Math.round(DiscordConfigs.reconnectTimeout / 1000)
-                    } seconds...`,
-                );
-                setTimeout(connectToDiscord, DiscordConfigs.reconnectTimeout);
-            }
+            this.logger.error(
+                "Doppelgangster has been disconnected from Discord!",
+            );
+            this.reconnect();
         });
 
         // Log Discord errors to the logger.
-        this.discord.on("error", (error) => {
+        this.discord.on("error", (error) =>
             this.logger.error(
                 "Discord has encountered an error:",
                 Utilities.misc.stringifyError(error),
-            );
-        });
+            ),
+        );
 
         // Attach a listener to perform actions after logging into Discord.
         this.discord.on("ready", () => {
+            // Attach to the guilds defined in the configurations.
             for (const guildID of Configs.guildIDs) {
                 const guild: Optional<$Discord.Guild> =
                     this.discord.guilds.get(guildID);
@@ -144,8 +124,8 @@ export class Doppelgangster extends Mix(EventEmitter)
             }
         });
 
-        // Log into Discord.
-        connectToDiscord();
+        // Establish a connection to Discord.
+        this.connect();
     }
 
     public attachGuild(guild: $Discord.Guild): void {
@@ -161,18 +141,22 @@ export class Doppelgangster extends Mix(EventEmitter)
      */
     public async destroy(): Promise<void> {
         // Mark the instance as being in the process of destruction.
-        this.logger.info("Exiting...");
+        Utilities.logging.info("Exiting...");
         this._destroying = true;
 
         // Destroy all controller instances.
-        for (const typedControllers of Object.values(this.controllers)) {
-            for (const controller of typedControllers) {
-                await controller.destroy();
+        if (this.controllers) {
+            for (const typedControllers of Object.values(this.controllers)) {
+                for (const controller of typedControllers) {
+                    await controller.destroy();
+                }
             }
         }
 
         // Destroy the discord.js client.
-        await this.discord.destroy();
+        if (this.discord) {
+            await this.discord.destroy();
+        }
 
         // Reset the global logger to the default logger.
         Utilities.logging.setLogger();
@@ -194,6 +178,35 @@ export class Doppelgangster extends Mix(EventEmitter)
         }
 
         this._loggers.push(logger);
+    }
+
+    private async connect(): Promise<void> {
+        try {
+            this.logger.info("Connecting to Discord...");
+            await this.discord.login(this._apiToken);
+            this.logger.info("Successfully connected to Discord.");
+            this.emit("ready");
+        } catch (error) {
+            this.logger.error(
+                "Failed to connect to Discord:",
+                Utilities.misc.stringifyError(error),
+            );
+            this.reconnect();
+        } finally {
+            this._reconnecting = false;
+        }
+    }
+
+    private async reconnect(): Promise<void> {
+        if (!this._reconnecting && !this._destroying) {
+            this._reconnecting = true;
+            this.logger.info(
+                `Attempting to reconnect to Discord in ${
+                    Math.round(DiscordConfigs.reconnectTimeout / 1000)
+                } seconds...`,
+            );
+            setTimeout(this.connect, DiscordConfigs.reconnectTimeout);
+        }
     }
 }
 

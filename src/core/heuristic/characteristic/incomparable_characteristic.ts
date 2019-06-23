@@ -9,7 +9,10 @@ import { Profile } from "@/core/heuristic/profile";
 /**
  * TODO
  */
-export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Characteristic<DataT> {
+export abstract class IncomparableCharacteristic<
+    DataT,
+    ExampleT
+> extends Characteristic<DataT> {
     // Private properties
     private _analysis?: CharacteristicAnalysis<ExampleT>;
 
@@ -17,7 +20,7 @@ export abstract class IncomparableCharacteristic<DataT, ExampleT> extends Charac
      * Construct an IncomparableCharacteristic instance.
      * @param profile A Profile instance
      */
-    constructor(public readonly profile: Profile) {
+    constructor(profile: Profile) {
         super(profile);
 
         this.onMixInComplete(() => {

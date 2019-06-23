@@ -70,14 +70,15 @@ export class ProfileReport extends Mix(Component).with(Expirable).compose() {
     }
 
     /**
-     * Destroy the CharacteristicAnalysis instance.
+     * Destroy the ProfileReport instance.
      */
     public destroy(): void {
         return;
     }
 
     public toString(
-        suspiciousIncomparableCharacteristicsOnly?: boolean, similarComparableCharacteristicsOnly?: boolean,
+        suspiciousIncomparableCharacteristicsOnly?: boolean,
+        similarComparableCharacteristicsOnly?: boolean,
     ): string {
         return (
             (

@@ -25,6 +25,12 @@ interface IControllerConstructors extends IMappedObject<
  * Define which controller implementations will be used by Doppelgangster.
  */
 export const controllers: Readonly<IControllerConstructors> = {
+    // Initialize the logging controllers first.
+    logging: [
+        LoggingControllers.ConsoleLoggingController,
+        LoggingControllers.FileLoggingController,
+    ],
+
     authorization: [],
 
     characteristic: [
@@ -33,11 +39,6 @@ export const controllers: Readonly<IControllerConstructors> = {
 
     command: [
         CommandControllers.TextCommandController,
-    ],
-
-    logging: [
-        LoggingControllers.ConsoleLoggingController,
-        LoggingControllers.FileLoggingController,
     ],
 
     module: [

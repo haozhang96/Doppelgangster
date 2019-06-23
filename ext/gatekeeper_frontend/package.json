@@ -1,0 +1,28 @@
+{
+    "name": "doppelgangster_gatekeeper_frontend",
+    "version": "0.0.0",
+    "description": "Doppelgangster Gatekeeper front-end",
+    "main": "dist/server/server.js",
+    "author": {
+        "name": "Hao Zhang"
+    },
+    "scripts": {
+        "debug": "nodemon --watch dist --inspect=0.0.0.0:9222 --nolazy dist/server/server.js",
+        "docker-debug": "docker-compose up --build",
+        "postinstall": "tsc",
+        "start": "node dist/server/server.js",
+        "watch": "tsc -w"
+    },
+    "devDependencies": {
+        "@types/node": "^12.0.10",
+        "nodemon": "^1.19.1",
+        "tslint-microsoft-contrib": "^6.2.0"
+    },
+    "dependencies": {
+        "javascript-obfuscator": "^0.18.1",
+        "jsonschema": "^1.2.4",
+        "mongodb": "^3.2.7",
+        "tslib": "^1.10.0",
+        "typeorm": "^0.2.18"
+    }
+}
