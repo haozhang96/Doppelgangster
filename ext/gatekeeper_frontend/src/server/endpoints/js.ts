@@ -20,7 +20,9 @@ const configurations = {
     obfuscate: !!process.env.JS_OBFUSCATE || true,
 };
 
-const libraryNames: string[] = [
+// Define the list of libraries located in /src/client/js/libs to concatenate
+//   with the main script.
+const libraryFileNames: string[] = [
     "polyfills.js",
     "platform.js",
     "webrtcips.js",
@@ -46,7 +48,7 @@ const chromeLiteModeResponse: string =
     + "}";
 
 /**
- * 
+ * Generate the main include script to be served for the given request.
  * @param request 
  * @param sessionID 
  */
@@ -68,7 +70,7 @@ async function generateScript(
 
     // Check if the script has already been generated and hasn't been updated.
     if (inputLastModified > outputLastModified) {
-        const libraries: string[] = libraryNames.map((file) =>
+        const libraries: string[] = libraryFileNames.map((file) =>
             $FileSystem.readFileSync(
                 $Path.resolve(jsPath, "libs", file),
             ).toString(),
@@ -98,7 +100,7 @@ async function generateScript(
             output = obfuscateJavaScript(output, obfuscatorOptions);
 
             // Save the obfuscated output to re-serve later.
-            $FileSystem.writeFileSync("", output);
+            $FileSystem.writeFileSync(outputPath, output);
         }
     } else {
         output = $FileSystem.readFileSync(outputPath).toString();
@@ -112,7 +114,7 @@ async function generateScript(
         || "";
 
     // Generate the user data to be sent with the output.
-    const sessionData: string = JSON.stringify({
+    const userData = {
         doNotTrack: request.headers.dnt === "1",
         headers: request.headers,
         id: sessionID,
@@ -120,14 +122,14 @@ async function generateScript(
         ipHub: await getIPHubData(ipAddress),
         ipapi: await getIPAPIData(ipAddress),
         isTorExitNode: await isTorExitNode(ipAddress),
-    });
+    };
 
     // Return the encoded user data concatenated with the script to be served.
     return (
         `var data = "${
             atob(xorEncode(
-                JSON.stringify(sessionData),
-                sessionID.split("").reverse().join(""),
+                JSON.stringify(userData),
+                sessionID.split("").reverse().join(""), // :^)
             ))
         }";\n${
             output
@@ -168,6 +170,7 @@ export default class extends Endpoint {
             return response.end(chromeLiteModeResponse);
         }
 
+        // Retrieve the session ID from the referer header.
         const sessionID: string = refererMatch[1];
 
         // Make sure that the session is valid in the database.
