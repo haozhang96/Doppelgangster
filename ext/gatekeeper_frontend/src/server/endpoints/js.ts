@@ -1,12 +1,11 @@
 // Import internal components.
+import { getIPAPIData, getIPHubData, isTorExitNode } from "../data";
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
-import { clientRootDirectory } from "../paths";
-import { dropConnection } from "../utilities";
-
-// Import external libraries.
-import { obfuscate } from "javascript-obfuscator";
+import { obfuscateJavaScript } from "../obfuscator";
+import { clientUncompiledRootDirectory } from "../paths";
+import { dropConnection, xorEncode } from "../utilities";
 
 // Import built-in libraries.
 import * as $FileSystem from "fs";
@@ -21,36 +20,12 @@ const configurations = {
     obfuscate: !!process.env.JS_OBFUSCATE || true,
 };
 
-// Define the default JavaScript obfuscator options.
-const defaultObfuscatorOptions: any = {
-    compact: true,
-    controlFlowFlattening: true,
-    controlFlowFlatteningThreshold: 0.75,
-    deadCodeInjection: true,
-    deadCodeInjectionThreshold: 0.4,
-    debugProtection: true,
-    debugProtectionInterval: true,
-    disableConsoleOutput: true,
-    domainLock: ["localhost"],
-    identifierNamesGenerator: "mangled",
-    identifiersPrefix: "",
-    log: false,
-    renameGlobals: true,
-    reservedNames: [],
-    rotateStringArray: true,
-    seed: 0,
-    selfDefending: true, // IE 5.5
-    sourceMap: false,
-    sourceMapBaseUrl: "",
-    sourceMapFileName: "",
-    sourceMapMode: "separate",
-    stringArray: true,
-    stringArrayEncoding: "rc4",
-    stringArrayThreshold: 0.8,
-    target: "browser",
-    transformObjectKeys: false,
-    unicodeEscapeSequence: false,
-};
+const libraryNames: string[] = [
+    "polyfills.js",
+    "platform.js",
+    "webrtcips.js",
+    "fingerprintjs2.js",
+];
 
 // TODO
 // const hostname: string = $OS.hostname();
@@ -70,10 +45,95 @@ const chromeLiteModeResponse: string =
     + "Find out how<\/a>\"; "
     + "}";
 
-// Construct the main JavaScript source code to serve.
-const source: string = $FileSystem.readFileSync(
-    $Path.resolve(clientRootDirectory, "js", "include.js"),
-).toString();
+/**
+ * 
+ * @param request 
+ * @param sessionID 
+ */
+async function generateScript(
+    request: $HTTP.IncomingMessage,
+    sessionID: string,
+): Promise<string> {
+    // Construct the paths to the necessary files.
+    const jsPath: string = $Path.resolve(clientUncompiledRootDirectory, "js");
+    const inputPath: string = $Path.resolve(jsPath, "fingerprint.js");
+    const outputPath: string = $Path.resolve(jsPath, "include.js");
+
+    // Determine the last modified dates of the input and output files.
+    const inputLastModified: Date = $FileSystem.statSync(inputPath).mtime;
+    const outputLastModified: Date = $FileSystem.statSync(outputPath).mtime;
+
+    // Prepare to generate the output script to be served.
+    let output: string;
+
+    // Check if the script has already been generated and hasn't been updated.
+    if (inputLastModified > outputLastModified) {
+        const libraries: string[] = libraryNames.map((file) =>
+            $FileSystem.readFileSync(
+                $Path.resolve(jsPath, "libs", file),
+            ).toString(),
+        );
+
+        // Concatenate the libraries and the main script.
+        output =
+            "window.onload = function () {\n"
+            + libraries.join("\n")
+            + $FileSystem.readFileSync(inputPath).toString()
+            + "\n};";
+
+        // Obfuscate the output if required.
+        if (configurations.obfuscate) {
+            const obfuscatorOptions = { selfDefending: true };
+
+            // Disable self-defense if the user's browser is IE < 7.
+            const ieUserAgentMatch: RegExpMatchArray | null =
+                (request.headers["user-agent"] || "").match(
+                    /^Mozilla\/\d\.\d+ \(.+; MSIE (\d\.\d+)/,
+                );
+            if (ieUserAgentMatch && parseInt(ieUserAgentMatch[1], 10) < 7) {
+                obfuscatorOptions.selfDefending = false;
+            }
+
+            // Obfuscate the output.
+            output = obfuscateJavaScript(output, obfuscatorOptions);
+
+            // Save the obfuscated output to re-serve later.
+            $FileSystem.writeFileSync("", output);
+        }
+    } else {
+        output = $FileSystem.readFileSync(outputPath).toString();
+    }
+
+    // See https://stackoverflow.com/a/19524949/8060864.
+    const ipAddress: string =
+        (request.headers["x-forwarded-for"] as string || "").split(",").pop()
+        || request.connection.remoteAddress
+        || request.socket.remoteAddress
+        || "";
+
+    // Generate the user data to be sent with the output.
+    const sessionData: string = JSON.stringify({
+        doNotTrack: request.headers.dnt === "1",
+        headers: request.headers,
+        id: sessionID,
+        ip: ipAddress,
+        ipHub: await getIPHubData(ipAddress),
+        ipapi: await getIPAPIData(ipAddress),
+        isTorExitNode: await isTorExitNode(ipAddress),
+    });
+
+    // Return the encoded user data concatenated with the script to be served.
+    return (
+        `var data = "${
+            atob(xorEncode(
+                JSON.stringify(sessionData),
+                sessionID.split("").reverse().join(""),
+            ))
+        }";\n${
+            output
+        }`
+    );
+}
 
 export default class extends Endpoint {
     public mimeType = "text/javascript";
@@ -108,11 +168,10 @@ export default class extends Endpoint {
             return response.end(chromeLiteModeResponse);
         }
 
+        const sessionID: string = refererMatch[1];
+
         // Make sure that the session is valid in the database.
-        if (!await database.manager.count(
-            GatekeeperSession,
-            { sessionID: refererMatch.slice(1)[0] },
-        )) {
+        if (!await database.manager.count(GatekeeperSession, { sessionID })) {
             return dropConnection(request, response);
         }
 
@@ -122,14 +181,7 @@ export default class extends Endpoint {
             "no-cache, max-age=0, must-revalidate, no-store, no-transform",
         );
 
-        // Return the obfuscated response if needed.
-        if (configurations.obfuscate) {
-            // TODO: Check IE7 (doesn't like self-defense)
-            response.end(
-                obfuscate(source, defaultObfuscatorOptions).getObfuscatedCode(),
-            );
-        } else {
-            response.end(source);
-        }
+        // Return the JavaScript based on server configurations.
+        response.end(await generateScript(request, sessionID));
     }
 }
