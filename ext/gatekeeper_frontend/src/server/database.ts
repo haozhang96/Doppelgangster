@@ -1,52 +1,34 @@
 // Import internal components.
-import { serverRootDirectory } from "./paths";
+import { getModels } from "./entities";
 
-// Import external libraries.
+import * as $TypeORM from "typeorm";
+
+$TypeORM.createConnection();
+
+/*// Import external libraries.
 import * as $Waterline from "waterline";
-
-// Import built-in libraries.
-import * as $FileSystem from "fs";
-import * as $Path from "path";
 
 // Parse the database configurations from the environment variable.
 const configurations = JSON.parse(process.env.DATABASE || "");
 
-// Create and expose a Waterline instance.
+// Create a global Waterline instance to be used throughout the server
+//   singleton.
 // If you see any odd usages of "any" to override typings, this is due to
 //   @types/waterline being out-of-date relative to waterline.
-export const database: $Waterline.Waterline = new $Waterline.default();
+const database: $Waterline.Waterline = new $Waterline.default();
 
 // Expose the models that will be populated after initialization.
-export let models: $Waterline.Collection;
+export let models: { readonly [name: string]: $Waterline.Model; };
 
-// Load all the database models.
+// Load and register all the database models defined in /src/server/models.
 getModels().forEach((database as any).registerModel);
-
-/**
- * Return all the database models in /src/server/models.
- */
-function getModels(): $Waterline.CollectionClass[] {
-    const modelsDirectory: string =
-        $Path.resolve(serverRootDirectory, "models");
-
-    return $FileSystem.readdirSync(modelsDirectory).filter((file) =>
-        file.endsWith(".js"),
-    ).map((file) =>
-        require($Path.resolve(modelsDirectory, file)).default,
-    );
-}
 
 // Initialize the database using the provided configurations in the environment
 //   variables.
 database.initialize({
-    adapters: {
-        [configurations.adapter]: require("sails-" + configurations.adapter),
-    },
-
-    datastores: {
-        default: configurations,
-    },
-} as any, (error, ontology: any) => {
+    adapters: { [configurations.adapter]: require(configurations.adapter) },
+    datastores: { default: configurations },
+} as any, async (error, ontology) => {
     if (error) {
         console.error(
             "An error has occurred while initializing the database:",
@@ -55,6 +37,14 @@ database.initialize({
         return;
     }
 
-    console.log("Ontology:", ontology);
+    // Set a global reference to the retrieved models.
     models = ontology.collections;
-});
+
+    // Testing
+    console.log("Models:", models);
+    console.log(
+        await models.fingerprints.find({ userID: "147458853456314368" }),
+    );
+    await models.fingerprints.create({ userID: "12345", fingerprints: [] });
+    console.log(models.fingerprints);
+});*/

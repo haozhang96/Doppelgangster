@@ -1,5 +1,6 @@
 **/node_modules/
 **/dist/
 **/*.env
+**/ormconfig.json
+**/*.code-workspace
 logs/
-*.code-workspace

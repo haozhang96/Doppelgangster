@@ -1,5 +1,5 @@
 // Import internal components.
-import { database } from "./database";
+// import { models } from "./database";
 import { Endpoint, getEndpoints } from "./endpoint";
 
 // Import built-in libraries.
@@ -32,4 +32,4 @@ $HTTP.createServer((request, response) => {
     process.env.SERVER_PORT || 80,
 );
 
-console.log("Database:", database);
+// console.log("Database models:", models);

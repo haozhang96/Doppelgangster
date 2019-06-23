@@ -51,7 +51,13 @@ export class ProfileAnalysis extends Mix(Component)
                     score += analysis.score * analysis.weight;
                     threshold += analysis.weight;
                     /*this.doppelgangster.logger.debug(
-                        `Adding ${characteristic.name}: score: ${analysis.score}, weight: ${analysis.weight}`
+                        `Adding ${
+                            characteristic.name
+                        }: score: ${
+                            analysis.score
+                        }, weight: ${
+                            analysis.weight
+                        }`
                     );*/
                     examples.push(analysis);
                 }
