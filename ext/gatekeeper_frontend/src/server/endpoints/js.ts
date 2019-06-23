@@ -1,7 +1,8 @@
 // Import internal components.
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
-import { Fingerprints } from "../entities/fingerprints";
+import { Fingerprint } from "../entities/fingerprint";
+import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientRootDirectory } from "../paths";
 import { dropConnection } from "../utilities";
 
@@ -16,9 +17,9 @@ import * as $Path from "path";
 
 // Define configurations.
 const configurations = {
-    debugAlert: true,
-    forceRecompilation: false,
-    obfuscate: !!process.env.OBFUSCATE_JAVASCRIPT,
+    debugAlert: !!process.env.JS_DEBUG_ALERT || true,
+    forceRecompilation: !!process.env.JS_FORCE_RECOMPILE || false,
+    obfuscate: !!process.env.JS_OBFUSCATE,
 };
 
 // Define the default JavaScript obfuscator options.
@@ -59,12 +60,12 @@ const defaultObfuscatorOptions: any = {
 /*const refererRegex: RegExp =
     new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
 
-// Construct a response to handle requests made via Chrome Data Saver, which is
+// Construct a response to handle requests made via Chrome's Lite mode, which is
 //   unsupported.
-const chromeDataSaverResponse: string =
+const chromeLiteModeResponse: string =
     "window.onload = function () { "
     + "document.getElementById(\"content\").innerHTML = "
-    + "\"<div class=\\\"primary\\\">Disable Chrome's data saver.<\/div>"
+    + "\"<div class=\\\"primary\\\">Disable Chrome's Lite mode.<\/div>"
     + "<a class=\\\"secondary\\\" href="
     + "\\\"https:\\\/\\\/support.google.com\\\/chrome\\\/answer\\\/2392284\\\">"
     + "Find out how<\/a>\"; "
@@ -97,7 +98,7 @@ export default class extends Endpoint {
             return dropConnection(request, response);
         }
 
-        // Check if the request was made via Chrome Data Saver.
+        // Check if the request was made via Chrome Lite mode.
         if (
             request.headers.via === "1.1 Chrome-Compression-Proxy"
             && request.headers["save-data"] === "on"
@@ -105,24 +106,25 @@ export default class extends Endpoint {
                 request.headers["x-forwarded-for"] as string || "_",
             )
         ) {
-            return response.end(chromeDataSaverResponse);
+            return response.end(chromeLiteModeResponse);
         }
 
         // Retrieve the SHA-256 session ID from the referer URL.
         const sessionID: string = refererMatch.slice(1)[0];
+
+        // Make sure that the session ID is valid in the database.
+        if (!await database.manager.count(
+            GatekeeperSession,
+            { sessionID: refererMatch.slice(1)[0] },
+        )) {
+            return dropConnection(request, response);
+        }
 
         // Make sure that the client does not use cached responses.
         response.setHeader(
             "Cache-Control",
             "no-cache, max-age=0, must-revalidate, no-store, no-transform",
         );
-
-        // Check database to make sure that the session token is valid in the
-        //   database.
-        database.manager.findOne(
-            Fingerprints,
-            { userID: "147458853456314368" },
-        ).then(console.log);
 
         // Return the obfuscated response if needed.
         if (configurations.obfuscate) {
