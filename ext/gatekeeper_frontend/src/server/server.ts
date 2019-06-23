@@ -4,14 +4,12 @@ import { Endpoint, getEndpoints } from "./endpoint";
 // Import built-in libraries.
 import * as $HTTP from "http";
 
-// Import some application information from package.json.
-import { dependencies as application_dependencies } from "../../package.json";
-
 // Display runtime environment version information.
 console.log(`Runtime environment: Node.js v${
     process.version.slice(1)
 }, MongoDB v${
-    application_dependencies.mongodb.replace("^", "")
+    // tslint:disable-next-line: no-var-requires
+    require("../../package.json").dependencies.mongodb.replace("^", "")
 }`);
 
 // Enumerate all the defined endpoints.
