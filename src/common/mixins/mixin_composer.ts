@@ -38,7 +38,7 @@ export class MixInComposer<ClassT extends InstantiableClass> {
         // Keep a count of mix-ins waiting for initialization.
         const mixinsRemaining: number = this._count;
 
-        // tslint:disable-next-line:max-classes-per-file
+        // tslint:disable-next-line: max-classes-per-file
         return class extends this._Base {
             private _mixinsRemaining: number = mixinsRemaining;
 

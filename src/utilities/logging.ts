@@ -2,7 +2,7 @@
 import { ILogger } from "@/common/interfaces";
 
 // Define a basic console logger as the default global logger.
-// tslint:disable:no-console
+// tslint:disable: no-console
 const defaultLogger: ILogger = {
     debug: console.debug,
     error: console.error,
@@ -12,7 +12,7 @@ const defaultLogger: ILogger = {
     trace: console.trace,
     warn: console.warn,
 };
-// tslint:enable:no-console
+// tslint:enable: no-console
 
 /**
  * Define the interchangeable logger instance that will be used.
