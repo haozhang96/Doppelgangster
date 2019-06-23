@@ -177,7 +177,7 @@ export default class extends Endpoint {
         const sessionID: string = refererMatch[1];
 
         // Make sure that the session is valid in the database.
-        if (!await database.manager.count(GatekeeperSession, { sessionID })) {
+        if (!await database.count(GatekeeperSession, { sessionID })) {
             return dropConnection(request, response);
         }
 

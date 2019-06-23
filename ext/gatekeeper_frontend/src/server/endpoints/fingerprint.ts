@@ -39,11 +39,13 @@ export default class extends Endpoint {
         // Retrieve the SHA-256 session ID from the referer URL.
         const sessionID: string = refererMatch.slice(1)[0];
 
+        // TODO
         const sessions: GatekeeperSession[] =
-            await database.manager.find(GatekeeperSession, { sessionID });
+            await database.find(GatekeeperSession, { sessionID });
 
+        // TODO
         const fingerprints: Fingerprint[] =
-            await database.manager.find(Fingerprint, { userID });
+            await database.find(Fingerprint, { });
 
         // Make sure that the session is valid in the database, and that there
         //   is still room to store more fingerprints for the user.

@@ -5,11 +5,11 @@ import * as $TypeORM from "typeorm";
 //   since this is returned asynchronously, but it should be fine since the
 //   first usage of the database (i.e. when a user connects to the front-end)
 //   will most likely take longer than the initialization time.
-export let database: $TypeORM.Connection;
+export let database: $TypeORM.EntityManager;
 
 // Connect to the database and set the global reference.
 $TypeORM.createConnection().then((_database) => {
-    database = _database;
+    database = _database.manager;
     console.log("The database is ready.");
 }).catch((error) => {
     console.error(
