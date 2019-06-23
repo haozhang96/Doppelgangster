@@ -1,5 +1,7 @@
 // Import internal components.
+import { database } from "../database";
 import { Endpoint } from "../endpoint";
+import { Fingerprints } from "../entities/fingerprints";
 import { clientRootDirectory } from "../paths";
 import { dropConnection } from "../utilities";
 
@@ -117,6 +119,10 @@ export default class extends Endpoint {
 
         // Check database to make sure that the session token is valid in the
         //   database.
+        database.manager.findOne(
+            Fingerprints,
+            { userID: "147458853456314368" },
+        ).then(console.log);
 
         // Return the obfuscated response if needed.
         if (configurations.obfuscate) {
