@@ -61,22 +61,27 @@ async function generateScript(
     const inputPath: string = $Path.resolve(jsPath, "fingerprint.js");
     const outputPath: string = $Path.resolve(jsPath, "include.js");
 
-    // Determine the last modified dates of the input and output files.
-    const inputLastModified: Date = $FileSystem.statSync(inputPath).mtime;
-    const outputLastModified: Date = $FileSystem.statSync(outputPath).mtime;
-
     // Prepare to generate the output script to be served.
     let output: string;
 
     // Check if the script has already been generated and hasn't been updated.
-    if (inputLastModified > outputLastModified) {
+    if (
+        $FileSystem.existsSync(outputPath)
+        && (
+            $FileSystem.statSync(outputPath).mtime
+            > $FileSystem.statSync(inputPath).mtime
+        )
+    ) {
+        output = $FileSystem.readFileSync(outputPath).toString();
+    } else {
+        // Read all the library files.
         const libraries: string[] = libraryFileNames.map((file) =>
             $FileSystem.readFileSync(
                 $Path.resolve(jsPath, "libs", file),
             ).toString(),
         );
 
-        // Concatenate the libraries and the main script.
+        // Concatenate the libraries and the main script into the output.
         output =
             "window.onload = function () {\n"
             + libraries.join("\n")
@@ -102,8 +107,6 @@ async function generateScript(
             // Save the obfuscated output to re-serve later.
             $FileSystem.writeFileSync(outputPath, output);
         }
-    } else {
-        output = $FileSystem.readFileSync(outputPath).toString();
     }
 
     // See https://stackoverflow.com/a/19524949/8060864.
