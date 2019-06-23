@@ -4,6 +4,14 @@ import { Endpoint, getEndpoints } from "./endpoint";
 // Import built-in libraries.
 import * as $HTTP from "http";
 
+// Display runtime environment version information.
+console.log(`Runtime environment: Node.js v${
+    process.version.slice(1)
+}, MongoDB v${
+    // tslint:disable-next-line: no-var-requires
+    require("../../package.json").dependencies.mongodb.replace("^", "")
+}`);
+
 // Enumerate all the defined endpoints.
 const endpoints: readonly Endpoint[] = getEndpoints();
 
