@@ -3,9 +3,8 @@ import { getIPAPIData, getIPHubData, isTorExitNode } from "../data";
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
-import { obfuscateJavaScript } from "../obfuscator";
 import { clientUncompiledRootDirectory } from "../paths";
-import { dropConnection, xorEncode } from "../utilities";
+import { dropConnection, obfuscateJavaScript, xorEncode } from "../utilities";
 
 // Import built-in libraries.
 import * as $FileSystem from "fs";
