@@ -58,7 +58,7 @@ export default class extends Endpoint {
         request.on("data", (chunk) => {
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
-            if (request.socket.bytesRead > configurations.maxCount) {
+            if (request.socket.bytesRead > configurations.maxSize) {
                 return dropConnection(request, response);
             }
 

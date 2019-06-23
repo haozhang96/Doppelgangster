@@ -12,7 +12,7 @@ console.log(`Runtime environment: Node.js v${
     require("../../package.json").dependencies.mongodb.replace("^", "")
 }`);
 
-// Enumerate all the defined endpoints.
+// Enumerate all the available endpoints in /src/server/endpoints.
 const endpoints: readonly Endpoint[] = getEndpoints();
 
 // Create the server and listen on the port set in the environment variable.

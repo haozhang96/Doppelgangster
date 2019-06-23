@@ -18,7 +18,7 @@ import * as $Path from "path";
 const configurations = {
     debugAlert: !!process.env.JS_DEBUG_ALERT || true,
     forceRecompilation: !!process.env.JS_FORCE_RECOMPILE || false,
-    obfuscate: !!process.env.JS_OBFUSCATE,
+    obfuscate: !!process.env.JS_OBFUSCATE || true,
 };
 
 // Define the default JavaScript obfuscator options.
