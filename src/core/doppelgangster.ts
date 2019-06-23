@@ -18,8 +18,11 @@ import * as ControllerConfigs from "?/controllers";
 import * as DiscordConfigs from "?/discord";
 import * as Configs from "?/doppelgangster";
 
-// Import the application version from package.json.
-import { version as application_version } from "@/../package.json";
+// Import some application information from package.json.
+import {
+    dependencies as application_dependencies,
+    version as application_version,
+} from "@/../package.json";
 
 /**
  * TODO
@@ -71,6 +74,8 @@ export class Doppelgangster extends Mix(EventEmitter)
             process.version.slice(1)
         }, discord.js v${
             $Discord.version
+        }, MongoDB v${
+            application_dependencies.mongodb.replace("^", "")
         }`);
         this.logger.info("Initializing Doppelgangster...");
 

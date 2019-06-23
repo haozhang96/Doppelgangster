@@ -23,6 +23,8 @@
         "watch": true,
         "removeComments": true,
         "forceConsistentCasingInFileNames": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         
         // Type-checking options
         "strict": true,
