@@ -1,7 +1,6 @@
 // Import internal components.
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
-import { Fingerprint } from "../entities/fingerprint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientRootDirectory } from "../paths";
 import { dropConnection } from "../utilities";
@@ -109,10 +108,7 @@ export default class extends Endpoint {
             return response.end(chromeLiteModeResponse);
         }
 
-        // Retrieve the SHA-256 session ID from the referer URL.
-        const sessionID: string = refererMatch.slice(1)[0];
-
-        // Make sure that the session ID is valid in the database.
+        // Make sure that the session is valid in the database.
         if (!await database.manager.count(
             GatekeeperSession,
             { sessionID: refererMatch.slice(1)[0] },

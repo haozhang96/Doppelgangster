@@ -1,5 +1,8 @@
 // Import internal components.
+import { database } from "../database";
 import { Endpoint } from "../endpoint";
+import { Fingerprint } from "../entities/fingerprint";
+import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { dropConnection } from "../utilities";
 
 // Import built-in libraries.
@@ -13,7 +16,7 @@ const configurations = {
 
 export default class extends Endpoint {
     public method = "POST";
-    protected url = "/verify";
+    protected url = "/verify"; // :^)
 
     public async handle(
         request: $HTTP.IncomingMessage,
@@ -36,11 +39,23 @@ export default class extends Endpoint {
         // Retrieve the SHA-256 session ID from the referer URL.
         const sessionID: string = refererMatch.slice(1)[0];
 
+        const sessions: GatekeeperSession[] =
+            await database.manager.find(GatekeeperSession, { sessionID });
+
+        const fingerprints: Fingerprint[] =
+            await database.manager.find(Fingerprint, { userID });
+
+        // Make sure that the session is valid in the database, and that there
+        //   is still room to store more fingerprints for the user.
+        if (
+            sessions.length === 0
+            || fingerprints.length === configurations.maxCount
+        ) {
+            return dropConnection(request, response);
+        }
+
         const chunks: Uint8Array[] = [];
         request.on("data", (chunk) => {
-            // TODO: Check max fingerprint count
-            
-
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
             if (request.socket.bytesRead > configurations.maxCount) {
