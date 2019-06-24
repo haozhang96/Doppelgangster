@@ -1,5 +1,5 @@
 // Import external libraries.
-import * as $JavaScriptObfuscator from "javascript-obfuscator";
+import JavaScriptObfuscator from "javascript-obfuscator";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
@@ -57,7 +57,7 @@ export function dropConnection(
  *   with
  */
 export function obfuscateJavaScript(code: string, options?: object): string {
-    return $JavaScriptObfuscator.obfuscate(
+    return JavaScriptObfuscator.obfuscate(
         code,
         {...defaultJavaScriptObfuscatorOptions, ...options},
     ).getObfuscatedCode();
@@ -78,7 +78,7 @@ export function xorEncode(input: string, key: string): string {
         output.push(
             String.fromCharCode(
                 // tslint:disable-next-line: no-bitwise
-                input[i].charCodeAt(0) ^ key[i % keyLength].charCodeAt(0),
+                input.charCodeAt(i) ^ key[i % keyLength].charCodeAt(0),
             ),
         );
     }

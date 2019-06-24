@@ -48,8 +48,8 @@ const chromeLiteModeResponse: string =
 
 /**
  * Generate the main include script to be served for the given request.
- * @param request 
- * @param sessionID 
+ * @param request An active HTTP incoming message request to serve the script to
+ * @param sessionID The session ID of the request
  */
 async function generateScript(
     request: $HTTP.IncomingMessage,
@@ -119,20 +119,20 @@ async function generateScript(
     const userData = {
         doNotTrack: request.headers.dnt === "1",
         headers: request.headers,
-        id: sessionID,
         ip: ipAddress,
         ipHub: await getIPHubData(ipAddress),
         ipapi: await getIPAPIData(ipAddress),
         isTorExitNode: await isTorExitNode(ipAddress),
+        sessionID,
     };
 
     // Return the encoded user data concatenated with the script to be served.
     return (
         `var data = "${
-            atob(xorEncode(
+            Buffer.from(xorEncode(
                 JSON.stringify(userData),
                 sessionID.split("").reverse().join(""), // :^)
-            ))
+            ), "binary").toString("base64")
         }";\n${
             output
         }`
@@ -176,9 +176,9 @@ export default class extends Endpoint {
         const sessionID: string = refererMatch[1];
 
         // Make sure that the session is valid in the database.
-        if (!await database.count(GatekeeperSession, { sessionID })) {
+        /*if (!await database.count(GatekeeperSession, { sessionID })) {
             return dropConnection(request, response);
-        }
+        }*/
 
         // Make sure that the client does not use cached responses.
         response.setHeader(

@@ -1,50 +1,115 @@
-// ClientRects: https://browserleaks.com/rects
+/**
+ * Note that this script has been purposely written using ES3-/ES5-compatible
+ *   syntax for good compatibility without requiring additional transpilation.
+ * 
+ * Future references:
+ * - ClientRects: https://browserleaks.com/rects
+ */
 
-http = function (options) {
-	var request = window.XMLHttpRequest ? new XMLHttpRequest() : window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : undefined;
-	if (typeof options.parameters === "object") {
-		var objectKeys = Object.keys || objectKeys || function(){"use strict";var t=Object.prototype.hasOwnProperty,r=!{toString:null}.propertyIsEnumerable("toString"),e=["toString","toLocaleString","valueOf","hasOwnProperty","isPrototypeOf","propertyIsEnumerable","constructor"],o=e.length;return function(n){if("function"!=typeof n&&("object"!=typeof n||null===n))throw new TypeError("Object.keys called on non-object");var c,l,p=[];for(c in n)t.call(n,c)&&p.push(c);if(r)for(l=0;l<o;l++)t.call(n,e[l])&&p.push(e[l]);return p}}(), serializer = function (key) {
-			return key + "=" + (typeof this[1][key] === "object" ? objectKeys(this[1][key]).map(this[0].bind([this[0], this[1][key]])) : encodeURIComponent(this[1][key]));
-		};
-		options.parameters = objectKeys(options.parameters).map(serializer.bind([serializer, options.parameters])).join("&");
+/**
+ * 
+ * @param {Object} options 
+ */
+function http(options) {
+	// Create a HTTP request.
+	var request = (
+		window.XMLHttpRequest ?
+			new XMLHttpRequest()
+		: window.ActiveXObject ?
+			new ActiveXObject("Microsoft.XMLHTTP")
+		: // Edge case; will be handled below
+			undefined
+	);
+
+	// Build the parameters.
+	var parameters = options.parameters;
+	if (typeof parameters === "object") {
+		parameters = Object.keys(parameters).map(function (key) {
+			return key + "=" + encodeURIComponent(parameters[key])
+		}).join("&");
 	}
-	var url = options.parameters ? options.url + "?" + options.parameters : options.url;
+
+	// Build the URL.
+	var url = parameters ? options.url + "?" + parameters : options.url;
+
+	// Make the request.
 	if (request) {
-		request.open(options.method || "GET", url, !options.synchronous); // Must open before setting options.timeout to avoid InvalidStateError in IE
-		if (options.options && window.XMLHttpRequest && request instanceof XMLHttpRequest)
-			for (var option in options.options)
+		// The request must be open before setting options.timeout to avoid
+		//   InvalidStateError in IE.
+		request.open(options.method || "GET", url, !options.synchronous);
+
+		// Make sure to only set the options if we are using native
+		//   XMLHttpRequest or else IE might throw a fit for attempting to
+		//   modify an ActiveX object.
+		if (
+			options.options
+			&& typeof XMLHttpRequest === "object"
+			&& request instanceof XMLHttpRequest
+		) {
+			for (var option in options.options) {
 				request[option] = options.options[option];
-		if (options.headers)
-			for (var header in options.headers)
+			}
+		}
+
+		// Set the request headers.
+		if (options.headers) {
+			for (var header in options.headers) {
 				request.setRequestHeader(header, options.headers[header]);
+			}
+		}
+
+		// Send the request and return the response text if requested.
 		request.send(options.data);
 		return options.synchronous ? request.responseText : request;
-	} else document.createElement("img").src = url;
+	} else if (options.method.toUpperCase() === "GET") {
+		// Use an embedded image to make the GET request.
+		document.createElement("img").src = url;
+	}
 };
 
-generateCode = function (reCAPTCHAresponse) {
-	if (reCAPTCHAresponse = reCAPTCHAresponse || grecaptcha.getResponse())
-		http({
-			url: "Public/GenerateCode.php",
-			parameters: { id: data.id, reCAPTCHA: reCAPTCHAresponse },
-			options: {
-				onload: function () {
-					var response = this.responseText;
-					fingerprinting.then(function () {
-						document.getElementById("content").innerHTML = "<div class=\"primary\" oncopy=\"setTimeout(window.open(location, '_self').close.bind(window), 0)\">" + (response || "Invalid server response.") + "</div>";
-					});
+/**
+ * 
+ * @param {String} reCAPTCHAresponse 
+ */
+function verify(reCAPTCHAresponse) {
+	if (reCAPTCHAresponse = reCAPTCHAresponse || grecaptcha.getResponse()) {
+		fingerprinting.then(function (fingerprintString) {
+			http({
+				url: "verify",
+				parameters: {
+					sessionID: data.sessionID,
+					reCAPTCHAresponse: reCAPTCHAresponse,
+					data: fingerprintString
+				},
+				options: {
+					onload: window.close
 				}
-			}
+			});
 		});
+	}
 };
 
-var data = JSON.parse((function (input, key) { // Keep data in the outer scope for generateCode
-	for (var output = [], input_len = input.length, key_len = key.length, index = 0; index < input_len; index++)
-		output.push(String.fromCharCode(input.charCodeAt(index) ^ key.substr(index % key_len, 1).charCodeAt(0)));
+// Keep data in the outer scope for verify() to find.
+var data = JSON.parse((function (input, key) {
+	var output = [], inputLength = input.length, keyLength = key.length;
+
+	for (var i = 0; i < inputLength; i++) {
+		output.push(
+			String.fromCharCode(
+				input.charCodeAt(i) ^ key.substr(i % keyLength, 1).charCodeAt(0)
+			)
+		);
+	}
+
 	return output.join("");
-})(atob(window.data), location.href.match(/[a-z0-9]{64}$/).pop().split("").reverse().join("")));
+})(
+	atob(window.data),
+	location.href.match(/[a-z0-9]{64}$/).pop().split("").reverse().join("")
+));
+alert(JSON.stringify(data))
 
 var fingerprinting = new Promise(function (finishFingerprinting) {
+	// Force the fingerprinting to finish within 10 seconds.
 	setTimeout(finishFingerprinting, 10000);
 	
 	var asyncFingerprints = [], fingerprint = {
@@ -61,12 +126,26 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 			
 			gpu: window.HTMLCanvasElement ? (function () {
 				try {
-					var canvas = document.body.appendChild(document.createElement("canvas")), context = canvas.getContext("experimental-webgl");
-					var extension = context.getExtension("WEBGL_debug_renderer_info"), renderer = context.getParameter(extension.UNMASKED_RENDERER_WEBGL);
+					var canvas = document.body.appendChild(
+						document.createElement("canvas")
+					);
+					var context = canvas.getContext("experimental-webgl");
+					var extension =
+						context.getExtension("WEBGL_debug_renderer_info");
+					var renderer =
+						context.getParameter(extension.UNMASKED_RENDERER_WEBGL);
 					
 					return canvas.parentNode.removeChild(canvas) && {
-						renderer: renderer.match(/^ANGLE/) ? renderer.slice(7, -1) : renderer,
-						vendor: context.getParameter(extension.UNMASKED_VENDOR_WEBGL)
+						renderer: (
+							renderer.match(/^ANGLE/) ?
+								renderer.slice(7, -1)
+							:
+								renderer
+						),
+
+						vendor: context.getParameter(
+							extension.UNMASKED_VENDOR_WEBGL
+						)
 					};
 				} catch (_) { }
 			})() : undefined,
@@ -77,7 +156,9 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 				colorDepth: screen.colorDepth
 			},
 			
-			battery: asyncFingerprints.push(navigator.getBattery ? navigator.getBattery() : undefined),
+			battery: asyncFingerprints.push(
+				navigator.getBattery ? navigator.getBattery() : undefined
+			),
 			memory: navigator.deviceMemory,
 			manufacturer: platform.manufacturer || undefined,
 			time: new Date().toJSON(),
@@ -89,10 +170,25 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 			name: platform.name,
 			version: platform.version,
 			engine: platform.layout,
-			languages: navigator.languages || (navigator.language ? [navigator.language] : undefined),
+			languages: navigator.languages || (
+				navigator.language ? [navigator.language] : undefined
+			),
 			// performanceTimings: window.performance && performance.timing.toJSON ? performance.timing.toJSON() : undefined,
-			hasVisitedBefore: !!((window.localStorage && (localStorage.getItem("") || localStorage.setItem("", true))) || (document.cookie = !!document.cookie)),
-			doNotTrack: navigator.doNotTrack === "1" || data.doNotTrack || data.headers.Dnt === "1"
+			hasVisitedBefore: !!(
+				(
+					window.localStorage
+					&& (
+						localStorage.getItem("")
+						|| localStorage.setItem("", true)
+					)
+				)
+				|| (document.cookie = !!document.cookie)
+			),
+			doNotTrack: (
+				navigator.doNotTrack === "1"
+				|| data.doNotTrack
+				|| data.headers.Dnt === "1"
+			)
 		},
 		
 		connection: {
@@ -127,7 +223,9 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 	// WebRTC IP address leaks
 	asyncFingerprints.push(new Promise(function (resolve) {
 		var ipAddresses = [];
-		try { webRTCIPs(function (ipAddress) { ipAddresses.push(ipAddress); }); } catch (_) { } // Edge is dumb and doesn't like finally
+		try {
+			webRTCIPs(function (ipAddress) { ipAddresses.push(ipAddress); });
+		} catch (_) { } // Edge is dumb and doesn't like finally
 		setTimeout(function () { resolve(ipAddresses); }, 3000);
 	}));
 	
@@ -170,49 +268,48 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 	
 	// Wait for async fingerprints
 	Promise.all(asyncFingerprints).then(function (fulfilledAsyncFingerprints) {
-		// Remove unnecessary elements to keep window content bounded
-		for (var elements = document.body.children, reCAPTCHAcomponent = document.querySelector(".g-recaptcha-bubble-arrow"), index = 1; index < elements.length; index++)
-			if (!reCAPTCHAcomponent || !elements[index].contains(reCAPTCHAcomponent))
+		// Remove unnecessary elements to keep window content bounded.
+		var elements = document.body.children;
+		var reCAPTCHAcomponent =
+			document.querySelector(".g-recaptcha-bubble-arrow");
+		for (var index = 1; index < elements.length; index++) {
+			if (!reCAPTCHAcomponent || !elements[index].contains(reCAPTCHAcomponent)) {
 				document.body.removeChild(elements[index]);
+			}
+		}
+
+		// Populate the battery information.
+		fingerprint.system.battery = (
+			fulfilledAsyncFingerprints[0] ?
+				{
+					charging: fulfilledAsyncFingerprints[0].charging,
+					level: fulfilledAsyncFingerprints[0].level
+				}
+			:
+				undefined
+		);
 		
-		with (fingerprint) {
-			// Battery
-			system.battery = fulfilledAsyncFingerprints[0] ? { charging: fulfilledAsyncFingerprints[0].charging, level: fulfilledAsyncFingerprints[0].level } : undefined;
+		with (fingerprint.connection) {
+			// WebRTC IP addresses
+			if (fulfilledAsyncFingerprints[1].length) {
+				for (var index in fulfilledAsyncFingerprints[1]) {
+					(fulfilledAsyncFingerprints[1][index].match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/) ? (ipAddresses.internal || (ipAddresses.internal = [])) : ipAddresses.external).push(fulfilledAsyncFingerprints[1][index]);
+				}
+			}
 			
-			with (connection) {
-				// WebRTC IP addresses
-				if (fulfilledAsyncFingerprints[1].length)
-					for (var index in fulfilledAsyncFingerprints[1])
-						(fulfilledAsyncFingerprints[1][index].match(/^(192\.168\.|169\.254\.|10\.|172\.(1[6-9]|2\d|3[01]))/) ? (ipAddresses.internal || (ipAddresses.internal = [])) : ipAddresses.external).push(fulfilledAsyncFingerprints[1][index]);
-				
-				// Remove duplicate IP addresses
-				ipAddresses.external = ipAddresses.external.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
-				if (ipAddresses.internal)
-					ipAddresses.internal = ipAddresses.internal.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
+			// Remove duplicate IP addresses
+			ipAddresses.external = ipAddresses.external.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
+			if (ipAddresses.internal) {
+				ipAddresses.internal = ipAddresses.internal.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
 			}
 		}
 		
 		// Send data
 		var fingerprintString = JSON.stringify(fingerprint);
+		finishFingerprinting(fingerprintString);
 		alert(fingerprintString);
-		http({
-			method: "POST",
-			url: "Public/Fingerprint.php",
-			parameters: { id: data.id },
-			data: fingerprintString,
-			options: { onload: finishFingerprinting, onerror: finishFingerprinting }
-		});
-		/*http({
-			method: "POST",
-			url: "Test.php",
-			data: fingerprintString,
-			options: {
-				onload: function () {
-					alert(this.responseText);
-				}
-			}
-		});*/
 	});
 });
 
-document.querySelector(".g-recaptcha").style.display = "inline-block"; // Show reCAPTCHA box
+// Show the reCAPTCHA box.
+document.querySelector(".g-recaptcha").style.display = "inline-block";
