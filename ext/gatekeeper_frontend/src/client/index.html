@@ -15,7 +15,7 @@
                         verify(grecaptcha.getResponse());
                     } else if (new Date() - started >= 5000) {
                         clearInterval(poll);
-                        document.getElementById("content").innerHTML = "<div class=\"primary\">Failed to retrieve code.<\/div><a class=\"secondary\" href=\"javascript: location.reload(true)\">Reload Page<\/a>";
+                        document.getElementById("content").innerHTML = "<div class=\"primary\">Failed to load scripts.<\/div><a class=\"secondary\" href=\"javascript: location.reload(true)\">Reload Page<\/a>";
                     }
                 }, 10);
             }; return _this; })();

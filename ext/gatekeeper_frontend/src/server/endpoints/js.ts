@@ -4,7 +4,9 @@ import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientUncompiledRootDirectory } from "../paths";
-import { dropConnection, obfuscateJavaScript, xorEncode } from "../utilities";
+import {
+    dropConnection, getRequestIPAddress, obfuscateJavaScript, xorCipher,
+} from "../utilities";
 
 // Import built-in libraries.
 import * as $FileSystem from "fs";
@@ -14,9 +16,9 @@ import * as $Path from "path";
 
 // Define configurations.
 const configurations = {
-    debugAlert: !!process.env.JS_DEBUG_ALERT || true,
-    forceRecompilation: !!process.env.JS_FORCE_RECOMPILE || false,
-    obfuscate: !!process.env.JS_OBFUSCATE || true,
+    debugAlert: JSON.parse(process.env.JS_DEBUG_ALERT || "true"),
+    forceRecompilation: JSON.parse(process.env.JS_FORCE_RECOMPILE || "false"),
+    obfuscate: JSON.parse(process.env.JS_OBFUSCATE || "true"),
 };
 
 // Define the list of libraries located in /src/client/js/libs to concatenate
@@ -35,16 +37,24 @@ const libraryFileNames: string[] = [
 /*const refererRegex: RegExp =
     new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
 
+// Construct a response to handle invalid requests.
+const invalidRequestResponse: string = (
+    "window.onload = function () { "
+    + "document.getElementById(\"content\").innerHTML = "
+    + "\"<div class=\\\"primary\\\">Invalid request.<\/div>\"; }"
+);
+
 // Construct a response to handle requests made via Chrome's Lite mode, which is
 //   unsupported.
-const chromeLiteModeResponse: string =
+const chromeLiteModeResponse: string = (
     "window.onload = function () { "
     + "document.getElementById(\"content\").innerHTML = "
     + "\"<div class=\\\"primary\\\">Disable Chrome's Lite mode.<\/div>"
     + "<a class=\\\"secondary\\\" href="
     + "\\\"https:\\\/\\\/support.google.com\\\/chrome\\\/answer\\\/2392284\\\">"
     + "Find out how<\/a>\"; "
-    + "}";
+    + "}"
+);
 
 /**
  * Generate the main include script to be served for the given request.
@@ -63,9 +73,11 @@ async function generateScript(
     // Prepare to generate the output script to be served.
     let output: string;
 
-    // Check if the script has already been generated and hasn't been updated.
+    // If the script isn't forced to be recompiled, has already been generated,
+    //   and hasn't been updated, then simply serve the old generated file.
     if (
-        $FileSystem.existsSync(outputPath)
+        !configurations.forceRecompilation
+        && $FileSystem.existsSync(outputPath)
         && (
             $FileSystem.statSync(outputPath).mtime
             > $FileSystem.statSync(inputPath).mtime
@@ -81,11 +93,22 @@ async function generateScript(
         );
 
         // Concatenate the libraries and the main script into the output.
-        output =
+        output = (
             "window.onload = function () {\n"
             + libraries.join("\n")
             + $FileSystem.readFileSync(inputPath).toString()
-            + "\n};";
+            + "\n};"
+        );
+
+        // Wrap the code in a debug alert if configured.
+        if (configurations.debugAlert) {
+            output = (
+                "try {\n" + output + "\n} catch (error) { "
+                + "alert(error.name + \": \" + error.message + "
+                + "(error.stack ? \"\\n\\nStack: \" + error.stack : \"\")"
+                + "); throw error; }"
+            );
+        }
 
         // Obfuscate the output if required.
         if (configurations.obfuscate) {
@@ -108,12 +131,8 @@ async function generateScript(
         }
     }
 
-    // See https://stackoverflow.com/a/19524949/8060864.
-    const ipAddress: string =
-        (request.headers["x-forwarded-for"] as string || "").split(",").pop()
-        || request.connection.remoteAddress
-        || request.socket.remoteAddress
-        || "";
+    // Get the request's IP address.
+    const ipAddress: string = await getRequestIPAddress(request);
 
     // Generate the user data to be sent with the output.
     const userData = {
@@ -129,7 +148,7 @@ async function generateScript(
     // Return the encoded user data concatenated with the script to be served.
     return (
         `var data = "${
-            Buffer.from(xorEncode(
+            Buffer.from(xorCipher(
                 JSON.stringify(userData),
                 sessionID.split("").reverse().join(""), // :^)
             ), "binary").toString("base64")
@@ -147,6 +166,7 @@ export default class extends Endpoint {
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
+        console.log("IP:", await getRequestIPAddress(request));
         console.log("Host:", request.headers.host);
         console.log("Referer:", request.headers.referer);
 
@@ -177,7 +197,8 @@ export default class extends Endpoint {
 
         // Make sure that the session is valid in the database.
         /*if (!await database.count(GatekeeperSession, { sessionID })) {
-            return dropConnection(request, response);
+            // return dropConnection(request, response);
+            return response.end(invalidRequestResponse);
         }*/
 
         // Make sure that the client does not use cached responses.

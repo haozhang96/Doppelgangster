@@ -7,8 +7,8 @@
  */
 
 /**
- * 
- * @param {Object} options 
+ * Make a HTTP request with the given options.
+ * @param {Object} options
  */
 function http(options) {
 	// Create a HTTP request.
@@ -43,7 +43,7 @@ function http(options) {
 		//   modify an ActiveX object.
 		if (
 			options.options
-			&& typeof XMLHttpRequest === "object"
+			&& window.XMLHttpRequest
 			&& request instanceof XMLHttpRequest
 		) {
 			for (var option in options.options) {
@@ -69,44 +69,77 @@ function http(options) {
 
 /**
  * 
+ * @param {*} input 
+ * @param {*} key 
+ */
+function xorCipher(input, key) {
+	var output = [], inputLength = input.length, keyLength = key.length;
+	for (var i = 0; i < inputLength; i++) {
+		output.push(
+			String.fromCharCode(
+				input.charCodeAt(i) ^ key.charCodeAt(i % keyLength)
+			)
+		);
+	}
+	return output.join("");
+}
+
+function showMessage(message, showReload) {
+	document.getElementById("content").innerHTML = (
+		"<div class=\"primary\">"
+		+ (message || "Verification failed.")
+		+ "<\/div>"
+		+ (
+			showReload ?
+				"<a class=\"secondary\" "
+				+ "href=\"javascript: location.reload(true)\">"
+				+ "Reload Page<\/a>"
+			:
+				""
+		)
+	);
+}
+
+/**
+ * 
+ * Note that this must be defined using the "var = function () {...}" syntax
+ *   to overwrite the default one.
  * @param {String} reCAPTCHAresponse 
  */
-function verify(reCAPTCHAresponse) {
+verify = function (reCAPTCHAresponse) {
 	if (reCAPTCHAresponse = reCAPTCHAresponse || grecaptcha.getResponse()) {
-		fingerprinting.then(function (fingerprintString) {
+		showMessage("Verifying...");
+		fingerprinting.then(function (fingerprint) {
 			http({
 				url: "verify",
-				parameters: {
+				method: "POST",
+				data: btoa(xorCipher(JSON.stringify({
 					sessionID: data.sessionID,
 					reCAPTCHAresponse: reCAPTCHAresponse,
-					data: fingerprintString
-				},
+					data: fingerprint
+				}), key)),
 				options: {
-					onload: window.close
+					onload: function () {
+						if (this.status === 200) {
+							showMessage("Verification successful.");
+						} else {
+							showMessage("Verification failed.", true);
+						}
+					},
+					onerror: function () {
+						showMessage("Verification failed.", true);
+					}
 				}
 			});
 		});
 	}
 };
 
-// Keep data in the outer scope for verify() to find.
-var data = JSON.parse((function (input, key) {
-	var output = [], inputLength = input.length, keyLength = key.length;
-
-	for (var i = 0; i < inputLength; i++) {
-		output.push(
-			String.fromCharCode(
-				input.charCodeAt(i) ^ key.substr(i % keyLength, 1).charCodeAt(0)
-			)
-		);
-	}
-
-	return output.join("");
-})(
-	atob(window.data),
-	location.href.match(/[a-z0-9]{64}$/).pop().split("").reverse().join("")
-));
-alert(JSON.stringify(data))
+// Keep data in the outer scope for other components to find.
+var key = location.href.match(/[a-z0-9]{64}$/)[0].split("").reverse().join("");
+var data = JSON.parse(xorCipher(atob(window.data), key));
+//console.log(JSON.stringify(data));
+//alert(JSON.stringify(data))
 
 var fingerprinting = new Promise(function (finishFingerprinting) {
 	// Force the fingerprinting to finish within 10 seconds.
@@ -210,8 +243,8 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 				},
 				timezone: {
 					region: data.ipapi.timezone,
-					utcOffset: (data.ipapi.utc_offset.slice(0, 1) === "-" ? -1 : 1) * (data.ipapi.utc_offset.substr(-4, 2) * 60 + +data.ipapi.utc_offset.substr(-2, 2)),
-					matchesSystem: (data.ipapi.utc_offset.slice(0, 1) === "-" ? -1 : 1) * (data.ipapi.utc_offset.substr(-4, 2) * 60 + +data.ipapi.utc_offset.substr(-2, 2)) === -new Date().getTimezoneOffset() // getTimezoneOffset uses local time as reference instead of UTC time
+					utcOffset: data.ipapi.utc_offset ? (data.ipapi.utc_offset.slice(0, 1) === "-" ? -1 : 1) * (data.ipapi.utc_offset.substr(-4, 2) * 60 + +data.ipapi.utc_offset.substr(-2, 2)) : undefined,
+					matchesSystem: data.ipapi.utc_offset ? (data.ipapi.utc_offset.slice(0, 1) === "-" ? -1 : 1) * (data.ipapi.utc_offset.substr(-4, 2) * 60 + +data.ipapi.utc_offset.substr(-2, 2)) === -new Date().getTimezoneOffset() : undefined // getTimezoneOffset uses local time as reference instead of UTC time
 				}
 			} : undefined,
 			latency: window.performance && performance.timing.responseStart !== performance.timing.requestStart ? performance.timing.responseStart - performance.timing.requestStart : undefined
@@ -305,9 +338,8 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 		}
 		
 		// Send data
-		var fingerprintString = JSON.stringify(fingerprint);
-		finishFingerprinting(fingerprintString);
-		alert(fingerprintString);
+		finishFingerprinting(fingerprint);
+		alert(JSON.stringify(fingerprint));
 	});
 });
 

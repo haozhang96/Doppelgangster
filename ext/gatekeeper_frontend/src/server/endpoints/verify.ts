@@ -1,9 +1,10 @@
 // Import internal components.
+import { verifyReCAPTCHA } from "../data/recaptcha";
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { Fingerprint } from "../entities/fingerprint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
-import { dropConnection } from "../utilities";
+import { dropConnection, getRequestIPAddress, xorCipher } from "../utilities";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
@@ -16,14 +17,13 @@ const configurations = {
 
 export default class extends Endpoint {
     public method = "POST";
-    protected url = "/verify"; // :^)
+    protected url = "/verify";
 
     public async handle(
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
-        console.log("Host:", request.headers.host);
-        console.log("Referer:", request.headers.referer);
+        console.log("in");
 
         // Attempt to match the required referer URL format.
         const refererMatch: RegExpMatchArray | null =
@@ -37,10 +37,10 @@ export default class extends Endpoint {
         }
 
         // Retrieve the SHA-256 session ID from the referer URL.
-        const sessionID: string = refererMatch.slice(1)[0];
+        const sessionID: string = refererMatch[1];
 
         // TODO
-        const sessions: GatekeeperSession[] =
+        /*const sessions: GatekeeperSession[] =
             await database.find(GatekeeperSession, { sessionID });
 
         // TODO
@@ -54,7 +54,7 @@ export default class extends Endpoint {
             || fingerprints.length === configurations.maxCount
         ) {
             return dropConnection(request, response);
-        }
+        }*/
 
         const chunks: Uint8Array[] = [];
         request.on("data", (chunk) => {
@@ -64,15 +64,38 @@ export default class extends Endpoint {
                 return dropConnection(request, response);
             }
 
+            console.log("Reading chunk");
             chunks.push(chunk);
-        }).on("end", () => {
-            // Add the fingerprint to the database.
+        }).on("end", async () => {
+            console.log("Read " + request.socket.bytesRead + " bytes");
             try {
-                const fingerprint =
-                    JSON.parse(Buffer.concat(chunks).toString());
-                response.end(JSON.stringify(fingerprint));
+                // Reconstruct the data from the encoded POST body.
+                const data = JSON.parse(xorCipher(
+                    Buffer.from(
+                        Buffer.concat(chunks).toString(),
+                        "base64",
+                    ).toString(),
+                    sessionID.split("").reverse().join(""), // :^)
+                ));
+
+                // Make sure that the reCAPTCHA response is valid.
+                if (
+                    data.sessionID !== sessionID
+                    || !verifyReCAPTCHA(
+                        data.reCAPTCHAresponse,
+                        await getRequestIPAddress(request),
+                    )
+                ) {
+                    return dropConnection(request, response);
+                }
+
+                const fingerprint = data.data;
+                console.log("Fingerprint:", fingerprint);
+
+                response.end(JSON.stringify(data));
             } catch (error) {
                 console.error("Fingerprint error:", error);
+                return dropConnection(request, response);
             }
         });
     }

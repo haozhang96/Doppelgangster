@@ -1,5 +1,6 @@
 // Import external libraries.
 import JavaScriptObfuscator from "javascript-obfuscator";
+import * as $Request from "request";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
@@ -44,9 +45,48 @@ export function dropConnection(
     request: $HTTP.IncomingMessage,
     response: $HTTP.ServerResponse,
 ): void {
+    console.log("Dropping connection from " + request.connection.remoteAddress);
     response.statusCode = 403;
     response.end();
     request.destroy();
+}
+
+/**
+ * Return the IP address of a HTTP request.
+ * See https://stackoverflow.com/a/19524949/8060864.
+ * @param request The HTTP request to retrieve the IP address of
+ */
+export async function getRequestIPAddress(
+    request: $HTTP.IncomingMessage,
+): Promise<string> {
+    const localIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
+    const ipAddress: string = request.connection.remoteAddress || "";
+
+    if (localIPAddresses.includes(ipAddress)) {
+        // For local machine requests, try to resolve the external IP address.
+        return getExternalIPAddress();
+    } else {
+        return (
+            (request.headers["x-forwarded-for"] as string).split(",").pop()
+            || request.socket.remoteAddress
+            || ipAddress
+        );
+    }
+}
+
+export async function getExternalIPAddress(): Promise<string> {
+    return new Promise((resolve) => {
+        $Request.get(
+            "https://api.ipify.org", // https://ipv4.icanhazip.com
+            (error, response) => {
+                if (error || response.statusCode !== 200) {
+                    resolve("127.0.0.1");
+                }
+
+                resolve(response.body);
+            },
+        );
+    });
 }
 
 /**
@@ -69,7 +109,7 @@ export function obfuscateJavaScript(code: string, options?: object): string {
  * @param input 
  * @param key 
  */
-export function xorEncode(input: string, key: string): string {
+export function xorCipher(input: string, key: string): string {
     const inputLength: number = input.length;
     const keyLength: number = key.length;
     const output: string[] = [];

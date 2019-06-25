@@ -4,7 +4,7 @@ import * as $Request from "request";
 export function isTorExitNode(ipAddress: string): Promise<boolean> {
     // TODO: Cache the file
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         $Request.get(
             (
                 "http://torstatus.blutmagie.de/ip_list_exit.php/"
@@ -12,7 +12,7 @@ export function isTorExitNode(ipAddress: string): Promise<boolean> {
             ),
             (error, response) => {
                 if (error || response.statusCode !== 200) {
-                    reject(false);
+                    resolve(false);
                 }
 
                 resolve((response.body as string).includes(ipAddress));
