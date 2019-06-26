@@ -3,8 +3,8 @@ import {
     getBuiltInModuleClasses, ModuleController,
 } from "@/core/base/controllers";
 import { Doppelgangster } from "@/core/doppelgangster";
-import { CharacteristicConstructor } from "@/core/heuristic/characteristic";
-import { CommandConstructor } from "@/core/interaction/command";
+import { CharacteristicClass } from "@/core/heuristic/characteristic";
+import { CommandClass } from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
 /**
@@ -31,7 +31,7 @@ export class BasicModuleController extends ModuleController {
         // Register all module characteristics and commands.
         doppelgangster.once("controllersReady", (controllers) => {
             // Register module characteristics.
-            const moduleCharacteristics: CharacteristicConstructor[] =
+            const moduleCharacteristics: CharacteristicClass[] =
                 [...this.registry.values()].map((modules) =>
                     modules.map((module) => module.characteristics),
                 ).flat(Infinity).filter((characteristics) =>
@@ -54,7 +54,7 @@ export class BasicModuleController extends ModuleController {
             );
 
             // Register module commands.
-            const moduleCommands: CommandConstructor[] =
+            const moduleCommands: CommandClass[] =
                 [...this.registry.values()].map((modules) =>
                     modules.map((module) => module.commands),
                 ).flat(Infinity).filter((commands) =>

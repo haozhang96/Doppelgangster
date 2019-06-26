@@ -420,8 +420,8 @@ export abstract class Command extends DisableableComponent {
 }
 
 /**
- * Define the command's constructor type with the abstract property removed.
+ * Define the command's class type with the abstract property removed.
  */
-export type CommandConstructor = typeof Command & (
+export type CommandClass = typeof Command & (
     new (controller: CommandController) => Command
 );

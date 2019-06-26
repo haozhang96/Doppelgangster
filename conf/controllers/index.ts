@@ -9,22 +9,22 @@ import * as Controllers from "@/core/base/controllers";
 /**
  * Define how the controllers object must be defined at the bottom.
  */
-interface IControllerConstructors extends IMappedObject<
-    Controllers.ControllerConstructor[]
+interface IControllerClasses extends IMappedObject<
+    Controllers.ControllerClass[]
 > {
-    authorization: Controllers.AuthorizationControllerConstructor[];
-    characteristic: Controllers.CharacteristicControllerConstructor[];
-    command: Controllers.CommandControllerConstructor[];
-    logging: Controllers.LoggingControllerConstructor[];
-    module: Controllers.ModuleControllerConstructor[];
-    persistence: Controllers.PersistenceControllerConstructor[];
-    profile: Controllers.ProfileControllerConstructor[];
+    authorization: Controllers.AuthorizationControllerClass[];
+    characteristic: Controllers.CharacteristicControllerClass[];
+    command: Controllers.CommandControllerClass[];
+    logging: Controllers.LoggingControllerClass[];
+    module: Controllers.ModuleControllerClass[];
+    persistence: Controllers.PersistenceControllerClass[];
+    profile: Controllers.ProfileControllerClass[];
 }
 
 /**
  * Define which controller implementations will be used by Doppelgangster.
  */
-export const controllers: Readonly<IControllerConstructors> = {
+export const controllers: Readonly<IControllerClasses> = {
     // Initialize the logging controllers first.
     logging: [
         LoggingControllers.ConsoleLoggingController,

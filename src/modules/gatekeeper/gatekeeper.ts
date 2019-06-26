@@ -1,17 +1,17 @@
 // Import Doppelgangster components.
 import { Doppelgangster } from "@/core";
 import { Module } from "@/core/base/module";
-import { CharacteristicConstructor } from "@/core/heuristic/characteristic";
-import { CommandConstructor } from "@/core/interaction/command";
+import { CharacteristicClass } from "@/core/heuristic/characteristic";
+import { CommandClass } from "@/core/interaction/command";
 import { getDefaultClassesInDirectory } from "@/utilities/reflection";
 
 /**
  * TODO
  */
 export class Gatekeeper extends Module {
-    public readonly characteristics: CharacteristicConstructor[] =
+    public readonly characteristics: CharacteristicClass[] =
         getDefaultClassesInDirectory(__dirname, "characteristics");
-    public readonly commands: CommandConstructor[] = [];
+    public readonly commands: CommandClass[] = [];
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);

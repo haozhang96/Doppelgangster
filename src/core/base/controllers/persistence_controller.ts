@@ -1,6 +1,6 @@
 // Import internal components.
 import {
-    Controller, ControllerConstructor,
+    Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
 
 /**
@@ -9,8 +9,8 @@ import {
 export abstract class PersistenceController extends Controller { }
 
 /**
- * Define the PersistenceController's constructor type with the abstract
- *   property removed.
+ * Define the PersistenceController's class type with the abstract property
+ *   removed.
  */
-export type PersistenceControllerConstructor =
-    ControllerConstructor<typeof PersistenceController, PersistenceController>;
+export type PersistenceControllerClass =
+    ControllerClass<typeof PersistenceController, PersistenceController>;

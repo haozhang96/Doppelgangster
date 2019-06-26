@@ -1,9 +1,9 @@
 // Import internal components.
 import {
-    RegistryController, RegistryControllerConstructor,
+    RegistryController, RegistryControllerClass,
 } from "@/core/base/controllers/registry_controller";
 import {
-    Command, CommandConstructor, ICommandCallResult,
+    Command, CommandClass, ICommandCallResult,
 } from "@/core/interaction/command";
 import * as Utilities from "@/utilities";
 
@@ -11,7 +11,7 @@ import * as Utilities from "@/utilities";
  * TODO
  */
 export abstract class CommandController extends RegistryController<
-    CommandConstructor,
+    CommandClass,
     Command
 > {
     // @Override
@@ -22,16 +22,15 @@ export abstract class CommandController extends RegistryController<
 }
 
 /**
- * Define the CommandController's constructor type with the abstract property
- *   removed.
+ * Define the CommandController's class type with the abstract property removed.
  */
-export type CommandControllerConstructor =
-    RegistryControllerConstructor<typeof CommandController, CommandController>;
+export type CommandControllerClass =
+    RegistryControllerClass<typeof CommandController, CommandController>;
 
 /**
  * Return all the built-in command classes found in /src/commands.
  */
-export function getBuiltInCommandClasses(): CommandConstructor[] {
+export function getBuiltInCommandClasses(): CommandClass[] {
     return Utilities.reflection.getDefaultClassesInDirectory(
         Utilities.path.sourceRootResolve("commands"),
     );

@@ -5,7 +5,7 @@ import { Optional } from "@/common/types";
 import { DisableableComponent } from "@/core/base/components";
 import { ProfileController } from "@/core/base/controllers";
 import {
-    Characteristic, CharacteristicConstructor,
+    Characteristic, CharacteristicClass,
 } from "@/core/heuristic/characteristic";
 import {
     ProfileAnalysis, ProfileComparison, ProfileReport,
@@ -42,7 +42,7 @@ export class Profile extends Mix(DisableableComponent)
         super(controller.doppelgangster);
 
         // Instantiate all characteristics.
-        const allCharacteristics: CharacteristicConstructor[][] =
+        const allCharacteristics: CharacteristicClass[][] =
             this.doppelgangster.controllers.characteristic.map((_controller) =>
                 [..._controller.registry.keys()],
             );

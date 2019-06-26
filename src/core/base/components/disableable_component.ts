@@ -1,7 +1,7 @@
 // Import internal components.
 import { IDisableable } from "@/common/interfaces/traits";
 import {
-    Component, ComponentConstructor,
+    Component, ComponentClass,
 } from "@/core/base/components/component";
 
 /**
@@ -34,10 +34,10 @@ export abstract class DisableableComponent extends Component implements IDisable
 }
 
 /**
- * Define the DisableableComponent's constructor type with the abstract
- *   property removed.
+ * Define the DisableableComponent's class type with the abstract property
+ *   removed.
  */
-export type DisableableComponentConstructor<
-    ConstructorT = typeof DisableableComponent,
+export type DisableableComponentClass<
+    ClassT = typeof DisableableComponent,
     InstanceT = DisableableComponent
-> = ComponentConstructor<ConstructorT, InstanceT>;
+> = ComponentClass<ClassT, InstanceT>;

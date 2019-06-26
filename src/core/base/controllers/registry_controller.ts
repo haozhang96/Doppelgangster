@@ -2,22 +2,22 @@
 import { Callback, InstantiableClass, Optional } from "@/common/types";
 import { Component } from "@/core/base/components";
 import {
-    Controller, ControllerConstructor,
+    Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
 
 /**
  * TODO
  */
 export abstract class RegistryController<
-    ConstructorT extends InstantiableClass,
-    InstanceT extends InstanceType<ConstructorT>
+    ClassT extends InstantiableClass,
+    InstanceT extends InstanceType<ClassT>
 > extends Controller {
-    private readonly _registry: Map<ConstructorT, InstanceT[]> = new Map();
+    private readonly _registry: Map<ClassT, InstanceT[]> = new Map();
 
     /**
      * Return a copy of the registry.
      */
-    public get registry(): Map<ConstructorT, InstanceT[]> {
+    public get registry(): Map<ClassT, InstanceT[]> {
         return new Map(this._registry);
     }
 
@@ -43,8 +43,8 @@ export abstract class RegistryController<
      * @param callback The callback used to determine whether a class matches
      */
     public findClass(
-        callback: Callback<ConstructorT, boolean>,
-    ): Optional<ConstructorT> {
+        callback: Callback<ClassT, boolean>,
+    ): Optional<ClassT> {
         for (const _Component of this._registry.keys()) {
             if (callback(_Component)) {
                 return _Component;
@@ -73,7 +73,7 @@ export abstract class RegistryController<
      * Register a component class in the register.
      * @param _Component A Component class
      */
-    public registerClass(_Component: ConstructorT): InstanceT[] {
+    public registerClass(_Component: ClassT): InstanceT[] {
         if (!this._registry.has(_Component)) {
             this._registry.set(_Component, []);
         }
@@ -86,7 +86,7 @@ export abstract class RegistryController<
      */
     public registerInstance(component: InstanceT): void {
         const classRegistry: InstanceT[] =
-            this.registerClass(component.constructor as ConstructorT);
+            this.registerClass(component.constructor as ClassT);
         if (!classRegistry.includes(component)) {
             classRegistry.push(component);
         }
@@ -94,10 +94,10 @@ export abstract class RegistryController<
 }
 
 /**
- * Define the RegistryController's constructor type with the abstract property
+ * Define the RegistryController's class type with the abstract property
  *   removed.
  */
-export type RegistryControllerConstructor<
+export type RegistryControllerClass<
     ClassT = typeof RegistryController,
     InstanceT = RegistryController<any, any>
-> = ControllerConstructor<ClassT, InstanceT>;
+> = ControllerClass<ClassT, InstanceT>;

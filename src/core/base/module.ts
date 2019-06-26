@@ -2,17 +2,17 @@
 import { DisableableComponent } from "@/core/base/components";
 import { Doppelgangster } from "@/core/doppelgangster";
 import {
-    CharacteristicConstructor,
+    CharacteristicClass,
 } from "@/core/heuristic/characteristic/characteristic";
-import { CommandConstructor } from "@/core/interaction/command";
+import { CommandClass } from "@/core/interaction/command";
 
 /**
  * TODO
  */
 export abstract class Module extends DisableableComponent {
     // @Override
-    public abstract readonly characteristics: CharacteristicConstructor[];
-    public abstract readonly commands: CommandConstructor[];
+    public abstract readonly characteristics: CharacteristicClass[];
+    public abstract readonly commands: CommandClass[];
 
     /**
      * Construct a Module instance.
@@ -28,8 +28,8 @@ export abstract class Module extends DisableableComponent {
 }
 
 /**
- * Define the Module's constructor type with the abstract property removed.
+ * Define the Module's class type with the abstract property removed.
  */
-export type ModuleConstructor = typeof Module & (
+export type ModuleClass = typeof Module & (
     new (doppelgangster: Doppelgangster) => Module
 );

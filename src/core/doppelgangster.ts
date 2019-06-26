@@ -85,7 +85,7 @@ export class Doppelgangster extends Mix(EventEmitter)
         // Instantiate all controllers.
         this.controllers =
             Utilities.object.mapValues<
-                Controllers.ControllerConstructor[],
+                Controllers.ControllerClass[],
                 Controllers.Controller[]
             >(
                 ControllerConfigs.controllers,

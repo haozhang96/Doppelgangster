@@ -1,7 +1,7 @@
 // Import internal components.
 import { ILogger } from "@/common/interfaces";
 import {
-    Controller, ControllerConstructor,
+    Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
 import { Doppelgangster } from "@/core/doppelgangster";
 
@@ -26,8 +26,7 @@ export abstract class LoggingController extends Controller {
 }
 
 /**
- * Define the LoggingController's constructor type with the abstract property
- *   removed.
+ * Define the LoggingController's class type with the abstract property removed.
  */
-export type LoggingControllerConstructor =
-    ControllerConstructor<typeof LoggingController, LoggingController>;
+export type LoggingControllerClass =
+    ControllerClass<typeof LoggingController, LoggingController>;

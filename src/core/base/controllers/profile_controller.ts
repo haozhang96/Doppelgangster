@@ -2,7 +2,7 @@
 import { UniquePair, UnorderedPairStore } from "@/common/classes/pair";
 import { Optional } from "@/common/types";
 import {
-    Controller, ControllerConstructor,
+    Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
 import { Profile, ProfileComparison } from "@/core/heuristic/profile";
 
@@ -48,8 +48,7 @@ export abstract class ProfileController extends Controller {
 }
 
 /**
- * Define the ProfileController's constructor type with the abstract property
- *   removed.
+ * Define the ProfileController's class type with the abstract property removed.
  */
-export type ProfileControllerConstructor =
-    ControllerConstructor<typeof ProfileController, ProfileController>;
+export type ProfileControllerClass =
+    ControllerClass<typeof ProfileController, ProfileController>;

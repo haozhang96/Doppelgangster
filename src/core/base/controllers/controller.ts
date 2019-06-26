@@ -1,5 +1,5 @@
 // Import internal components.
-import { Component, ComponentConstructor } from "@/core/base/components";
+import { Component, ComponentClass } from "@/core/base/components";
 import { Doppelgangster } from "@/core/doppelgangster";
 
 /**
@@ -20,9 +20,9 @@ export abstract class Controller extends Component {
 }
 
 /**
- * Define the Controller's constructor type with the abstract property removed.
+ * Define the Controller's class type with the abstract property removed.
  */
-export type ControllerConstructor<
+export type ControllerClass<
     ClassT = typeof Controller,
     InstanceT = Controller
-> = ComponentConstructor<ClassT, InstanceT>;
+> = ComponentClass<ClassT, InstanceT>;

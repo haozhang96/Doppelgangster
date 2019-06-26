@@ -1,9 +1,9 @@
 // Import internal components.
 import {
-    RegistryController, RegistryControllerConstructor,
+    RegistryController, RegistryControllerClass,
 } from "@/core/base/controllers/registry_controller";
 import {
-    Characteristic, CharacteristicConstructor,
+    Characteristic, CharacteristicClass,
 } from "@/core/heuristic/characteristic";
 import * as Utilities from "@/utilities";
 
@@ -11,15 +11,15 @@ import * as Utilities from "@/utilities";
  * TODO
  */
 export abstract class CharacteristicController extends RegistryController<
-    CharacteristicConstructor,
+    CharacteristicClass,
     Characteristic<any>
 > { }
 
 /**
- * Define the CharacteristicController's constructor type with the abstract
- *   property removed.
+ * Define the CharacteristicController's class type with the abstract property
+ *   removed.
  */
-export type CharacteristicControllerConstructor = RegistryControllerConstructor<
+export type CharacteristicControllerClass = RegistryControllerClass<
     typeof CharacteristicController,
     CharacteristicController
 >;
@@ -27,7 +27,7 @@ export type CharacteristicControllerConstructor = RegistryControllerConstructor<
 /**
  * Return all the built-in characteristic classes found in /src/characteristics.
  */
-export function getBuiltInCharacteristicClasses(): CharacteristicConstructor[] {
+export function getBuiltInCharacteristicClasses(): CharacteristicClass[] {
     return Utilities.reflection.getDefaultClassesInDirectory(
         Utilities.path.sourceRootResolve("characteristics"),
     );

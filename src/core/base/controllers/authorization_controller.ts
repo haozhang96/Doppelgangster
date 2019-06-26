@@ -1,6 +1,6 @@
 // Import internal components.
 import {
-    Controller, ControllerConstructor,
+    Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
 
 /**
@@ -9,10 +9,10 @@ import {
 export abstract class AuthorizationController extends Controller { }
 
 /**
- * Define the AuthorizationController's constructor type with the abstract
- *   property removed.
+ * Define the AuthorizationController's class type with the abstract property
+ *   removed.
  */
-export type AuthorizationControllerConstructor = ControllerConstructor<
+export type AuthorizationControllerClass = ControllerClass<
     typeof AuthorizationController,
     AuthorizationController
 >;

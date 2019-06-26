@@ -96,9 +96,8 @@ export abstract class Characteristic<DataT> extends Mix(DisableableComponent)
 }
 
 /**
- * Define the characteristic's constructor type with the abstract property
- *   removed.
+ * Define the characteristic's class type with the abstract property removed.
  */
-export type CharacteristicConstructor<DataT = any> = typeof Characteristic & (
+export type CharacteristicClass<DataT = any> = typeof Characteristic & (
     new (profile: Profile) => Characteristic<DataT>
 );

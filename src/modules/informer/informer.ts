@@ -1,15 +1,15 @@
 // Import Doppelgangster components.
 import { Doppelgangster } from "@/core";
 import { Module } from "@/core/base/module";
-import { CharacteristicConstructor } from "@/core/heuristic/characteristic";
-import { CommandConstructor } from "@/core/interaction/command";
+import { CharacteristicClass } from "@/core/heuristic/characteristic";
+import { CommandClass } from "@/core/interaction/command";
 
 /**
  * TODO
  */
 export class Informer extends Module {
-    public readonly characteristics: CharacteristicConstructor[] = [];
-    public readonly commands: CommandConstructor[] = [];
+    public readonly characteristics: CharacteristicClass[] = [];
+    public readonly commands: CommandClass[] = [];
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
