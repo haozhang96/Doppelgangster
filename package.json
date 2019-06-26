@@ -24,6 +24,7 @@
         "discord.js": "^11.5.1",
         "module-alias": "^2.2.0",
         "mongodb": "^3.2.7",
+        "reflect-metadata": "^0.1.13",
         "request": "^2.88.0",
         "simple-statistics": "^7.0.2",
         "tracer": "^0.9.8",
