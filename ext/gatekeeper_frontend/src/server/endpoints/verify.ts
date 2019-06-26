@@ -5,7 +5,8 @@ import { Endpoint } from "../endpoint";
 import { Fingerprint } from "../entities/fingerprint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import {
-    dropConnection, getRequestIPAddress, parseEnvironmentVariable, xorCipher,
+    base64XORJSONDecode, dropConnection, getRequestIPAddress,
+    parseEnvironmentVariable,
 } from "../utilities";
 
 // Import built-in libraries.
@@ -13,8 +14,9 @@ import * as $HTTP from "http";
 
 // Define configurations.
 const configurations = {
-    maxCount: parseEnvironmentVariable("FINGERPRINT_MAX_COUNT", 10),
-    maxSize: parseEnvironmentVariable("FINGERPRINT_MAX_SIZE", 16 * 1024),
+    maxBytes: parseEnvironmentVariable("VERIFICATION_MAX_BYTES", 16 * 1024),
+    maxFingerprintCount:
+        parseEnvironmentVariable("VERIFICATION_MAX_FINGERPRINT_COUNT", 5),
 };
 
 export default class extends Endpoint {
@@ -51,7 +53,7 @@ export default class extends Endpoint {
         //   is still room to store more fingerprints for the user.
         if (
             sessions.length === 0
-            || fingerprints.length === configurations.maxCount
+            || fingerprints.length === configurations.maxFingerprintCount
         ) {
             return dropConnection(request, response, "");
         }*/
@@ -60,7 +62,7 @@ export default class extends Endpoint {
         request.on("data", (chunk) => {
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
-            if (request.socket.bytesRead > configurations.maxSize) {
+            if (request.socket.bytesRead > configurations.maxBytes) {
                 return dropConnection(request, response, "Data size overflow");
             }
 
@@ -68,13 +70,10 @@ export default class extends Endpoint {
         }).on("end", async () => {
             try {
                 // Reconstruct the data from the encoded POST body.
-                const data = JSON.parse(xorCipher(
-                    Buffer.from(
-                        Buffer.concat(chunks).toString(),
-                        "base64",
-                    ).toString(),
+                const data = base64XORJSONDecode(
+                    Buffer.concat(chunks).toString(),
                     sessionID.split("").reverse().join(""), // :^)
-                ));
+                );
 
                 // Make sure that the reCAPTCHA response is valid.
                 if (

@@ -40,6 +40,30 @@ const defaultJavaScriptObfuscatorOptions: any = {
 const loopbackIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
 
 /**
+ * Decode a base64-XOR-JSON-encoded string with a key.
+ * @param encoded The encoded string to decode
+ * @param key The key to decode the encoded string with
+ */
+export function base64XORJSONDecode(encoded: string, key: string): any {
+    return JSON.parse(xorCipher(
+        Buffer.from(encoded, "base64").toString(),
+        key,
+    ));
+}
+
+/**
+ * Encode an object into a string using the base64-XOR-JSON encoding with a key.
+ * @param object The object to encode
+ * @param key The key to encode the object with
+ */
+export function base64XORJSONEncode(object: any, key: string): string {
+    return Buffer.from(
+        xorCipher(JSON.stringify(object), key),
+        "binary",
+    ).toString("base64");
+}
+
+/**
  * Immediately drop an active connection with a 403 status code.
  * @param request 
  * @param response 

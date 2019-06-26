@@ -5,8 +5,8 @@ import { Endpoint } from "../endpoint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientUncompiledRootDirectory } from "../paths";
 import {
-    dropConnection, getRequestIPAddress, obfuscateJavaScript,
-    parseEnvironmentVariable, xorCipher,
+    base64XORJSONEncode, dropConnection, getRequestIPAddress,
+    obfuscateJavaScript, parseEnvironmentVariable,
 } from "../utilities";
 
 // Import built-in libraries.
@@ -149,10 +149,10 @@ async function generateScript(
     // Return the encoded user data concatenated with the script to be served.
     return (
         `var data = "${
-            Buffer.from(xorCipher(
-                JSON.stringify(userData),
+            base64XORJSONEncode(
+                userData,
                 sessionID.split("").reverse().join(""), // :^)
-            ), "binary").toString("base64")
+            )
         }";\n${
             output
         }`
