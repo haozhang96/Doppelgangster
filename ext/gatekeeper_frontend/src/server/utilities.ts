@@ -139,7 +139,7 @@ export function xorCipher(input: string, key: string): string {
         output.push(
             String.fromCharCode(
                 // tslint:disable-next-line: no-bitwise
-                input.charCodeAt(i) ^ key[i % keyLength].charCodeAt(0),
+                input.charCodeAt(i) ^ key.charCodeAt(i % keyLength),
             ),
         );
     }
