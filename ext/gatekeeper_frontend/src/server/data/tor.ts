@@ -1,21 +1,24 @@
-// Import external libraries.
-import * as $Request from "request";
+// Import built-in libraries.
+import * as $DNS from "dns";
 
 export function isTorExitNode(ipAddress: string): Promise<boolean> {
-    // TODO: Cache the file
-
     return new Promise((resolve) => {
-        $Request.get(
-            (
-                "http://torstatus.blutmagie.de/ip_list_exit.php/"
-                + "Tor_ip_list_EXIT.csv"
-            ),
-            (error, response) => {
-                if (error || response.statusCode !== 200) {
+        $DNS.lookup(
+            `${
+                ipAddress.split(".").reverse().join(".")
+            }.443.8.8.8.8.ip-port.exitlist.torproject.org`,
+            (error, address) => {
+                if (error) {
                     resolve(false);
                 }
 
-                resolve((response.body as string).includes(ipAddress));
+                resolve(
+                    address ?
+                        address.startsWith("127.0.0.")
+                        && address !== "127.0.0.1"
+                    :
+                        false,
+                );
             },
         );
     });

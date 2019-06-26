@@ -39,11 +39,11 @@ const libraryFileNames: string[] = [
     new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
 
 // Construct a response to handle invalid requests.
-const invalidRequestResponse: string = (
+/*const invalidRequestResponse: string = (
     "window.onload = function () { "
     + "document.getElementById(\"content\").innerHTML = "
     + "\"<div class=\\\"primary\\\">Invalid request.<\/div>\"; }"
-);
+);*/
 
 // Construct a response to handle requests made via Chrome's Lite mode, which is
 //   unsupported.
