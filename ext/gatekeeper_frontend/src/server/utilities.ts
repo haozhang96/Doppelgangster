@@ -36,6 +36,9 @@ const defaultJavaScriptObfuscatorOptions: any = {
     unicodeEscapeSequence: false,
 };
 
+// Keep a list of loopback (localhost) IP addresses.
+const loopbackIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
+
 /**
  * Immediately drop an active connection with a 403 status code.
  * @param request 
@@ -59,10 +62,9 @@ export function dropConnection(
 export async function getRequestIPAddress(
     request: $HTTP.IncomingMessage,
 ): Promise<string> {
-    const localIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
     const ipAddress: string = request.connection.remoteAddress || "";
 
-    if (localIPAddresses.includes(ipAddress)) {
+    if (loopbackIPAddresses.includes(ipAddress)) {
         // For local machine requests, try to resolve the external IP address.
         return getExternalIPAddress();
     } else {
