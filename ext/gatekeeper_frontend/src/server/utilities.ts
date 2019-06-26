@@ -45,7 +45,7 @@ export function dropConnection(
     request: $HTTP.IncomingMessage,
     response: $HTTP.ServerResponse,
 ): void {
-    console.log("Dropping connection from " + request.connection.remoteAddress);
+    console.log("Dropping connection from " + getRequestIPAddress(request));
     response.statusCode = 403;
     response.end();
     request.destroy();
@@ -75,18 +75,37 @@ export async function getRequestIPAddress(
 }
 
 export async function getExternalIPAddress(): Promise<string> {
-    return new Promise((resolve) => {
-        $Request.get(
-            "https://api.ipify.org", // https://ipv4.icanhazip.com
-            (error, response) => {
-                if (error || response.statusCode !== 200) {
-                    resolve("127.0.0.1");
-                }
+    const apiEndpoints: string[] = [
+        "https://api.ipify.org",
+        "https://ipv4.icanhazip.com",
+        "https://ip4.seeip.org",
+        "https://ipv4bot.whatismyipaddress.com",
+    ];
 
-                resolve(response.body);
-            },
-        );
-    });
+    while (apiEndpoints.length) {
+        try {
+            return await new Promise((resolve, reject) => {
+                $Request.get(
+                    apiEndpoints.pop() as string,
+                    (error, response) => {
+                        // If the API failed to return the external IP, continue
+                        //   to the next API.
+                        if (error || response.statusCode !== 200) {
+                            reject();
+                        }
+
+                        resolve(response.body);
+                    },
+                );
+            });
+        } finally {
+            // No error handling is needed. Just go to the next API.
+        }
+    }
+
+    // No API was able to get the external IP. Just return the default loopback
+    //   address.
+    return "127.0.0.1";
 }
 
 /**

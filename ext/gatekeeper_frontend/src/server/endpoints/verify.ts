@@ -1,5 +1,5 @@
 // Import internal components.
-import { verifyReCAPTCHA } from "../data/recaptcha";
+import { verifyReCAPTCHA } from "../data";
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { Fingerprint } from "../entities/fingerprint";

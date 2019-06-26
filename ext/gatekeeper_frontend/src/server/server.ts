@@ -1,4 +1,5 @@
 // Import internal components.
+import "./database"; // Initialize the database.
 import { Endpoint, getEndpoints } from "./endpoint";
 
 // Import built-in libraries.
