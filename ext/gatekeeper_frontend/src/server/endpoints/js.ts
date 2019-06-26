@@ -5,7 +5,8 @@ import { Endpoint } from "../endpoint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientUncompiledRootDirectory } from "../paths";
 import {
-    dropConnection, getRequestIPAddress, obfuscateJavaScript, xorCipher,
+    dropConnection, getRequestIPAddress, obfuscateJavaScript,
+    parseEnvironmentVariable, xorCipher,
 } from "../utilities";
 
 // Import built-in libraries.
@@ -16,9 +17,9 @@ import * as $Path from "path";
 
 // Define configurations.
 const configurations = {
-    debugAlert: JSON.parse(process.env.JS_DEBUG_ALERT || "true"),
-    forceRecompilation: JSON.parse(process.env.JS_FORCE_RECOMPILE || "false"),
-    obfuscate: JSON.parse(process.env.JS_OBFUSCATE || "true"),
+    debugAlert: parseEnvironmentVariable("JS_DEBUG_ALERT", true),
+    forceRecompilation: parseEnvironmentVariable("JS_FORCE_RECOMPILE", false),
+    obfuscate: parseEnvironmentVariable("JS_OBFUSCATE", true),
 };
 
 // Define the list of libraries located in /src/client/js/libs to concatenate

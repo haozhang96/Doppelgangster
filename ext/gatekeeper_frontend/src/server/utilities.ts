@@ -79,6 +79,9 @@ export async function getRequestIPAddress(
     }
 }
 
+/**
+ * Return the external IP address of this server.
+ */
 export async function getExternalIPAddress(): Promise<string> {
     const apiEndpoints: string[] = [
         "https://api.ipify.org",
@@ -125,6 +128,20 @@ export function obfuscateJavaScript(code: string, options?: object): string {
         code,
         {...defaultJavaScriptObfuscatorOptions, ...options},
     ).getObfuscatedCode();
+}
+
+/**
+ * Parse (using the JSON parser) a value out of the environment variables.
+ * @param name The name of the environment variable to parse
+ * @param defaultValue The default value to return if it's missing
+ */
+export function parseEnvironmentVariable<T>(name: string, defaultValue?: T): T {
+    return (
+        process.env[name] ?
+            JSON.parse(process.env[name] as string)
+        :
+            defaultValue
+    );
 }
 
 /**

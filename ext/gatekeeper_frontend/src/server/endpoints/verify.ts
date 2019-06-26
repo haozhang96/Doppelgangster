@@ -4,15 +4,17 @@ import { database } from "../database";
 import { Endpoint } from "../endpoint";
 import { Fingerprint } from "../entities/fingerprint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
-import { dropConnection, getRequestIPAddress, xorCipher } from "../utilities";
+import {
+    dropConnection, getRequestIPAddress, parseEnvironmentVariable, xorCipher,
+} from "../utilities";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
 
 // Define configurations.
 const configurations = {
-    maxCount: parseInt(process.env.FINGERPRINT_MAX_COUNT || "10", 10),
-    maxSize: parseInt(process.env.FINGERPRINT_MAX_SIZE || "16384", 10),
+    maxCount: parseEnvironmentVariable("FINGERPRINT_MAX_COUNT", 10),
+    maxSize: parseEnvironmentVariable("FINGERPRINT_MAX_SIZE", 16 * 1024),
 };
 
 export default class extends Endpoint {
