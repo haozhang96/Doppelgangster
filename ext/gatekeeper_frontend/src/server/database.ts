@@ -8,6 +8,7 @@ import * as $TypeORM from "typeorm";
 export let database: $TypeORM.EntityManager;
 
 // Connect to the database and set the global reference.
+console.log("Connecting to the database...");
 $TypeORM.createConnection().then((_database) => {
     database = _database.manager;
     console.log("The database is ready.");
