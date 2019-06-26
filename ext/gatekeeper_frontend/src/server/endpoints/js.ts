@@ -178,7 +178,7 @@ export default class extends Endpoint {
 
         // Make sure that the referer URL matches the required format.
         if (!refererMatch) {
-            return dropConnection(request, response);
+            return dropConnection(request, response, "Referer mismatch");
         }
 
         // Check if the request was made via Chrome Lite mode.
@@ -197,8 +197,7 @@ export default class extends Endpoint {
 
         // Make sure that the session is valid in the database.
         /*if (!await database.count(GatekeeperSession, { sessionID })) {
-            // return dropConnection(request, response);
-            return response.end(invalidRequestResponse);
+            return dropConnection(request, response, "Invalid session ID");
         }*/
 
         // Make sure that the client does not use cached responses.

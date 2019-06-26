@@ -68,9 +68,10 @@ function http(options) {
 };
 
 /**
- * 
- * @param {*} input 
- * @param {*} key 
+ * Encode or decode an input string with a key using the XOR cipher.
+ * This is absolutely NOT meant to be secure!
+ * @param {string} input The input string to encode or decode
+ * @param {string} key The key to encode/decode on the input string with
  */
 function xorCipher(input, key) {
 	var output = [], inputLength = input.length, keyLength = key.length;
@@ -84,16 +85,27 @@ function xorCipher(input, key) {
 	return output.join("");
 }
 
-function showMessage(message, showReload) {
+/**
+ * Show a message on the screen.
+ * @param {string} message The message to show on the screen
+ * @param {boolean} showAction Show a link to close or reload the page
+ * @param {boolean} reloadMode Show the page reload link instead of page close
+ */
+function showMessage(message, showAction, reloadMode) {
 	document.getElementById("content").innerHTML = (
-		"<div class=\"primary\">"
-		+ (message || "Verification failed.")
-		+ "<\/div>"
+		"<div class=\"primary\">" + message + "<\/div>"
 		+ (
-			showReload ?
-				"<a class=\"secondary\" "
-				+ "href=\"javascript: location.reload(true)\">"
-				+ "Reload Page<\/a>"
+			showAction ?
+				"<a class=\"secondary\" href=\"javascript: "
+				+ (
+					reloadMode ?
+						"location.reload(true)"
+					:
+						"window.open(location, '_self').close()"
+				)
+				+ "\">"
+				+ (reloadMode ? "Reload Page" : "Close Page")
+				+ "<\/a>"
 			:
 				""
 		)
@@ -101,13 +113,13 @@ function showMessage(message, showReload) {
 }
 
 /**
- * 
+ * Verify the reCAPTCHA response with the server and send the fingerprint data.
  * Note that this must be defined using the "var = function () {...}" syntax
  *   to overwrite the default one.
- * @param {String} reCAPTCHAresponse 
  */
-verify = function (reCAPTCHAresponse) {
-	if (reCAPTCHAresponse = reCAPTCHAresponse || grecaptcha.getResponse()) {
+verify = function () {
+	var reCAPTCHAresponse = grecaptcha.getResponse();
+	if (reCAPTCHAresponse) {
 		showMessage("Verifying...");
 		fingerprinting.then(function (fingerprint) {
 			http({
@@ -121,13 +133,13 @@ verify = function (reCAPTCHAresponse) {
 				options: {
 					onload: function () {
 						if (this.status === 200) {
-							showMessage("Verification successful.");
+							showMessage("Verification successful.", true);
 						} else {
-							showMessage("Verification failed.", true);
+							showMessage("Verification failed.", true, true);
 						}
 					},
 					onerror: function () {
-						showMessage("Verification failed.", true);
+						showMessage("Verification failed.", true, true);
 					}
 				}
 			});
@@ -138,7 +150,6 @@ verify = function (reCAPTCHAresponse) {
 // Keep data in the outer scope for other components to find.
 var key = location.href.match(/[a-z0-9]{64}$/)[0].split("").reverse().join("");
 var data = JSON.parse(xorCipher(atob(window.data), key));
-//console.log(JSON.stringify(data));
 //alert(JSON.stringify(data))
 
 var fingerprinting = new Promise(function (finishFingerprinting) {

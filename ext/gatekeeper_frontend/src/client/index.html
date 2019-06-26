@@ -12,7 +12,7 @@
                 var started = new Date(), poll = setInterval(function () {
                     if (verify !== _this) {
                         clearInterval(poll);
-                        verify(grecaptcha.getResponse());
+                        verify();
                     } else if (new Date() - started >= 5000) {
                         clearInterval(poll);
                         document.getElementById("content").innerHTML = "<div class=\"primary\">Failed to load scripts.<\/div><a class=\"secondary\" href=\"javascript: location.reload(true)\">Reload Page<\/a>";

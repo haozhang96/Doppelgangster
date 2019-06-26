@@ -47,8 +47,11 @@ const loopbackIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
 export function dropConnection(
     request: $HTTP.IncomingMessage,
     response: $HTTP.ServerResponse,
+    reason: string = "No reason provided",
 ): void {
-    console.log("Dropping connection from " + getRequestIPAddress(request));
+    console.log(
+        `Dropping connection from ${getRequestIPAddress(request)}: ${reason}`,
+    );
     response.statusCode = 403;
     response.end();
     request.destroy();
@@ -125,15 +128,15 @@ export function obfuscateJavaScript(code: string, options?: object): string {
 }
 
 /**
- * Encode an input string with a key using the XOR cipher.
+ * Encode or decode an input string with a key using the XOR cipher.
  * This is absolutely NOT meant to be secure!
- * @param input 
- * @param key 
+ * @param input The input string to encode or decode
+ * @param key The key to encode/decode on the input string with
  */
 export function xorCipher(input: string, key: string): string {
+    const output: string[] = [];
     const inputLength: number = input.length;
     const keyLength: number = key.length;
-    const output: string[] = [];
 
     for (let i = 0; i < inputLength; i++) {
         output.push(

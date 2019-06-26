@@ -23,8 +23,6 @@ export default class extends Endpoint {
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
-        console.log("in");
-
         // Attempt to match the required referer URL format.
         const refererMatch: RegExpMatchArray | null =
             (request.headers.referer || "").match(
@@ -33,7 +31,7 @@ export default class extends Endpoint {
 
         // Make sure that the referer URL matches the required format.
         if (!refererMatch) {
-            return dropConnection(request, response);
+            return dropConnection(request, response, "Referer mismatch");
         }
 
         // Retrieve the SHA-256 session ID from the referer URL.
@@ -53,7 +51,7 @@ export default class extends Endpoint {
             sessions.length === 0
             || fingerprints.length === configurations.maxCount
         ) {
-            return dropConnection(request, response);
+            return dropConnection(request, response, "");
         }*/
 
         const chunks: Uint8Array[] = [];
@@ -61,13 +59,11 @@ export default class extends Endpoint {
             // Drop the connection if the data being sent is larger than the
             //   maximum allowed size.
             if (request.socket.bytesRead > configurations.maxSize) {
-                return dropConnection(request, response);
+                return dropConnection(request, response, "Data size overflow");
             }
 
-            console.log("Reading chunk");
             chunks.push(chunk);
         }).on("end", async () => {
-            console.log("Read " + request.socket.bytesRead + " bytes");
             try {
                 // Reconstruct the data from the encoded POST body.
                 const data = JSON.parse(xorCipher(
@@ -86,7 +82,11 @@ export default class extends Endpoint {
                         await getRequestIPAddress(request),
                     )
                 ) {
-                    return dropConnection(request, response);
+                    return dropConnection(
+                        request,
+                        response,
+                        "Invalid reCAPTCHA response",
+                    );
                 }
 
                 const fingerprint = data.data;
@@ -95,7 +95,7 @@ export default class extends Endpoint {
                 response.end(JSON.stringify(data));
             } catch (error) {
                 console.error("Fingerprint error:", error);
-                return dropConnection(request, response);
+                return dropConnection(request, response, "Fingerprint error");
             }
         });
     }
