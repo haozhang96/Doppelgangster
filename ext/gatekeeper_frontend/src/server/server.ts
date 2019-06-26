@@ -1,12 +1,6 @@
 // Enable support for TypeORM decorators.
 import "reflect-metadata";
 
-// Import internal components.
-import { Endpoint, getEndpoints } from "./endpoint";
-
-// Import built-in libraries.
-import * as $HTTP from "http";
-
 // Display runtime environment version information.
 console.log(`Runtime environment: Node.js v${
     process.version.slice(1)
@@ -17,6 +11,12 @@ console.log(`Runtime environment: Node.js v${
 
 // Initialize the database.
 import "./database";
+
+// Import internal components.
+import { Endpoint, getEndpoints } from "./endpoint";
+
+// Import built-in libraries.
+import * as $HTTP from "http";
 
 // Enumerate all the available endpoints in /src/server/endpoints.
 const endpoints: readonly Endpoint[] = getEndpoints();

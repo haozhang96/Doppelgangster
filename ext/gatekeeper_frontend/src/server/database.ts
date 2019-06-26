@@ -9,7 +9,15 @@ export let database: $TypeORM.EntityManager;
 
 // Connect to the database and set the global reference.
 console.log("Connecting to the database...");
-$TypeORM.createConnection().then((_database) => {
+$TypeORM.getConnectionOptions().then(async (options) =>
+    // Merge default connection options with user-provided options.
+    await $TypeORM.createConnection({
+        ...{
+            entities: ["dist/server/entities/*.js"],
+        },
+        ...options,
+    }),
+).then((_database) => {
     database = _database.manager;
     console.log("The database is ready.");
 }).catch((error) => {
