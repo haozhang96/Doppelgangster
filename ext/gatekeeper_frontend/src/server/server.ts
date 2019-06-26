@@ -1,3 +1,6 @@
+// Enable support for TypeORM decorators.
+import "reflect-metadata";
+
 // Import internal components.
 import { Endpoint, getEndpoints } from "./endpoint";
 

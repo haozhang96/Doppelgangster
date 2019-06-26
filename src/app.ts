@@ -1,4 +1,7 @@
-﻿// Enable support for module alias resolution (@/... paths).
+﻿// Enable support for TypeORM decorators.
+import "reflect-metadata";
+
+// Enable support for module alias resolution (@/... paths).
 import "module-alias/register";
 
 // Import internal components.
