@@ -12,10 +12,10 @@ console.log("Connecting to the database...");
 $TypeORM.getConnectionOptions().then(async (options) =>
     // Merge default connection options with user-provided options.
     await $TypeORM.createConnection({
+        ...options, // This must be up top or it will overwrite entities.
         ...{
             entities: ["dist/server/entities/*.js"],
         },
-        ...options,
     }),
 ).then((_database) => {
     database = _database.manager;

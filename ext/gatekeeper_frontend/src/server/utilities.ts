@@ -89,15 +89,15 @@ export function base64XORJSONEncode(object: any, key: string): string {
  * @param request The HTTP request to drop
  * @param response The response object attached to the given HTTP request
  */
-export function dropConnection(
+export async function dropConnection(
     request: $HTTP.IncomingMessage,
     response: $HTTP.ServerResponse,
     reason?: string,
-): void {
+): Promise<void> {
     if (reason) {
         console.log(
             `Dropping connection from ${
-                getRequestIPAddress(request)
+                await getRequestIPAddress(request)
             }: ${
                 reason
             }`,
