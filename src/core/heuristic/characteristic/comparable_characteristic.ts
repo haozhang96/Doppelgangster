@@ -24,17 +24,19 @@ export abstract class ComparableCharacteristic<
     constructor(profile: Profile) {
         super(profile);
 
-        this.on("data", () => {
-            // Expire all characteristic comparisons.
-            for (const comparison of this._comparisons) {
-                comparison.expire();
-            }
+        this.onMixInComplete(() =>
+            this.on("data", () => {
+                // Expire all characteristic comparisons.
+                for (const comparison of this._comparisons) {
+                    comparison.expire();
+                }
 
-            // Expire all profile comparisons.
-            for (const comparison of this.profile.comparisons) {
-                comparison.expire();
-            }
-        });
+                // Expire all profile comparisons.
+                for (const comparison of this.profile.comparisons) {
+                    comparison.expire();
+                }
+            }),
+        );
     }
 
     public compareTo(

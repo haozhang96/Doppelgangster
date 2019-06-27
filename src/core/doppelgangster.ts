@@ -64,7 +64,7 @@ export class Doppelgangster extends Mix(EventEmitter)
     /**
      * Construct a Doppelgangster instance.
      */
-    constructor(private readonly _apiToken: string = DiscordConfigs.apiToken) {
+    constructor(apiToken: string = DiscordConfigs.apiToken) {
         super();
 
         // Display runtime environment version information.
@@ -100,7 +100,7 @@ export class Doppelgangster extends Mix(EventEmitter)
             this.logger.error(
                 "Doppelgangster has been disconnected from Discord!",
             );
-            this.reconnect();
+            this.reconnect(apiToken);
         });
 
         // Log Discord errors to the logger.
@@ -125,7 +125,7 @@ export class Doppelgangster extends Mix(EventEmitter)
         });
 
         // Establish a connection to Discord.
-        this.connect();
+        this.connect(apiToken);
     }
 
     public attachGuild(guild: $Discord.Guild): void {
@@ -140,6 +140,11 @@ export class Doppelgangster extends Mix(EventEmitter)
      * Destroy the Doppelgangster instance.
      */
     public async destroy(): Promise<void> {
+        // Don't continue if the instance is already being destroyed.
+        if (this._destroying) {
+            return;
+        }
+
         // Mark the instance as being in the process of destruction.
         Utilities.logging.info("Exiting...");
         this._destroying = true;
@@ -180,10 +185,10 @@ export class Doppelgangster extends Mix(EventEmitter)
         this._loggers.push(logger);
     }
 
-    private async connect(): Promise<void> {
+    private async connect(apiToken: string): Promise<void> {
         try {
             this.logger.info("Connecting to Discord...");
-            await this.discord.login(this._apiToken);
+            await this.discord.login(apiToken);
             this.logger.info("Successfully connected to Discord.");
             this.emit("ready");
         } catch (error) {
@@ -191,13 +196,13 @@ export class Doppelgangster extends Mix(EventEmitter)
                 "Failed to connect to Discord:",
                 Utilities.misc.stringifyError(error),
             );
-            this.reconnect();
+            this.reconnect(apiToken);
         } finally {
             this._reconnecting = false;
         }
     }
 
-    private async reconnect(): Promise<void> {
+    private async reconnect(apiToken: string): Promise<void> {
         if (!this._reconnecting && !this._destroying) {
             this._reconnecting = true;
             this.logger.info(
@@ -205,7 +210,7 @@ export class Doppelgangster extends Mix(EventEmitter)
                     Math.round(DiscordConfigs.reconnectTimeout / 1000)
                 } seconds...`,
             );
-            setTimeout(this.connect, DiscordConfigs.reconnectTimeout);
+            setTimeout(this.connect, DiscordConfigs.reconnectTimeout, apiToken);
         }
     }
 }
