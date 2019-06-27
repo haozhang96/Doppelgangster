@@ -4,6 +4,7 @@ import * as $Request from "request";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
+import * as $OS from "os";
 
 // Define the default JavaScript obfuscator options.
 const defaultJavaScriptObfuscatorOptions: any = {
@@ -37,7 +38,27 @@ const defaultJavaScriptObfuscatorOptions: any = {
 };
 
 // Keep a list of loopback (localhost) IP addresses.
-const loopbackIPAddresses: string[] = ["127.0.0.1", "::1", "::ffff:127.0.0.1"];
+const loopbackIPAddresses: string[] =
+    ["localhost", "127.0.0.1", "::1", "::ffff:127.0.0.1"];
+
+// Keep an indicator of whether the server is running locally.
+const serverIsLocalHost: boolean =
+    parseEnvironmentVariable("SERVER_ISLOCALHOST", false);
+
+// Construct the server's hostname depending on whether it is running locally.
+const serverHostname: string = serverIsLocalHost ? "localhost" : $OS.hostname();
+
+// Construct a regular expression object to extract session IDs out of HTTP
+//   request referrers
+const referrerRegex: RegExp =
+    new RegExp(`^https?://${
+        serverIsLocalHost ?
+            `(?:${loopbackIPAddresses.map((ipAddress) =>
+                ipAddress.replace(/\./g, "\\."),
+            ).join("|")})`
+        :
+            serverHostname
+    }/([0-9a-f]{64})$`, "i");
 
 /**
  * Decode a base64-XOR-JSON-encoded string with a key.
@@ -65,17 +86,23 @@ export function base64XORJSONEncode(object: any, key: string): string {
 
 /**
  * Immediately drop an active connection with a 403 status code.
- * @param request 
- * @param response 
+ * @param request The HTTP request to drop
+ * @param response The response object attached to the given HTTP request
  */
 export function dropConnection(
     request: $HTTP.IncomingMessage,
     response: $HTTP.ServerResponse,
-    reason: string = "No reason provided",
+    reason?: string,
 ): void {
-    console.log(
-        `Dropping connection from ${getRequestIPAddress(request)}: ${reason}`,
-    );
+    if (reason) {
+        console.log(
+            `Dropping connection from ${
+                getRequestIPAddress(request)
+            }: ${
+                reason
+            }`,
+        );
+    }
     response.statusCode = 403;
     response.end();
     request.destroy();
@@ -101,6 +128,25 @@ export async function getRequestIPAddress(
             || ipAddress
         );
     }
+}
+
+/**
+ * Return the session ID of a HTTP request.
+ * @param request The HTTP request to retrieve the session ID of
+ */
+export function getRequestSessionID(
+    request: $HTTP.IncomingMessage,
+): string | undefined {
+    if (!serverIsLocalHost && request.headers.host !== serverHostname) {
+        console.log("Host mismatch:", request.headers.host, serverHostname);
+        return;
+    }
+
+    const referrerMatch: RegExpMatchArray | null =
+        (request.headers.referer || "").match(referrerRegex);
+    // console.debug("Regex:", referrerRegex);
+    // console.debug("Referrer match:", referrerMatch);
+    return referrerMatch ? referrerMatch[1] : undefined;
 }
 
 /**

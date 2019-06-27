@@ -6,7 +6,7 @@ import { Fingerprint } from "../entities/fingerprint";
 import { GatekeeperSession } from "../entities/gatekeeper_session";
 import {
     base64XORJSONDecode, dropConnection, getRequestIPAddress,
-    parseEnvironmentVariable,
+    getRequestSessionID, parseEnvironmentVariable,
 } from "../utilities";
 
 // Import built-in libraries.
@@ -27,19 +27,13 @@ export default class extends Endpoint {
         request: $HTTP.IncomingMessage,
         response: $HTTP.ServerResponse,
     ): Promise<void> {
-        // Attempt to match the required referer URL format.
-        const refererMatch: RegExpMatchArray | null =
-            (request.headers.referer || "").match(
-                new RegExp(`^https?://${request.headers.host}/([0-9a-f]{64})$`),
-            );
+        // Retrieve the session ID.
+        const sessionID: string | undefined = getRequestSessionID(request);
 
-        // Make sure that the referer URL matches the required format.
-        if (!refererMatch) {
-            return dropConnection(request, response, "Referer mismatch");
+        // Make sure that the request has a valid session ID.
+        if (!sessionID) {
+            return dropConnection(request, response, "Invalid session ID");
         }
-
-        // Retrieve the SHA-256 session ID from the referer URL.
-        const sessionID: string = refererMatch[1];
 
         // TODO
         /*const sessions: GatekeeperSession[] =

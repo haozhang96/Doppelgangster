@@ -6,13 +6,12 @@ import { GatekeeperSession } from "../entities/gatekeeper_session";
 import { clientUncompiledRootDirectory } from "../paths";
 import {
     base64XORJSONEncode, dropConnection, getRequestIPAddress,
-    obfuscateJavaScript, parseEnvironmentVariable,
+    getRequestSessionID, obfuscateJavaScript, parseEnvironmentVariable,
 } from "../utilities";
 
 // Import built-in libraries.
 import * as $FileSystem from "fs";
 import * as $HTTP from "http";
-// import * as $OS from "os";
 import * as $Path from "path";
 
 // Define configurations.
@@ -30,13 +29,6 @@ const libraryFileNames: string[] = [
     "webrtcips.js",
     "fingerprintjs2.js",
 ];
-
-// TODO
-// const hostname: string = $OS.hostname();
-
-// TODO
-/*const refererRegex: RegExp =
-    new RegExp(`^https?://${hostname}/([0-9a-f]{64})$`, "i");*/
 
 // Construct a response to handle invalid requests.
 /*const invalidRequestResponse: string = (
@@ -171,15 +163,12 @@ export default class extends Endpoint {
         console.log("Host:", request.headers.host);
         console.log("Referer:", request.headers.referer);
 
-        // Attempt to match the required referer URL format.
-        const refererMatch: RegExpMatchArray | null =
-            (request.headers.referer || "").match(
-                new RegExp(`^https?://${request.headers.host}/([0-9a-f]{64})$`),
-            );
+        // Retrieve the session ID.
+        const sessionID: string | undefined = getRequestSessionID(request);
 
-        // Make sure that the referer URL matches the required format.
-        if (!refererMatch) {
-            return dropConnection(request, response, "Referer mismatch");
+        // Make sure that the request has a valid session ID.
+        if (!sessionID) {
+            return dropConnection(request, response, "Invalid session ID");
         }
 
         // Check if the request was made via Chrome Lite mode.
@@ -192,9 +181,6 @@ export default class extends Endpoint {
         ) {
             return response.end(chromeLiteModeResponse);
         }
-
-        // Retrieve the session ID from the referer header.
-        const sessionID: string = refererMatch[1];
 
         // Make sure that the session is valid in the database.
         /*if (!await database.count(GatekeeperSession, { sessionID })) {

@@ -38,7 +38,7 @@ $HTTP.createServer((request, response) => {
         // At this point, none of the endpoints could handle the request.
         response.statusCode = 404;
     } catch (_) {
-        response.statusCode = 403;
+        response.statusCode = 500;
     }
     response.end();
 }).listen(
