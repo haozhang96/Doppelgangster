@@ -75,6 +75,7 @@ function http(options) {
  */
 function xorCipher(input, key) {
 	var output = [], inputLength = input.length, keyLength = key.length;
+
 	for (var i = 0; i < inputLength; i++) {
 		output.push(
 			String.fromCharCode(
@@ -82,6 +83,7 @@ function xorCipher(input, key) {
 			)
 		);
 	}
+
 	return output.join("");
 }
 
@@ -119,8 +121,10 @@ function showMessage(message, showAction, reloadMode) {
  */
 verify = function () {
 	var reCAPTCHAresponse = grecaptcha.getResponse();
+
 	if (reCAPTCHAresponse) {
 		showMessage("Verifying...");
+	
 		fingerprinting.then(function (fingerprint) {
 			http({
 				url: "verify",
@@ -310,7 +314,7 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 		});
 	}, 100);
 	
-	// Wait for async fingerprints
+	// Wait for asynchronous fingerprints to finish.
 	Promise.all(asyncFingerprints).then(function (fulfilledAsyncFingerprints) {
 		// Remove unnecessary elements to keep window content bounded.
 		var elements = document.body.children;
@@ -341,18 +345,18 @@ var fingerprinting = new Promise(function (finishFingerprinting) {
 				}
 			}
 			
-			// Remove duplicate IP addresses
+			// Remove duplicate IP addresses.
 			ipAddresses.external = ipAddresses.external.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
 			if (ipAddresses.internal) {
 				ipAddresses.internal = ipAddresses.internal.filter(function (ipAddress, index, self) { return self.indexOf(ipAddress) === index; });
 			}
 		}
 		
-		// Send data
+		// Send fingerprint data to the server and complete verification.
 		finishFingerprinting(fingerprint);
-		alert(JSON.stringify(fingerprint));
+		// alert(JSON.stringify(fingerprint));
 	});
 });
 
-// Show the reCAPTCHA box.
+// Now that the script has been loaded, show the reCAPTCHA box.
 document.querySelector(".g-recaptcha").style.display = "inline-block";

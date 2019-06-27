@@ -128,6 +128,7 @@ async function generateScript(
     const ipAddress: string = await getRequestIPAddress(request);
 
     // Generate the user data to be sent with the output.
+    // TODO: Maybe keep this on the server and merge with the user's response?
     const userData = {
         doNotTrack: request.headers.dnt === "1",
         headers: request.headers,

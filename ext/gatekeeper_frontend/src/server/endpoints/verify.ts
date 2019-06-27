@@ -2,8 +2,9 @@
 import { verifyReCAPTCHA } from "../data";
 import { database } from "../database";
 import { Endpoint } from "../endpoint";
-import { Fingerprint } from "../entities/fingerprint";
-import { GatekeeperSession } from "../entities/gatekeeper_session";
+import {
+    Fingerprint, GatekeeperSession, saveFingerprint,
+} from "../entities";
 import {
     base64XORJSONDecode, dropConnection, getRequestIPAddress,
     getRequestSessionID, parseEnvironmentVariable,
@@ -62,6 +63,9 @@ export default class extends Endpoint {
 
             chunks.push(chunk);
         }).on("end", async () => {
+            // Disconnect the user since they're done sending data.
+            response.end();
+
             try {
                 // Reconstruct the data from the encoded POST body.
                 const data = base64XORJSONDecode(
@@ -69,14 +73,20 @@ export default class extends Endpoint {
                     sessionID.split("").reverse().join(""), // :^)
                 );
 
+                // Make sure that the fingerprint's session ID matches.
+                if (data.sessionID !== sessionID) {
+                    return dropConnection(
+                        request,
+                        response,
+                        "Mismatching fingerprint session ID",
+                    );
+                }
+
                 // Make sure that the reCAPTCHA response is valid.
-                if (
-                    data.sessionID !== sessionID
-                    || !verifyReCAPTCHA(
-                        data.reCAPTCHAresponse,
-                        await getRequestIPAddress(request),
-                    )
-                ) {
+                if (!verifyReCAPTCHA(
+                    data.reCAPTCHAresponse,
+                    await getRequestIPAddress(request),
+                )) {
                     return dropConnection(
                         request,
                         response,
@@ -84,10 +94,10 @@ export default class extends Endpoint {
                     );
                 }
 
-                const fingerprint = data.data;
+                // Save the fingerprint.
+                const fingerprint: object = data.data;
                 console.log("Fingerprint:", fingerprint);
-
-                response.end(JSON.stringify(data));
+                saveFingerprint(sessionID, fingerprint);
             } catch (error) {
                 console.error("Fingerprint error:", error);
                 return dropConnection(request, response, "Fingerprint error");
