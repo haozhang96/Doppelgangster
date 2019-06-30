@@ -221,18 +221,14 @@ export function parseEnvironmentVariable<T>(name: string, defaultValue?: T): T {
  * @param key The key to encode/decode on the input string with
  */
 export function xorCipher(input: string, key: string): string {
-    const output: string[] = [];
+    const charCodes: number[] = [];
     const inputLength: number = input.length;
     const keyLength: number = key.length;
 
     for (let i = 0; i < inputLength; i++) {
-        output.push(
-            String.fromCharCode(
-                // tslint:disable-next-line: no-bitwise
-                input.charCodeAt(i) ^ key.charCodeAt(i % keyLength),
-            ),
-        );
+        // tslint:disable-next-line: no-bitwise
+        charCodes.push(input.charCodeAt(i) ^ key.charCodeAt(i % keyLength));
     }
 
-    return output.join("");
+    return String.fromCharCode(...charCodes);
 }

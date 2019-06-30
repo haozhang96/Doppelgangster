@@ -74,17 +74,13 @@ function http(options) {
  * @param {string} key The key to encode/decode on the input string with
  */
 function xorCipher(input, key) {
-	var output = [], inputLength = input.length, keyLength = key.length;
+	var charCodes = [], inputLength = input.length, keyLength = key.length;
 
 	for (var i = 0; i < inputLength; i++) {
-		output.push(
-			String.fromCharCode(
-				input.charCodeAt(i) ^ key.charCodeAt(i % keyLength)
-			)
-		);
+		charCodes.push(input.charCodeAt(i) ^ key.charCodeAt(i % keyLength));
 	}
 
-	return output.join("");
+	return String.fromCharCode.apply(null, charCodes);
 }
 
 /**
@@ -94,20 +90,15 @@ function xorCipher(input, key) {
  * @param {boolean} reloadMode Show the page reload link instead of page close
  */
 function showMessage(message, showAction, reloadMode) {
-	document.getElementById("content").innerHTML = (
-		"<div class=\"primary\">" + message + "<\/div>"
-		+ (
+	document.querySelector("#content").innerHTML = (
+		"<div class=\"primary\">" + message + "<\/div>" + (
 			showAction ?
-				"<a class=\"secondary\" href=\"javascript: "
-				+ (
+				"<a class=\"secondary\" href=\"javascript: " + (
 					reloadMode ?
 						"location.reload(true)"
 					:
 						"window.open(location, '_self').close()"
-				)
-				+ "\">"
-				+ (reloadMode ? "Reload Page" : "Close Page")
-				+ "<\/a>"
+				) + "\">" + (reloadMode ? "Reload" : "Close Page") + "<\/a>"
 			:
 				""
 		)
