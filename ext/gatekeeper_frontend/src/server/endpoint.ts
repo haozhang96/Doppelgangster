@@ -7,7 +7,7 @@ import * as $HTTP from "http";
 import * as $Path from "path";
 
 /**
- * TODO
+ * The Endpoint class defines an endpoint for the server to handle requests.
  */
 export abstract class Endpoint {
     public readonly method: string = "GET";
@@ -30,7 +30,7 @@ export abstract class Endpoint {
 }
 
 /**
- * Return all the endpoint classes in /src/server/endpoints.
+ * Create and return an instance of all the endpoints in /src/server/endpoints.
  */
 export function getEndpoints(): Endpoint[] {
     const endpointsDirectory: string =
