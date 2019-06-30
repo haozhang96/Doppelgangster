@@ -8,11 +8,10 @@ import * as $TypeORM from "typeorm";
 export let database: $TypeORM.EntityManager;
 
 // Connect to the database and set the global reference.
-console.log("Connecting to the database...");
 $TypeORM.getConnectionOptions().then(async (options) =>
-    // Merge default connection options with user-provided options.
+    // Merge user-provided connection options with the static options.
     await $TypeORM.createConnection({
-        ...options, // This must be up top or it will overwrite entities.
+        ...options, // This must be up top or it will overwrite static options.
         ...{
             entities: ["dist/server/entities/*.js"],
         },

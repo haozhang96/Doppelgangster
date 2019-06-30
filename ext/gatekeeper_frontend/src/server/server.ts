@@ -1,14 +1,6 @@
 // Enable support for TypeORM decorators.
 import "reflect-metadata";
 
-// Display runtime environment version information.
-console.log(`Runtime environment: Node.js v${
-    process.version.slice(1)
-}, MongoDB v${
-    // tslint:disable-next-line: no-var-requires
-    require("../../package.json").dependencies.mongodb.replace("^", "")
-}`);
-
 // Initialize the database.
 import "./database";
 
@@ -17,6 +9,14 @@ import { Endpoint, getEndpoints } from "./endpoint";
 
 // Import built-in libraries.
 import * as $HTTP from "http";
+
+// Display runtime environment version information.
+console.log(`Runtime environment: Node.js v${
+    process.version.slice(1)
+}, MongoDB v${
+    // tslint:disable-next-line: no-var-requires
+    require("../../package.json").dependencies.mongodb.replace("^", "")
+}`);
 
 // Enumerate all the available endpoints in /src/server/endpoints.
 const endpoints: readonly Endpoint[] = getEndpoints();
