@@ -224,7 +224,7 @@ interface IControllers extends IMappedObject<Controllers.Controller[]> {
     command: Controllers.CommandController[];
     logging: Controllers.LoggingController[];
     module: Controllers.ModuleController[];
-    persistence: Controllers.PersistenceController[];
+    persistence: Array<Controllers.PersistenceController<any, any, any>>;
     profile: Controllers.ProfileController[];
 }
 

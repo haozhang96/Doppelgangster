@@ -3,6 +3,7 @@ import * as CharacteristicControllers from "@/controllers/characteristic";
 import * as CommandControllers from "@/controllers/command";
 import * as LoggingControllers from "@/controllers/logging";
 import * as ModuleControllers from "@/controllers/module";
+import * as PersistenceControllers from "@/controllers/persistence";
 import * as ProfileControllers from "@/controllers/profile";
 import * as Controllers from "@/core/base/controllers";
 
@@ -17,7 +18,7 @@ interface IControllerClasses extends IMappedObject<
     command: Controllers.CommandControllerClass[];
     logging: Controllers.LoggingControllerClass[];
     module: Controllers.ModuleControllerClass[];
-    persistence: Controllers.PersistenceControllerClass[];
+    persistence: Array<Controllers.PersistenceControllerClass<any, any, any>>;
     profile: Controllers.ProfileControllerClass[];
 }
 
@@ -45,7 +46,9 @@ export const controllers: Readonly<IControllerClasses> = {
         ModuleControllers.BasicModuleController,
     ],
 
-    persistence: [],
+    persistence: [
+        PersistenceControllers.TypeORMPersistenceController,
+    ],
 
     profile: [
         ProfileControllers.BasicProfileController,

@@ -36,11 +36,11 @@ export default class extends Endpoint {
             return dropConnection(request, response, "Invalid session ID");
         }
 
-        // TODO
+        // TODO: Make sure that the session exists in the database.
         /*const sessions: GatekeeperSession[] =
             await database.find(GatekeeperSession, { sessionID });
 
-        // TODO
+        // TODO: Make sure that ...
         const fingerprints: Fingerprint[] =
             await database.find(Fingerprint, { });
 

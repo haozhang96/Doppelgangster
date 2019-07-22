@@ -12,7 +12,7 @@ export abstract class RegistryController<
     ClassT extends InstantiableClass,
     InstanceT extends InstanceType<ClassT>
 > extends Controller {
-    private readonly _registry: Map<ClassT, InstanceT[]> = new Map();
+    protected readonly _registry: Map<ClassT, InstanceT[]> = new Map();
 
     /**
      * Return a copy of the registry.

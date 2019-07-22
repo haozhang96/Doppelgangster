@@ -1,9 +1,43 @@
 // Import internal components.
-import { Class, InstantiableClass } from "@/common/types";
+import {
+    Class, ClassConstructorCallSignature, InstantiableClass,
+} from "@/common/types";
 import { FileSystemUtils } from "@/utilities/file_system";
 
 // Import built-in libraries.
 import * as $Path from "path";
+
+/**
+ * Call a class' constructor with the given arguments.
+ * @param _Class The class to call the constructor of
+ * @param args Arguments to call the class' constructor with
+ */
+export function callConstructor<ClassT extends InstantiableClass>(
+    _Class: ClassT,
+    ...args: ClassConstructorCallSignature<ClassT>
+): InstanceType<ClassT> {
+    return new (
+        Function.prototype.call.bind.call(_Class as any, null, ...args) as any
+    )();
+}
+
+/**
+ * Construct a class instance from a JSON-serialized string.
+ * @param _Class The class to deserialize the JSON-serialized string to
+ * @param serialized The JSON-serialized string containing the instance's
+ *   properties
+ * @param args Arguments to call the class' constructor with
+ */
+export function constructInstanceFromJSON<ClassT extends InstantiableClass>(
+    _Class: ClassT,
+    serialized: string,
+    ...args: ClassConstructorCallSignature<ClassT>
+): InstanceType<ClassT> {
+    return Object.assign(
+        new (_Class as InstantiableClass)(...args),
+        JSON.parse(serialized || "{}"),
+    );
+}
 
 /**
  * Deabstractify an abstract class for TypeScript's type-checking system.
@@ -70,6 +104,8 @@ export function getTypeNames(
 
 // Expose components.
 export const ReflectionUtils = {
+    callConstructor,
+    constructInstanceFromJSON,
     deabstractifyClass,
     getDefaultClassesInDirectory,
     getTypeNames,

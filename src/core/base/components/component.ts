@@ -19,7 +19,5 @@ export abstract class Component implements IDestructible {
 /**
  * Define the Component's class type with the abstract property removed.
  */
-export type ComponentClass<
-    ClassT = typeof Component,
-    InstanceT = Component
-> = ClassT & (new (doppelgangster: Doppelgangster) => InstanceT);
+export type ComponentClass<ClassT = typeof Component, InstanceT = Component> =
+    ClassT & (new (doppelgangster: Doppelgangster) => InstanceT);
