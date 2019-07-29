@@ -1,9 +1,8 @@
 // Import internal components.
-import {
-    TypeORMPersistenceController, TypeORMPersistenceControllerClass,
-} from "@/controllers/persistence";
+import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Repository } from "@/core/base/persistence";
-import { TypeORMEntityClass } from "@/persistence/typeorm/typeorm_entity";
+import { TypeORMEntity } from "@/persistence/typeorm/typeorm_entity";
+import { Optional } from '@/common/types';
 
 // Import external libraries.
 // import * as $TypeORM from "typeorm";
@@ -12,28 +11,45 @@ import { TypeORMEntityClass } from "@/persistence/typeorm/typeorm_entity";
  * TODO
  */
 export abstract class TypeORMRepository<
-    RepositoryClassT extends TypeORMRepositoryClass<
-        RepositoryClassT,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    EntityClassT extends TypeORMEntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT
-    >,
-    PrimaryKeyT extends (string | number | symbol)
+    BaseEntityT extends TypeORMEntity<any, any, any>,
+    PrimaryKeyT
 > extends Repository<
-    RepositoryClassT,
-    TypeORMPersistenceControllerClass<RepositoryClassT, EntityClassT>,
-    EntityClassT,
+    BaseEntityT,
+    TypeORMPersistenceController,
     PrimaryKeyT
 > {
-    constructor(
-        persistenceController:
-            TypeORMPersistenceController<RepositoryClassT, EntityClassT>,
-    ) {
-        super(persistenceController);
+    public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
+        return this as unknown as EntityT;
+    }
+
+    public async delete(): Promise<void> {
+        return;
+    }
+
+    public async destroy(): Promise<void> {
+        return;
+    }
+
+    public async find<EntityT extends BaseEntityT>(
+        ...args: any[]
+    ): Promise<Optional<EntityT>> {
+        return this as unknown as EntityT;
+    }
+
+    public async findAll<EntityT extends BaseEntityT>(): Promise<EntityT[]> {
+        return [this] as unknown as EntityT[];
+    }
+
+    public async read<EntityT extends BaseEntityT>(
+        entity: EntityT,
+    ): Promise<void> {
+        return;
+    }
+
+    public async save<EntityT extends BaseEntityT>(
+        entity: EntityT,
+    ): Promise<void> {
+        return;
     }
 }
 
@@ -41,20 +57,7 @@ export abstract class TypeORMRepository<
  * Define the TypeORMRepository class' type with the abstract property removed.
  */
 export type TypeORMRepositoryClass<
-    RepositoryClassT extends TypeORMRepositoryClass<
-        RepositoryClassT,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    EntityClassT extends TypeORMEntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT
-    >,
-    PrimaryKeyT extends (string | number | symbol)
+    RepositoryT extends TypeORMRepository<any, any>
 > = typeof TypeORMRepository & (
-    new (
-        persistenceController:
-            TypeORMPersistenceController<RepositoryClassT, EntityClassT>,
-    ) => InstanceType<RepositoryClassT>
+    new (persistenceController: TypeORMPersistenceController) => RepositoryT
 );

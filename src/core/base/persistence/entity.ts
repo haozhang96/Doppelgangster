@@ -2,29 +2,15 @@
 import { IllegalStateError } from "@/common/errors";
 import { ISerializable } from "@/common/interfaces/traits";
 import { Component } from "@/core/base/components";
-import {
-    Repository, RepositoryClass,
-} from "@/core/base/persistence/repository";
-import { PersistenceControllerClass } from '../controllers/persistence_controller';
+import { Repository } from "@/core/base/persistence/repository";
 // import { ReflectionUtils } from "@/utilities";
 
 /**
  * TODO: Change to Repository instead of PersistenceController
  */
 export abstract class Entity<
-    EntityClassT extends EntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT,
-        SerializedT
-    >,
-    RepositoryClassT extends RepositoryClass<
-        RepositoryClassT,
-        any,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    PrimaryKeyT extends (string | number | symbol),
+    EntityT extends Entity<any, any, any>,
+    RepositoryT extends Repository<any, any, any>,
     SerializedT
 > extends Component implements ISerializable<SerializedT> {
     /**
@@ -33,27 +19,10 @@ export abstract class Entity<
      * @param repository The repository to bind the entity to
      * @param serialized The JSON-encoded string to deserialize from
      */
-    public static fromJSON<
-        EntityClassT extends EntityClass<
-            EntityClassT,
-            RepositoryClassT,
-            any,
-            any
-        >,
-        RepositoryClassT extends RepositoryClass<RepositoryClassT, any, EntityClassT, any>
-    >(
-        repository: InstanceType<RepositoryClassT>,
+    public static fromJSON<EntityT extends Entity<any, any, any>>(
+        repository: Repository<any, any, any>,
         serialized: string,
-    ): InstanceType<EntityClassT> {
-        /*return ReflectionUtils.constructInstanceFromJSON(
-            this as EntityClass<T>,
-            serialized,
-            repository,
-        ) as T;*/
-        /*return Object.assign(
-            new (this as EntityClass<T>)(repository),
-            JSON.parse(serialized || "{}"),
-        );*/
+    ): EntityT {
         return Object.assign(
             Object.create(this.prototype),
             JSON.parse(serialized || "{}"),
@@ -62,7 +31,7 @@ export abstract class Entity<
     }
 
     public abstract readonly primaryKey:
-        EntityPrimaryKey<Entity<any, any, any, any>, any>;
+        EntityPrimaryKey<Entity<EntityT, RepositoryT, SerializedT>, EntityT>;
     public readonly properties: string[] = Object.getOwnPropertyNames(this);
 
     private _destroyed: boolean = false;
@@ -71,7 +40,7 @@ export abstract class Entity<
      * Construct an Entity instance.
      * @param repository The Repository instance to attach to
      */
-    constructor(public readonly repository: InstanceType<RepositoryClassT>) {
+    constructor(public readonly repository: RepositoryT) {
         super(repository.doppelgangster);
     }
 
@@ -81,10 +50,7 @@ export abstract class Entity<
 
     public async delete(...args: any[]): Promise<void> {
         this.assertUsable();
-        await this.repository.delete(
-            this as InstanceType<EntityClassT>,
-            ...args,
-        );
+        await this.repository.delete(this as unknown as EntityT, ...args);
         await this.destroy();
     }
 
@@ -95,10 +61,7 @@ export abstract class Entity<
 
     public async save(...args: any[]): Promise<void> {
         this.assertUsable();
-        await this.repository.save(
-            this as InstanceType<EntityClassT>,
-            ...args,
-        );
+        await this.repository.save(this as unknown as EntityT, ...args);
     }
 
     public toJSON(): string {
@@ -111,7 +74,9 @@ export abstract class Entity<
      * Assert that the entity has not been destroyed.
      */
     private assertUsable(): void {
-        if (this._destroyed) {
+        if (this.repository === undefined) {
+            throw new IllegalStateError("This entity has no repository!");
+        } else if (this._destroyed) {
             throw new IllegalStateError("This entity has been destroyed!");
         }
     }
@@ -121,31 +86,14 @@ export abstract class Entity<
  * Define the Entity class' type with the abstract property removed.
  */
 export type EntityClass<
-    EntityClassT extends EntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT,
-        SerializedT
-    >,
-    RepositoryClassT extends RepositoryClass<
-        RepositoryClassT,
-        any,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    PrimaryKeyT extends (string | number | symbol),
-    SerializedT
-> =
-    typeof Entity & (
-        new (
-            repository: InstanceType<RepositoryClassT>,
-        ) => InstanceType<EntityClassT>
-    );
+    EntityT extends Entity<any, any, any>,
+    RepositoryT extends Repository<any, any, any>
+> = typeof Entity & (new (repository: RepositoryT) => EntityT);
 
 /**
  * TODO
  */
 export type EntityPrimaryKey<
-    BaseEntityT extends Entity<any, any, any, any>,
+    BaseEntityT extends Entity<any, any, any>,
     EntityT extends BaseEntityT,
 > = Exclude<keyof EntityT, keyof BaseEntityT>;

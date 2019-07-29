@@ -4,7 +4,6 @@ import { Doppelgangster } from "@/core";
 import {
     ControllerClass, PersistenceController,
 } from "@/core/base/controllers";
-import { TypeORMEntityClass } from "@/persistence/typeorm/typeorm_entity";
 import {
     TypeORMRepositoryClass,
 } from "@/persistence/typeorm/typeorm_repository";
@@ -15,22 +14,8 @@ import * as $TypeORM from "typeorm";
 /**
  * TODO
  */
-export class TypeORMPersistenceController<
-    RepositoryClassT extends TypeORMRepositoryClass<
-        RepositoryClassT,
-        EntityClassT,
-        any
-    >,
-    EntityClassT extends TypeORMEntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        any
-    >
-> extends PersistenceController<
-    TypeORMPersistenceControllerClass<RepositoryClassT, EntityClassT>,
-    RepositoryClassT,
-    EntityClassT
-> implements IInitializable {
+export class TypeORMPersistenceController
+        extends PersistenceController implements IInitializable {
     private _database!: $TypeORM.EntityManager;
 
     constructor(doppelgangster: Doppelgangster) {
@@ -64,9 +49,9 @@ export class TypeORMPersistenceController<
         return;
     }
 
-    public async getRepository(
-        Repository: RepositoryClassT,
-    ): Promise<InstanceType<RepositoryClassT>> {
+    public async getRepository<
+        RepositoryClassT extends TypeORMRepositoryClass<any>
+    >(Repository: RepositoryClassT): Promise<InstanceType<RepositoryClassT>> {
         await this.initialize();
         return super.getRepository(Repository);
     }
@@ -91,19 +76,7 @@ export class TypeORMPersistenceController<
  * Define the TypeORMPersistenceController class' type with the abstract
  *   property removed.
  */
-export type TypeORMPersistenceControllerClass<
-    RepositoryClassT extends TypeORMRepositoryClass<
-        RepositoryClassT,
-        EntityClassT,
-        any
-    >,
-    EntityClassT extends TypeORMEntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        any
-    >
-> =
-    ControllerClass<
-        typeof TypeORMPersistenceController,
-        TypeORMPersistenceController<RepositoryClassT, EntityClassT>
-    >;
+export type TypeORMPersistenceControllerClass = ControllerClass<
+    typeof TypeORMPersistenceController,
+    TypeORMPersistenceController
+>;

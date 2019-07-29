@@ -1,42 +1,23 @@
 // Import internal components.
+import { IllegalStateError } from "@/common/errors";
 import { Optional } from "@/common/types";
 import { Component } from "@/core/base/components";
-import { PersistenceControllerClass } from "@/core/base/controllers";
-import { EntityClass } from "@/core/base/persistence/entity";
+import { PersistenceController } from "@/core/base/controllers";
+import { Entity, EntityClass } from "@/core/base/persistence/entity";
 
 /**
  * TODO
  */
 export abstract class Repository<
-    RepositoryClassT extends RepositoryClass<
-        RepositoryClassT,
-        PersistenceControllerClassT,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    PersistenceControllerClassT extends PersistenceControllerClass<
-        PersistenceControllerClassT,
-        RepositoryClassT,
-        EntityClassT
-    >,
-    EntityClassT extends EntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT,
-        any
-    >,
-    PrimaryKeyT extends (string | number | symbol)
+    BaseEntityT extends Entity<any, any, any>,
+    PersistenceControllerT extends PersistenceController,
+    PrimaryKeyT
 > extends Component {
+    protected abstract readonly entityClass: unknown;
     protected readonly entities:
-        Map<PrimaryKeyT, InstanceType<EntityClassT>> = new Map();
+        Map</* PrimaryKeyT */ unknown, Entity<any, any, any>> = new Map();
 
-    // @Override
-    protected abstract readonly entityClass: EntityClassT;
-
-    constructor(
-        public readonly persistenceController:
-            InstanceType<PersistenceControllerClassT>,
-    ) {
+    constructor(public readonly persistenceController: PersistenceControllerT) {
         super(persistenceController.doppelgangster);
 
         persistenceController.doppelgangster.logger.info(
@@ -45,46 +26,48 @@ export abstract class Repository<
         );
     }
 
-    public findByPrimaryKey(
-        primaryKey: PrimaryKeyT,
-    ): Optional<InstanceType<EntityClassT>> {
-        return this.entities.get(primaryKey);
+    public findByPrimaryKey<EntityT extends BaseEntityT, K extends PrimaryKeyT>(
+        primaryKey: K,
+    ): Optional<EntityT> {
+        return this.entities.get(primaryKey) as EntityT;
     }
 
-    /**
-     * Deserialize and construct an instance of Entity from a JSON-encoded
-     *   string.
-     * @param Entity The Entity class to construct an instance of
-     * @param serialized The JSON-encoded string to deserialize from
-     */
-    public fromJSON(serialized: string): InstanceType<EntityClassT> {
-        return this.entityClass.fromJSON(this, serialized);
+    public fromJSON<EntityT extends BaseEntityT>(serialized: string): EntityT {
+        if (!(this.entityClass instanceof Function)) {
+            throw new IllegalStateError(
+                "The \"entityClass\" field is not a constructor!",
+            );
+        }
+
+        return (
+            this.entityClass as EntityClass<BaseEntityT, any>
+        ).fromJSON(this, serialized);
     }
 
-    public abstract async create(
+    public abstract async create<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<InstanceType<EntityClassT>>;
+    ): Promise<EntityT>;
 
-    public abstract async delete(
-        entity: InstanceType<EntityClassT>,
+    public abstract async delete<EntityT extends BaseEntityT>(
+        entity: EntityT,
         ...args: any[]
     ): Promise<void>;
 
-    public abstract async find(
+    public abstract async find<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Optional<InstanceType<EntityClassT>>>;
+    ): Promise<Optional<EntityT>>;
 
-    public abstract async findAll(
+    public abstract async findAll<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Array<InstanceType<EntityClassT>>>;
+    ): Promise<EntityT[]>;
 
-    public abstract async read(
-        entity: InstanceType<EntityClassT>,
+    public abstract async read<EntityT extends BaseEntityT>(
+        entity: EntityT,
         ...args: any[]
     ): Promise<void>;
 
-    public abstract async save(
-        entity: InstanceType<EntityClassT>,
+    public abstract async save<EntityT extends BaseEntityT>(
+        entity: EntityT,
         ...args: any[]
     ): Promise<void>;
 }
@@ -93,25 +76,8 @@ export abstract class Repository<
  * Define the Repository class' type with the abstract property removed.
  */
 export type RepositoryClass<
-    RepositoryClassT extends RepositoryClass<
-        RepositoryClassT,
-        PersistenceControllerClassT,
-        EntityClassT,
-        PrimaryKeyT
-    >,
-    PersistenceControllerClassT extends PersistenceControllerClass<
-        PersistenceControllerClassT,
-        RepositoryClassT,
-        EntityClassT
-    >,
-    EntityClassT extends EntityClass<
-        EntityClassT,
-        RepositoryClassT,
-        PrimaryKeyT,
-        any
-    >,
-    PrimaryKeyT extends (string | number | symbol)
+    RepositoryT extends Repository<any, any, any>,
+    PersistenceControllerT extends PersistenceController
 > = typeof Repository & (
-    new (persistenceController: InstanceType<PersistenceControllerClassT>) =>
-        InstanceType<RepositoryClassT>
+    new (persistenceController: PersistenceControllerT) => RepositoryT
 );
