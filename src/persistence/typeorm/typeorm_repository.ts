@@ -1,8 +1,8 @@
 // Import internal components.
+import { Optional } from "@/common/types";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Repository } from "@/core/base/persistence";
 import { TypeORMEntity } from "@/persistence/typeorm/typeorm_entity";
-import { Optional } from '@/common/types';
 
 // Import external libraries.
 // import * as $TypeORM from "typeorm";
@@ -12,11 +12,11 @@ import { Optional } from '@/common/types';
  */
 export abstract class TypeORMRepository<
     BaseEntityT extends TypeORMEntity<any, any, any>,
-    PrimaryKeyT
+    BasePrimaryKeyT
 > extends Repository<
     BaseEntityT,
     TypeORMPersistenceController,
-    PrimaryKeyT
+    BasePrimaryKeyT
 > {
     public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
         return this as unknown as EntityT;

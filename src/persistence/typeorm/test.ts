@@ -1,13 +1,18 @@
 import { doppelgangster } from "@/app";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
-// import { MyEntity } from "./entities/my_entity";
-import { MyRepository } from "./repositories/my_repository";
+import { MyEntity } from "@/persistence/typeorm/entities/my_entity";
+import { MyRepository } from "@/persistence/typeorm/repositories/my_repository";
 
-new TypeORMPersistenceController(
-    doppelgangster,
-).initialize().then(async (controller) => {
-    const a = new MyRepository(controller);
-    const b = await controller.getRepository(MyRepository);
+new TypeORMPersistenceController(doppelgangster).initialize().then(async (
+    controller,
+) => {
+    const repositoryA = new MyRepository(controller);
+    const entityA = new MyEntity(repositoryA);
+    entityA.load();
 
-    alert(a.fromJSON("{a:1}") === b.fromJSON("{a:1}"));
+    const repositoryB = await controller.getRepository(MyRepository);
+    const entityB = await repositoryB.create();
+    repositoryB.read(entityB);
+
+    alert(repositoryA.fromJSON("{a:1}") === repositoryB.fromJSON("{a:1}"));
 });

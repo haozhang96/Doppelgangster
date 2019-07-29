@@ -11,8 +11,8 @@ import * as $TypeORM from "typeorm";
 export abstract class TypeORMEntity<
     EntityT extends TypeORMEntity<any, any, any>,
     RepositoryT extends TypeORMRepository<any, any>,
-    PrimaryKeyT
-> extends Entity<EntityT, RepositoryT, PrimaryKeyT> {
+    SerializedT
+> extends Entity<EntityT, RepositoryT, SerializedT> {
     protected abstract readonly typeormEntity: $TypeORM.BaseEntity;
 }
 
@@ -22,9 +22,7 @@ export abstract class TypeORMEntity<
 export type TypeORMEntityClass<
     EntityT extends TypeORMEntity<any, any, any>,
     RepositoryT extends TypeORMRepository<any, any>
-> = typeof TypeORMEntity & (
-    new (repository: RepositoryT) => EntityT
-);
+> = typeof TypeORMEntity & (new (repository: RepositoryT) => EntityT);
 
 export type TypeORMEntityPrimaryKey<
     EntityT extends TypeORMEntity<any, any, any>

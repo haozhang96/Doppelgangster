@@ -7,7 +7,6 @@ import * as $TypeORM from "typeorm";
 
 export class MyEntity extends TypeORMEntity<MyEntity, MyRepository, string> {
     public primaryKey: TypeORMEntityPrimaryKey<MyEntity> = "a";
-
     public a: string = "hi";
     public b: string = "there";
 

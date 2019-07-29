@@ -3,7 +3,6 @@ import { IllegalStateError } from "@/common/errors";
 import { ISerializable } from "@/common/interfaces/traits";
 import { Component } from "@/core/base/components";
 import { Repository } from "@/core/base/persistence/repository";
-// import { ReflectionUtils } from "@/utilities";
 
 /**
  * TODO: Change to Repository instead of PersistenceController
@@ -20,7 +19,7 @@ export abstract class Entity<
      * @param serialized The JSON-encoded string to deserialize from
      */
     public static fromJSON<EntityT extends Entity<any, any, any>>(
-        repository: Repository<any, any, any>,
+        repository: Repository<EntityT, any, any>,
         serialized: string,
     ): EntityT {
         return Object.assign(
@@ -50,7 +49,7 @@ export abstract class Entity<
 
     public async delete(...args: any[]): Promise<void> {
         this.assertUsable();
-        await this.repository.delete(this as unknown as EntityT, ...args);
+        await this.repository.delete(this, ...args);
         await this.destroy();
     }
 
@@ -59,9 +58,14 @@ export abstract class Entity<
         this._destroyed = true;
     }
 
+    public async load(...args: any[]): Promise<void> {
+        this.assertUsable();
+        await this.repository.read(this, ...args);
+    }
+
     public async save(...args: any[]): Promise<void> {
         this.assertUsable();
-        await this.repository.save(this as unknown as EntityT, ...args);
+        await this.repository.save(this, ...args);
     }
 
     public toJSON(): string {

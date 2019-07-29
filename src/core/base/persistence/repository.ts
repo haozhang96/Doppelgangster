@@ -11,11 +11,11 @@ import { Entity, EntityClass } from "@/core/base/persistence/entity";
 export abstract class Repository<
     BaseEntityT extends Entity<any, any, any>,
     PersistenceControllerT extends PersistenceController,
-    PrimaryKeyT
+    BasePrimaryKeyT
 > extends Component {
-    protected abstract readonly entityClass: unknown;
+    protected abstract readonly entityClass: /* BaseEntityT */ unknown;
     protected readonly entities:
-        Map</* PrimaryKeyT */ unknown, Entity<any, any, any>> = new Map();
+        Map</* BasePrimaryKeyT */ unknown, Entity<any, any, any>> = new Map();
 
     constructor(public readonly persistenceController: PersistenceControllerT) {
         super(persistenceController.doppelgangster);
@@ -26,9 +26,10 @@ export abstract class Repository<
         );
     }
 
-    public findByPrimaryKey<EntityT extends BaseEntityT, K extends PrimaryKeyT>(
-        primaryKey: K,
-    ): Optional<EntityT> {
+    public findByPrimaryKey<
+        EntityT extends BaseEntityT,
+        PrimaryKeyT extends BasePrimaryKeyT
+    >(primaryKey: PrimaryKeyT): Optional<EntityT> {
         return this.entities.get(primaryKey) as EntityT;
     }
 
