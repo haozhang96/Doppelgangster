@@ -18,10 +18,10 @@ export abstract class Entity<
      * @param repository The repository to bind the entity to
      * @param serialized The JSON-encoded string to deserialize from
      */
-    public static fromJSON<EntityT extends Entity<any, any, any>>(
-        repository: Repository<EntityT, any, any>,
+    public static fromJSON<EntityClassT extends EntityClass<any, any>>(
+        repository: Repository<EntityClassT, any, any>,
         serialized: string,
-    ): EntityT {
+    ): InstanceType<EntityClassT> {
         return Object.assign(
             Object.create(this.prototype),
             JSON.parse(serialized || "{}"),
@@ -78,10 +78,10 @@ export abstract class Entity<
      * Assert that the entity has not been destroyed.
      */
     private assertUsable(): void {
-        if (this.repository === undefined) {
-            throw new IllegalStateError("This entity has no repository!");
-        } else if (this._destroyed) {
+        if (this._destroyed) {
             throw new IllegalStateError("This entity has been destroyed!");
+        } else if (this.repository === undefined) {
+            throw new IllegalStateError("This entity has no repository!");
         }
     }
 }

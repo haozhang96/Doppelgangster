@@ -9,11 +9,11 @@ import { Entity, EntityClass } from "@/core/base/persistence/entity";
  * TODO
  */
 export abstract class Repository<
-    BaseEntityT extends Entity<any, any, any>,
+    BaseEntityClassT extends EntityClass<any, any>,
     PersistenceControllerT extends PersistenceController,
     BasePrimaryKeyT
 > extends Component {
-    protected abstract readonly entityClass: /* BaseEntityT */ unknown;
+    protected abstract readonly entityClass: /* BaseEntityClassT */ unknown;
     protected readonly entities:
         Map</* BasePrimaryKeyT */ unknown, Entity<any, any, any>> = new Map();
 
@@ -27,48 +27,51 @@ export abstract class Repository<
     }
 
     public findByPrimaryKey<
-        EntityT extends BaseEntityT,
+        EntityClassT extends BaseEntityClassT,
         PrimaryKeyT extends BasePrimaryKeyT
-    >(primaryKey: PrimaryKeyT): Optional<EntityT> {
-        return this.entities.get(primaryKey) as EntityT;
+    >(primaryKey: PrimaryKeyT): Optional<InstanceType<EntityClassT>> {
+        return this.entities.get(primaryKey) as InstanceType<EntityClassT>;
     }
 
-    public fromJSON<EntityT extends BaseEntityT>(serialized: string): EntityT {
+    public fromJSON<EntityClassT extends BaseEntityClassT>(
+        serialized: string,
+    ): InstanceType<EntityClassT> {
         if (!(this.entityClass instanceof Function)) {
             throw new IllegalStateError(
                 "The \"entityClass\" field is not a constructor!",
             );
         }
 
-        return (
-            this.entityClass as EntityClass<BaseEntityT, any>
-        ).fromJSON(this, serialized);
+        return (this.entityClass as EntityClassT).fromJSON(this, serialized);
     }
 
-    public abstract async create<EntityT extends BaseEntityT>(
+    public abstract async create<EntityClassT extends BaseEntityClassT>(
+        Entity: EntityClassT,
         ...args: any[]
-    ): Promise<EntityT>;
+    ): Promise<InstanceType<EntityClassT>>;
 
-    public abstract async delete<EntityT extends BaseEntityT>(
-        entity: EntityT,
-        ...args: any[]
-    ): Promise<void>;
-
-    public abstract async find<EntityT extends BaseEntityT>(
-        ...args: any[]
-    ): Promise<Optional<EntityT>>;
-
-    public abstract async findAll<EntityT extends BaseEntityT>(
-        ...args: any[]
-    ): Promise<EntityT[]>;
-
-    public abstract async read<EntityT extends BaseEntityT>(
-        entity: EntityT,
+    public abstract async delete<EntityClassT extends BaseEntityClassT>(
+        entity: InstanceType<EntityClassT>,
         ...args: any[]
     ): Promise<void>;
 
-    public abstract async save<EntityT extends BaseEntityT>(
-        entity: EntityT,
+    public abstract async find<EntityClassT extends BaseEntityClassT>(
+        Entity: EntityClassT,
+        ...args: any[]
+    ): Promise<Optional<InstanceType<BaseEntityClassT>>>;
+
+    public abstract async findAll<EntityClassT extends BaseEntityClassT>(
+        Entity: EntityClassT,
+        ...args: any[]
+    ): Promise<Array<InstanceType<EntityClassT>>>;
+
+    public abstract async read<EntityClassT extends BaseEntityClassT>(
+        entity: InstanceType<EntityClassT>,
+        ...args: any[]
+    ): Promise<void>;
+
+    public abstract async save<EntityClassT extends BaseEntityClassT>(
+        entity: InstanceType<EntityClassT>,
         ...args: any[]
     ): Promise<void>;
 }
