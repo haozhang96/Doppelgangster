@@ -14,5 +14,5 @@ new TypeORMPersistenceController(doppelgangster).initialize().then(async (
     const entityB = await repositoryB.create();
     repositoryB.read(entityB);
 
-    alert(repositoryA.fromJSON("{a:1}") === repositoryB.fromJSON("{a:1}"));
+    alert(repositoryA.fromJSON("{a:1}").a === repositoryB.fromJSON("{a:1}").a);
 });
