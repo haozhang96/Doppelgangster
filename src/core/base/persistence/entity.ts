@@ -18,10 +18,10 @@ export abstract class Entity<
      * @param repository The repository to bind the entity to
      * @param serialized The JSON-encoded string to deserialize from
      */
-    public static fromJSON<EntityClassT extends EntityClass<any, any>>(
-        repository: Repository<EntityClassT, any, any>,
+    public static fromJSON<EntityT extends Entity<any, any, any>>(
+        repository: Repository<EntityT, any, any>,
         serialized: string,
-    ): InstanceType<EntityClassT> {
+    ): EntityT {
         return Object.assign(
             Object.create(this.prototype),
             JSON.parse(serialized || "{}"),
@@ -58,14 +58,14 @@ export abstract class Entity<
         this._destroyed = true;
     }
 
-    public async load(...args: any[]): Promise<void> {
+    public async load(...args: any[]): Promise<this> {
         this.assertUsable();
-        await this.repository.read(this, ...args);
+        return this.repository.read(this, ...args);
     }
 
-    public async save(...args: any[]): Promise<void> {
+    public async save(...args: any[]): Promise<this> {
         this.assertUsable();
-        await this.repository.save(this, ...args);
+        return this.repository.save(this, ...args);
     }
 
     public toJSON(): string {

@@ -27,9 +27,7 @@ export function caseInsensitiveEquals(a: string, b: string): boolean {
     return a.toLowerCase() === b.toLowerCase();
 }
 
-export function format(_format: string, ...formatters: any[]): string {
-    return $Utilities.format(_format, ...formatters);
-}
+export const format = $Utilities.format;
 
 export function pluralize(word: string, count: number, pluralForm?: string) {
     return count === 1 ? word : (pluralForm || word + "s");

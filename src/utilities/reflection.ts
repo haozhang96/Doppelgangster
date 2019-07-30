@@ -22,21 +22,29 @@ export function callConstructor<ClassT extends InstantiableClass>(
 }
 
 /**
- * Construct a class instance from a JSON-serialized string.
+ * Create a class instance and assign any properties given.
+ * @param _Class The class to create an instance of
+ * @param properties Properties to assign to the created instance
+ */
+export function createInstance<ClassT extends Class>(
+    _Class: ClassT,
+    properties?: any,
+): unknown {
+    return Object.assign(Object.create(_Class.prototype), properties);
+}
+
+/**
+ * Create a class instance from a JSON-serialized string.
  * @param _Class The class to deserialize the JSON-serialized string to
  * @param serialized The JSON-serialized string containing the instance's
  *   properties
  * @param args Arguments to call the class' constructor with
  */
-export function constructInstanceFromJSON<ClassT extends InstantiableClass>(
+export function createInstanceFromJSON<ClassT extends Class>(
     _Class: ClassT,
     serialized: string,
-    ...args: ClassConstructorCallSignature<ClassT>
-): InstanceType<ClassT> {
-    return Object.assign(
-        new (_Class as InstantiableClass)(...args),
-        JSON.parse(serialized || "{}"),
-    );
+): unknown {
+    return createInstance(_Class, JSON.parse(serialized || "{}"));
 }
 
 /**
@@ -105,7 +113,8 @@ export function getTypeNames(
 // Expose components.
 export const ReflectionUtils = {
     callConstructor,
-    constructInstanceFromJSON,
+    createInstance,
+    createInstanceFromJSON,
     deabstractifyClass,
     getDefaultClassesInDirectory,
     getTypeNames,

@@ -7,6 +7,7 @@ import {
 import {
     TypeORMRepositoryClass,
 } from "@/persistence/typeorm/typeorm_repository";
+import * as Utilities from "@/utilities";
 
 // Import external libraries.
 import * as $TypeORM from "typeorm";
@@ -57,18 +58,10 @@ export class TypeORMPersistenceController
     }
 
     public async initialize(): Promise<this> {
-        if (!this._database) {
-            return await new Promise((resolve) => {
-                const poll = setInterval(() => {
-                    if (this._database) {
-                        clearInterval(poll);
-                        resolve(this);
-                    }
-                }, 5);
-            });
-        }
-
-        return this;
+        return Utilities.misc.waitUntil(
+            () => this._database,
+            () => this,
+        ) as unknown as this;
     }
 }
 

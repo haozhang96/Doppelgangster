@@ -1,6 +1,10 @@
+// tslint:disable: max-classes-per-file
+
 // Import internal components.
 import { TypeORMEntity, TypeORMEntityPrimaryKey } from "@/persistence/typeorm";
-import { MyRepository } from "@/persistence/typeorm/repositories/my_repository";
+import {
+    MyFakeRepository, MyRepository,
+} from "@/persistence/typeorm/repositories/my_repository";
 
 // Import external libraries.
 import * as $TypeORM from "typeorm";
@@ -14,5 +18,16 @@ export class MyEntity extends TypeORMEntity<MyEntity, MyRepository, string> {
 
     public serialize(): string {
         return "wow";
+    }
+}
+
+export class MyFakeEntity
+        extends TypeORMEntity<MyFakeEntity, MyFakeRepository, string> {
+    public primaryKey!: TypeORMEntityPrimaryKey<MyFakeEntity>;
+
+    protected typeormEntity = new $TypeORM.BaseEntity();
+
+    public serialize(): string {
+        return "hi";
     }
 }

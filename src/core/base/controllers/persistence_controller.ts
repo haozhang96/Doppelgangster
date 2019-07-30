@@ -2,7 +2,7 @@
 import {
     Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
-import { Repository, RepositoryClass } from "@/core/base/persistence"; // TODO
+import { Repository, RepositoryClass } from "@/core/base/persistence";
 
 /**
  * TODO

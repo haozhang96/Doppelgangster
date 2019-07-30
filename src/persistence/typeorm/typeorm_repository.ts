@@ -2,7 +2,9 @@
 import { Optional } from "@/common/types";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Repository } from "@/core/base/persistence";
-import { TypeORMEntityClass } from "@/persistence/typeorm/typeorm_entity";
+import {
+    TypeORMEntity, TypeORMEntityClass,
+} from "@/persistence/typeorm/typeorm_entity";
 
 // Import external libraries.
 // import * as $TypeORM from "typeorm";
@@ -11,22 +13,23 @@ import { TypeORMEntityClass } from "@/persistence/typeorm/typeorm_entity";
  * TODO
  */
 export abstract class TypeORMRepository<
-    BaseEntityClassT extends TypeORMEntityClass<any, any>,
+    BaseEntityT extends TypeORMEntity<any, any, any>,
     BasePrimaryKeyT
 > extends Repository<
-    BaseEntityClassT,
+    BaseEntityT,
     TypeORMPersistenceController,
     BasePrimaryKeyT
 > {
-    public async create<EntityClassT extends BaseEntityClassT>(
-        Entity: EntityClassT,
+    public async create<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<InstanceType<EntityClassT>> {
-        return new Entity(this) as InstanceType<EntityClassT>;
+    ): Promise<EntityT> {
+        return new (this.entityClass as TypeORMEntityClass<any, any>)(
+            this,
+        ) as EntityT;
     }
 
-    public async delete<EntityClassT extends BaseEntityClassT>(
-        entity: InstanceType<EntityClassT>,
+    public async delete<EntityT extends BaseEntityT>(
+        entity: EntityT,
         ...args: any[]
     ): Promise<void> {
         return;
@@ -36,30 +39,28 @@ export abstract class TypeORMRepository<
         return;
     }
 
-    public async find<EntityClassT extends BaseEntityClassT>(
-        Entity: EntityClassT,
+    public async find<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Optional<InstanceType<EntityClassT>>> {
-        return this.create(Entity, ...args);
+    ): Promise<Optional<EntityT>> {
+        return this.create<EntityT>(...args);
     }
 
-    public async findAll<EntityClassT extends BaseEntityClassT>(
-        Entity: EntityClassT,
+    public async findAll<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Array<InstanceType<EntityClassT>>> {
-        return [await this.create(Entity, ...args)];
+    ): Promise<EntityT[]> {
+        return [await this.create<EntityT>(...args)];
     }
 
-    public async read<EntityClassT extends BaseEntityClassT>(
-        entity: InstanceType<EntityClassT>,
-    ): Promise<void> {
-        return;
+    public async read<EntityT extends BaseEntityT>(
+        entity: EntityT,
+    ): Promise<EntityT> {
+        return entity;
     }
 
-    public async save<EntityClassT extends BaseEntityClassT>(
-        entity: InstanceType<EntityClassT>,
-    ): Promise<void> {
-        return;
+    public async save<EntityT extends BaseEntityT>(
+        entity: EntityT,
+    ): Promise<EntityT> {
+        return entity;
     }
 }
 
