@@ -1,6 +1,6 @@
 // Import internal components.
 import { IInitializable } from "@/common/interfaces/traits";
-import { Promisable } from "@/common/types";
+import { ClassConstructorCallSignature, Promisable } from "@/common/types";
 import { Doppelgangster } from "@/core";
 import {
     ControllerClass, PersistenceController,
@@ -18,7 +18,7 @@ import * as $TypeORM from "typeorm";
  */
 export class TypeORMPersistenceController
         extends PersistenceController implements IInitializable {
-    private _database!: $TypeORM.EntityManager;
+    public typeormDatabase!: $TypeORM.EntityManager;
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);
@@ -32,8 +32,8 @@ export class TypeORMPersistenceController
                     entities: ["dist/src/core/persistence/entities/*.js"],
                 },
             }),
-        ).then((_database) => {
-            this._database = _database.manager;
+        ).then((database) => {
+            this.typeormDatabase = database.manager;
             doppelgangster.logger.info("The database is ready.");
         }).catch((error) => {
             doppelgangster.logger.error(
@@ -44,26 +44,27 @@ export class TypeORMPersistenceController
     }
 
     public get initialized(): boolean {
-        return !!this._database;
+        return !!this.typeormDatabase;
     }
 
     public async destroy(): Promise<void> {
         await super.destroy();
-        await this._database.connection.close();
+        await this.typeormDatabase.connection.close();
     }
 
     public async getRepository<
         RepositoryClassT extends TypeORMRepositoryClass<any>
     >(
         Repository: Promisable<RepositoryClassT>,
+        ...args: ClassConstructorCallSignature<RepositoryClassT>
     ): Promise<InstanceType<RepositoryClassT>> {
         await this.initialize();
-        return super.getRepository(await Repository);
+        return super.getRepository(await Repository, ...args);
     }
 
     public async initialize(): Promise<this> {
         return Utilities.misc.waitUntil(
-            () => this._database,
+            () => this.typeormDatabase,
             () => this,
         ) as unknown as this;
     }

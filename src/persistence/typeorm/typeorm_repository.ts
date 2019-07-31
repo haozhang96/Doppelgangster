@@ -7,7 +7,7 @@ import {
 } from "@/persistence/typeorm/typeorm_entity";
 
 // Import external libraries.
-// import * as $TypeORM from "typeorm";
+import * as $TypeORM from "typeorm";
 
 /**
  * TODO
@@ -20,9 +20,23 @@ export abstract class TypeORMRepository<
     TypeORMPersistenceController,
     BasePrimaryKeyT
 > {
-    public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
+    public readonly typeormRepository: $TypeORM.Repository<BaseEntityT>;
+
+    constructor(
+        persistenceController: TypeORMPersistenceController,
+        repositoryName: string,
+    ) {
+        super(persistenceController);
+        this.typeormRepository =
+            persistenceController.typeormDatabase.getRepository(repositoryName);
+    }
+
+    public async create<EntityT extends BaseEntityT>(
+        typeormEntity: $TypeORM.BaseEntity,
+    ): Promise<EntityT> {
         return new (this.entityClass as TypeORMEntityClass<any, any>)(
             this,
+            typeormEntity,
         ) as EntityT;
     }
 

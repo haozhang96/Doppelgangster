@@ -1,5 +1,5 @@
 // Import internal components.
-import { Promisable } from "@/common/types";
+import { ClassConstructorCallSignature, Promisable } from "@/common/types";
 import {
     Controller, ControllerClass,
 } from "@/core/base/controllers/controller";
@@ -24,13 +24,17 @@ export abstract class PersistenceController extends Controller {
         RepositoryClassT extends RepositoryClass<any, any>
     >(
         _Repository: Promisable<RepositoryClassT>,
+        ...args: ClassConstructorCallSignature<RepositoryClassT>
     ): Promise<InstanceType<RepositoryClassT>> {
         _Repository = await _Repository;
 
         // Ensure that a repository singleton instance is associated with this
         //   persistence controller.
         if (!this.repositories.has(_Repository)) {
-            this.repositories.set(_Repository, new _Repository(this));
+            this.repositories.set(
+                _Repository,
+                new (_Repository as any)(this, ...args),
+            );
         }
 
         // Return the repository singleton instance associated with this
