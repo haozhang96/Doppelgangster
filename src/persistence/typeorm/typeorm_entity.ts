@@ -1,4 +1,5 @@
 // Import internal components.
+import { NotImplementedError } from "@/common/errors";
 import { Entity, EntityPrimaryKey } from "@/core/base/persistence";
 import { TypeORMRepository } from "@/persistence/typeorm/typeorm_repository";
 
@@ -13,7 +14,13 @@ export abstract class TypeORMEntity<
     RepositoryT extends TypeORMRepository<any, any>,
     SerializedT
 > extends Entity<EntityT, RepositoryT, SerializedT> {
-    protected abstract readonly typeormEntity: $TypeORM.BaseEntity;
+    // protected abstract readonly typeormEntity: $TypeORM.BaseEntity;
+
+    public serialize(): SerializedT {
+        throw new NotImplementedError(
+            "serialize() is currently not implemented in TypeORMEntity!",
+        );
+    }
 }
 
 /**

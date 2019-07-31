@@ -1,11 +1,12 @@
 // Import internal components.
+import { ExtendedSet } from "@/common/classes/extended_set";
 import { IllegalStateError } from "@/common/errors";
 import { ISerializable } from "@/common/interfaces/traits";
 import { Component } from "@/core/base/components";
 import { Repository } from "@/core/base/persistence/repository";
 
 /**
- * TODO: Change to Repository instead of PersistenceController
+ * TODO
  */
 export abstract class Entity<
     EntityT extends Entity<any, any, any>,
@@ -22,12 +23,48 @@ export abstract class Entity<
         repository: Repository<EntityT, any, any>,
         serialized: string,
     ): EntityT {
+        // Deserialize the JSON string. Any errors in the serialized string will
+        //   cause a SyntaxError.
+        const deserialized: any = JSON.parse(serialized || "{}");
+
+        // Use a dummy instance to populate the properties that are set in the
+        //   constructor - which are all the class-level field declarations set
+        //   in TypeScript.
+        if (!this.properties) {
+            this.properties = new ExtendedSet(Object.getOwnPropertyNames(
+                (this as any).call(null, repository),
+            ));
+        }
+
+        // Determine the property intersection and union sizes.
+        const deserializedProperties: string[] = Object.keys(deserialized);
+        const intersectedPropertyCount: number =
+            this.properties.intersect(deserializedProperties).size;
+        const unionedPropertyCount: number =
+            this.properties.union(deserializedProperties).size;
+        const expectedPropertyCount: number = this.properties.size;
+
+        // Make sure that the deserialized object contains the expected keys.
+        if (intersectedPropertyCount < expectedPropertyCount) {
+            throw new TypeError(
+                "Not enough properties were given in the serialized string!",
+            );
+        } else if (unionedPropertyCount > expectedPropertyCount) {
+            throw new TypeError(
+                "Too many properties were given in the serialized string!",
+            );
+        }
+
+        // Create an entity instance with the given deserialized properties.
         return Object.assign(
             Object.create(this.prototype),
-            JSON.parse(serialized || "{}"),
+            deserialized,
             { repository },
         );
     }
+
+    // Keep a set of properties for checking against deserialized JSON objects.
+    private static properties: ExtendedSet<string>;
 
     public abstract readonly primaryKey:
         EntityPrimaryKey<Entity<EntityT, RepositoryT, SerializedT>, EntityT>;

@@ -1,6 +1,6 @@
 // Import internal components.
 import { IllegalStateError } from "@/common/errors";
-import { Optional } from "@/common/types";
+import { Optional, Promisable } from "@/common/types";
 import { Component } from "@/core/base/components";
 import { PersistenceController } from "@/core/base/controllers";
 import { Entity, EntityClass } from "@/core/base/persistence/entity";
@@ -30,7 +30,7 @@ export abstract class Repository<
         EntityT extends BaseEntityT,
         PrimaryKeyT extends BasePrimaryKeyT
     >(primaryKey: PrimaryKeyT): Optional<EntityT> {
-        return this.entities.get(primaryKey) as EntityT;
+        return this.entities.get(primaryKey) as Optional<EntityT>;
     }
 
     public fromJSON<EntityT extends BaseEntityT>(serialized: string): EntityT {
@@ -51,7 +51,7 @@ export abstract class Repository<
     ): Promise<EntityT>;
 
     public abstract async delete<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
         ...args: any[]
     ): Promise<void>;
 
@@ -64,12 +64,12 @@ export abstract class Repository<
     ): Promise<EntityT[]>;
 
     public abstract async read<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
         ...args: any[]
     ): Promise<EntityT>;
 
     public abstract async save<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
         ...args: any[]
     ): Promise<EntityT>;
 }

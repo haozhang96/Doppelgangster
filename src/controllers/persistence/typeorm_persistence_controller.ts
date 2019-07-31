@@ -1,5 +1,6 @@
 // Import internal components.
 import { IInitializable } from "@/common/interfaces/traits";
+import { Promisable } from "@/common/types";
 import { Doppelgangster } from "@/core";
 import {
     ControllerClass, PersistenceController,
@@ -47,14 +48,17 @@ export class TypeORMPersistenceController
     }
 
     public async destroy(): Promise<void> {
-        return;
+        await super.destroy();
+        await this._database.connection.close();
     }
 
     public async getRepository<
         RepositoryClassT extends TypeORMRepositoryClass<any>
-    >(Repository: RepositoryClassT): Promise<InstanceType<RepositoryClassT>> {
+    >(
+        Repository: Promisable<RepositoryClassT>,
+    ): Promise<InstanceType<RepositoryClassT>> {
         await this.initialize();
-        return super.getRepository(Repository);
+        return super.getRepository(await Repository);
     }
 
     public async initialize(): Promise<this> {

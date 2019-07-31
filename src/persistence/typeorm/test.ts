@@ -17,11 +17,10 @@ import {
     const entityA: MyEntity = await (new MyEntity(repositoryA)).load();
     entityA.a = "hi";
 
-    // Second way
+    // Second way (safer if controller has external initializations)
     const repositoryB: MyRepository =
         await controller.getRepository(MyRepository);
-    const entityB: MyEntity =
-        await repositoryB.read(await repositoryB.create());
+    const entityB: MyEntity = await repositoryB.read(repositoryB.create());
     entityB.a = "hi";
 
     // Another repository + entity

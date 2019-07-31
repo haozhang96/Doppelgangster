@@ -1,5 +1,6 @@
 // Import internal components.
 import { IDestructible } from "@/common/interfaces/traits";
+import { Promisable } from "@/common/types";
 import { Doppelgangster } from "@/core/doppelgangster";
 
 /**
@@ -13,7 +14,7 @@ export abstract class Component implements IDestructible {
     constructor(public readonly doppelgangster: Doppelgangster) { }
 
     // @Override
-    public abstract destroy(): void;
+    public abstract destroy(): Promisable<void>;
 }
 
 /**

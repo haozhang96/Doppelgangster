@@ -1,5 +1,5 @@
 // Import internal components.
-import { Optional } from "@/common/types";
+import { Optional, Promisable } from "@/common/types";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Repository } from "@/core/base/persistence";
 import {
@@ -20,16 +20,14 @@ export abstract class TypeORMRepository<
     TypeORMPersistenceController,
     BasePrimaryKeyT
 > {
-    public async create<EntityT extends BaseEntityT>(
-        ...args: any[]
-    ): Promise<EntityT> {
+    public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
         return new (this.entityClass as TypeORMEntityClass<any, any>)(
             this,
         ) as EntityT;
     }
 
     public async delete<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
         ...args: any[]
     ): Promise<void> {
         return;
@@ -42,23 +40,23 @@ export abstract class TypeORMRepository<
     public async find<EntityT extends BaseEntityT>(
         ...args: any[]
     ): Promise<Optional<EntityT>> {
-        return this.create<EntityT>(...args);
+        return this.create<EntityT>();
     }
 
     public async findAll<EntityT extends BaseEntityT>(
         ...args: any[]
     ): Promise<EntityT[]> {
-        return [await this.create<EntityT>(...args)];
+        return [await this.create<EntityT>()];
     }
 
     public async read<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
     ): Promise<EntityT> {
         return entity;
     }
 
     public async save<EntityT extends BaseEntityT>(
-        entity: EntityT,
+        entity: Promisable<EntityT>,
     ): Promise<EntityT> {
         return entity;
     }
