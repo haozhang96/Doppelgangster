@@ -3,9 +3,6 @@ import { NotImplementedError } from "@/common/errors";
 import { Entity, EntityPrimaryKey } from "@/core/base/persistence";
 import { TypeORMRepository } from "@/persistence/typeorm/typeorm_repository";
 
-// Import external libraries.
-import * as $TypeORM from "typeorm";
-
 /**
  * TODO
  */
@@ -14,13 +11,6 @@ export abstract class TypeORMEntity<
     RepositoryT extends TypeORMRepository<any, any>,
     SerializedT
 > extends Entity<EntityT, RepositoryT, SerializedT> {
-    constructor(
-        repository: RepositoryT,
-        public readonly typeormEntity: $TypeORM.BaseEntity,
-    ) {
-        super(repository);
-    }
-
     public serialize(): SerializedT {
         throw new NotImplementedError(
             "serialize() is currently not implemented in TypeORMEntity!",
@@ -34,9 +24,7 @@ export abstract class TypeORMEntity<
 export type TypeORMEntityClass<
     EntityT extends TypeORMEntity<any, any, any>,
     RepositoryT extends TypeORMRepository<any, any>
-> = typeof TypeORMEntity & (
-    new (repository: RepositoryT, typeormEntity: $TypeORM.BaseEntity) => EntityT
-);
+> = typeof TypeORMEntity & (new (repository: RepositoryT) => EntityT);
 
 export type TypeORMEntityPrimaryKey<
     EntityT extends TypeORMEntity<any, any, any>

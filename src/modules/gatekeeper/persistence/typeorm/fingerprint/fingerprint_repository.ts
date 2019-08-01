@@ -1,4 +1,5 @@
 // Import internal components.
+import { Promisable } from "@/common/types";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Profile } from "@/core/heuristic/profile";
 import { IFingerprint } from "@/modules/gatekeeper/interfaces";
@@ -23,8 +24,10 @@ export class FingerprintRepository extends TypeORMRepository<
         super(persistenceController, "fingerprints");
     }
 
-    public async getFingerprints(profile: Profile): Promise<IFingerprint[]> {
-        const entity = await this.findByPrimaryKey(profile.userID);
+    public async getFingerprints(
+        profile: Promisable<Profile>,
+    ): Promise<IFingerprint[]> {
+        const entity = await this.findByPrimaryKey((await profile).userID);
         return entity ? entity.fingerprints : [];
     }
 }

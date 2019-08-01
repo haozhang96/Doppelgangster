@@ -31,12 +31,9 @@ export abstract class TypeORMRepository<
             persistenceController.typeormDatabase.getRepository(repositoryName);
     }
 
-    public async create<EntityT extends BaseEntityT>(
-        typeormEntity: $TypeORM.BaseEntity,
-    ): Promise<EntityT> {
+    public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
         return new (this.entityClass as TypeORMEntityClass<any, any>)(
             this,
-            typeormEntity,
         ) as EntityT;
     }
 
@@ -53,14 +50,22 @@ export abstract class TypeORMRepository<
 
     public async find<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Optional<EntityT>> {
-        return this.create<EntityT>();
-    }
-
-    public async findAll<EntityT extends BaseEntityT>(
-        ...args: any[]
     ): Promise<EntityT[]> {
         return [await this.create<EntityT>()];
+    }
+
+    public async findByPrimaryKey<
+        EntityT extends BaseEntityT,
+        PrimaryKeyT extends BasePrimaryKeyT
+    >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>> {
+        return undefined;
+    }
+
+    public async findOne<EntityT extends BaseEntityT>(
+        ...args: any[]
+    ): Promise<Optional<EntityT>> {
+        const a = await this.typeormRepository.find({});
+        return this.create<EntityT>();
     }
 
     public async read<EntityT extends BaseEntityT>(
@@ -82,5 +87,8 @@ export abstract class TypeORMRepository<
 export type TypeORMRepositoryClass<
     RepositoryT extends TypeORMRepository<any, any>
 > = typeof TypeORMRepository & (
-    new (persistenceController: TypeORMPersistenceController) => RepositoryT
+    new (
+        persistenceController: TypeORMPersistenceController,
+        repositoryName: string,
+    ) => RepositoryT
 );

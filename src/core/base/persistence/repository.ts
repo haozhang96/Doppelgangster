@@ -26,10 +26,10 @@ export abstract class Repository<
         );
     }
 
-    public findByPrimaryKey<
+    public async findByPrimaryKey<
         EntityT extends BaseEntityT,
         PrimaryKeyT extends BasePrimaryKeyT
-    >(primaryKey: PrimaryKeyT): Optional<EntityT> {
+    >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>> {
         return this.entities.get(primaryKey) as Optional<EntityT>;
     }
 
@@ -57,11 +57,16 @@ export abstract class Repository<
 
     public abstract async find<EntityT extends BaseEntityT>(
         ...args: any[]
-    ): Promise<Optional<EntityT>>;
-
-    public abstract async findAll<EntityT extends BaseEntityT>(
-        ...args: any[]
     ): Promise<EntityT[]>;
+
+    /*public abstract async findByPrimaryKey<
+        EntityT extends BaseEntityT,
+        PrimaryKeyT extends BasePrimaryKeyT
+    >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>>;*/
+
+    public abstract async findOne<EntityT extends BaseEntityT>(
+        ...args: any[]
+    ): Promise<Optional<EntityT>>;
 
     public abstract async read<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,

@@ -4,5 +4,5 @@ import { Profile } from "@/core/heuristic/profile";
 import { IFingerprint } from "@/modules/gatekeeper/interfaces";
 
 export interface IFingerprintRepository {
-    getFingerprints(profile: Profile): Promisable<IFingerprint[]>;
+    getFingerprints(profile: Promisable<Profile>): Promisable<IFingerprint[]>;
 }

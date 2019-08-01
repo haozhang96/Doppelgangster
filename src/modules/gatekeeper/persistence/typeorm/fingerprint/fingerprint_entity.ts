@@ -22,13 +22,11 @@ export class FingerprintEntity extends TypeORMEntity<
     FingerprintRepository,
     string
 > implements IFingerprintEntity {
+    public primaryKey: TypeORMEntityPrimaryKey<FingerprintEntity> = "userID";
+
     @$TypeORM.PrimaryColumn({length: 64})
     public userID!: string;
 
     @$TypeORM.Column("simple-json")
     public fingerprints!: IFingerprint[];
-
-    // Define the TypeORMEntity-specific properties.
-    public primaryKey: TypeORMEntityPrimaryKey<FingerprintEntity> = "userID";
-    // protected typeormEntity = new $TypeORM.BaseEntity();
 }
