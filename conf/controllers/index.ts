@@ -18,7 +18,7 @@ interface IControllerClasses extends IMappedObject<
     command: Controllers.CommandControllerClass[];
     logging: Controllers.LoggingControllerClass[];
     module: Controllers.ModuleControllerClass[];
-    persistence: Array<Controllers.PersistenceControllerClass<any, any, any>>;
+    persistence: Controllers.PersistenceControllerClass[];
     profile: Controllers.ProfileControllerClass[];
 }
 

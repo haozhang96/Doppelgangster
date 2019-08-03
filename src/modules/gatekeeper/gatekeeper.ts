@@ -17,7 +17,7 @@ export class Gatekeeper extends Mix(Module)
         getDefaultClassesInDirectory(__dirname, "characteristics");
     public readonly commands: CommandClass[] =
         getDefaultClassesInDirectory(__dirname, "commands");
-    public readonly entities: Array<EntityClass<any, any, any, any>> =
+    public readonly entities: Array<EntityClass<any, any>> =
         getDefaultClassesInDirectory(__dirname, "entities");
 
     constructor(doppelgangster: Doppelgangster) {

@@ -3,3 +3,6 @@ export type Callback<ArgumentsT = any, ReturnT = void> =
 
 export type CallbackCallSignature<CallbackT extends Callback> =
     CallbackT extends (...args: infer R) => any ? R : never;
+
+export type CallbackCallSignatureWithoutFirstArg<CallbackT extends Callback> =
+    CallbackT extends (_: any, ...args: infer R) => any ? R : never;

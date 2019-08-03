@@ -1,6 +1,8 @@
 // Import internal components.
 import { IInitializable } from "@/common/interfaces/traits";
-import { ClassConstructorCallSignature, Promisable } from "@/common/types";
+import {
+    ClassConstructorCallSignatureWithoutFirstArg, Promisable,
+} from "@/common/types";
 import { Doppelgangster } from "@/core";
 import {
     ControllerClass, PersistenceController,
@@ -56,10 +58,10 @@ export class TypeORMPersistenceController
         RepositoryClassT extends TypeORMRepositoryClass<any>
     >(
         Repository: Promisable<RepositoryClassT>,
-        ...args: ClassConstructorCallSignature<RepositoryClassT>
+        ...args: ClassConstructorCallSignatureWithoutFirstArg<RepositoryClassT>
     ): Promise<InstanceType<RepositoryClassT>> {
         await this.initialize();
-        return super.getRepository(await Repository, ...args);
+        return super.getRepository(Repository, ...args);
     }
 
     public async initialize(): Promise<this> {

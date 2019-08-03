@@ -1,5 +1,7 @@
 // Import internal components.
-import { Optional, Promisable } from "@/common/types";
+import { IllegalArgumentError } from "@/common/errors";
+import { IInitializable } from "@/common/interfaces/traits";
+import { CallbackCallSignature, Optional, Promisable } from "@/common/types";
 import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Repository } from "@/core/base/persistence";
 import {
@@ -19,19 +21,17 @@ export abstract class TypeORMRepository<
     BaseEntityT,
     TypeORMPersistenceController,
     BasePrimaryKeyT
-> {
-    public readonly typeormRepository: $TypeORM.Repository<BaseEntityT>;
+> implements IInitializable {
+    public abstract readonly repositoryName: string;
+    public typeormRepository!:
+        $TypeORM.Repository<TypeORMEntity<any, any, any>>;
 
-    constructor(
-        persistenceController: TypeORMPersistenceController,
-        repositoryName: string,
-    ) {
-        super(persistenceController);
-        this.typeormRepository =
-            persistenceController.typeormDatabase.getRepository(repositoryName);
+    public get initialized(): boolean {
+        return !!this.typeormRepository;
     }
 
     public async create<EntityT extends BaseEntityT>(): Promise<EntityT> {
+        await this.initialize();
         return new (this.entityClass as TypeORMEntityClass<any, any>)(
             this,
         ) as EntityT;
@@ -39,9 +39,13 @@ export abstract class TypeORMRepository<
 
     public async delete<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
-        ...args: any[]
+        ...args:
+            CallbackCallSignature<typeof $TypeORM.Repository.prototype.delete>
     ): Promise<void> {
-        return;
+        await this.initialize();
+        if (await entity) {
+            await this.typeormRepository.delete(...args);
+        }
     }
 
     public async destroy(): Promise<void> {
@@ -49,35 +53,66 @@ export abstract class TypeORMRepository<
     }
 
     public async find<EntityT extends BaseEntityT>(
-        ...args: any[]
-    ): Promise<EntityT[]> {
-        return [await this.create<EntityT>()];
-    }
-
-    public async findByPrimaryKey<
-        EntityT extends BaseEntityT,
-        PrimaryKeyT extends BasePrimaryKeyT
-    >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>> {
-        return undefined;
-    }
-
-    public async findOne<EntityT extends BaseEntityT>(
-        ...args: any[]
+        ...args:
+            CallbackCallSignature<typeof $TypeORM.Repository.prototype.findOne>
     ): Promise<Optional<EntityT>> {
-        const a = await this.typeormRepository.find({});
-        return this.create<EntityT>();
+        await this.initialize();
+        return (
+            await this.typeormRepository.findOne(...args) as Optional<EntityT>
+        );
+    }
+
+    public async findAll<EntityT extends BaseEntityT>(
+        ...args:
+            CallbackCallSignature<typeof $TypeORM.Repository.prototype.find>
+    ): Promise<EntityT[]> {
+        await this.initialize();
+        return await this.typeormRepository.find(...args) as EntityT[];
+    }
+
+    public async initialize(): Promise<this> {
+        // Create the TypeORM repository instance if it doesn't already exist.
+        if (!this.typeormRepository) {
+            this.typeormRepository =
+                this.persistenceController.typeormDatabase.getRepository(
+                    this.repositoryName,
+                );
+        }
+
+        return this;
     }
 
     public async read<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
     ): Promise<EntityT> {
+        await this.initialize();
         return entity;
     }
 
     public async save<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
     ): Promise<EntityT> {
+        await this.initialize();
+
+        const existingEntity: Optional<TypeORMEntity<any, any, any>> =
+            this.entities.get((entity = await entity).primaryKey);
+        if (existingEntity && existingEntity !== entity) {
+            throw new IllegalArgumentError(
+                "The provided entity has a conflicting primary key with the "
+                + `existing entity in the repository (${
+                    String(entity.primaryKey)
+                })!`,
+            );
+        }
+
+        // TODO: Save to TypeORM repository
+
         return entity;
+    }
+
+    public async synchronize(): Promise<void> {
+        await this.initialize();
+        return;
     }
 }
 
@@ -87,8 +122,5 @@ export abstract class TypeORMRepository<
 export type TypeORMRepositoryClass<
     RepositoryT extends TypeORMRepository<any, any>
 > = typeof TypeORMRepository & (
-    new (
-        persistenceController: TypeORMPersistenceController,
-        repositoryName: string,
-    ) => RepositoryT
+    new (persistenceController: TypeORMPersistenceController) => RepositoryT
 );

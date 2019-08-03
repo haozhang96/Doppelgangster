@@ -24,7 +24,7 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
             return this;
         }
 
-        public addListener = (event: string, listener: Callback) => {
+        public addListener = (event: string | symbol, listener: Callback) => {
             return this.delegate(super.addListener, event, listener);
         }
 
@@ -32,19 +32,25 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
             return this.delegate(super.emit, event, ...args);
         }
 
-        public on = (event: string, listener: Callback) => {
+        public on = (event: string | symbol, listener: Callback) => {
             return this.delegate(super.on, event, listener);
         }
 
-        public once = (event: string, listener: Callback) => {
+        public once = (event: string | symbol, listener: Callback) => {
             return this.delegate(super.once, event, listener);
         }
 
-        public prependListener = (event: string, listener: Callback) => {
+        public prependListener = (
+            event: string | symbol,
+            listener: Callback,
+        ) => {
             return this.delegate(super.prependListener, event, listener);
         }
 
-        public prependOnceListener = (event: string, listener: Callback) => {
+        public prependOnceListener = (
+            event: string | symbol,
+            listener: Callback,
+        ) => {
             return this.delegate(super.prependOnceListener, event, listener);
         }
 
@@ -52,7 +58,7 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
             return this.delegate(super.rawListeners, event);
         }
 
-        public removeAllListeners = (event?: string) => {
+        public removeAllListeners = (event?: string | symbol) => {
             return this.delegate(super.removeAllListeners, event);
         }
 
@@ -61,11 +67,14 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
             return this;
         }
 
-        public removeListener = (event: string, listener: Callback) => {
+        public removeListener = (
+            event: string | symbol,
+            listener: Callback,
+        ) => {
             return this.delegate(super.removeListener, event, listener);
         }
 
-        public off = (event: string, listener: Callback) => {
+        public off = (event: string | symbol, listener: Callback) => {
             return this.delegate(super.off, event, listener);
         }
 
@@ -77,10 +86,11 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
          */
         private delegate<T extends Callback>(
             method: T,
-            event?: string,
+            event?: string | symbol,
             ...args: any[]
         ): ReturnType<T> {
             if (event) {
+                event = String(event);
                 args.unshift(event.slice(event.indexOf(delimiter) + 1));
             }
             return method.call(
@@ -89,8 +99,8 @@ export function DelegatedEventEmitter<ClassT extends InstantiableClass>(
             ) as ReturnType<T>;
         }
 
-        private getDelegatedEmitter(event?: string): this | EmitterT {
-            if (!event || !event.includes(delimiter)) {
+        private getDelegatedEmitter(event?: string | symbol): this | EmitterT {
+            if (!event || !(event = String(event)).includes(delimiter)) {
                 return this;
             }
             return this._emitters[event.slice(0, event.indexOf(delimiter))];

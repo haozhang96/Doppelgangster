@@ -1,6 +1,5 @@
 export * from "./callback";
 export * from "./class";
-export * from "./defined";
 export * from "./mixin";
 export * from "./nullable";
 export * from "./optional";

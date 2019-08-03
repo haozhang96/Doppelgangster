@@ -13,7 +13,8 @@ export abstract class Repository<
     PersistenceControllerT extends PersistenceController,
     BasePrimaryKeyT
 > extends Component {
-    protected abstract readonly entityClass: /* BaseEntityClassT */ unknown;
+    public abstract readonly entityClass: /* BaseEntityClassT */ unknown;
+
     protected readonly entities:
         Map</* BasePrimaryKeyT */ unknown, Entity<any, any, any>> = new Map();
 
@@ -31,6 +32,23 @@ export abstract class Repository<
         PrimaryKeyT extends BasePrimaryKeyT
     >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>> {
         return this.entities.get(primaryKey) as Optional<EntityT>;
+    }
+
+    public async findAllByPrimaryKeys<
+        EntityT extends BaseEntityT,
+        PrimaryKeyT extends BasePrimaryKeyT
+    >(primaryKeys: PrimaryKeyT[]): Promise<EntityT[]> {
+        const entities: EntityT[] = [];
+
+        for (const primaryKey of primaryKeys) {
+            const entity: Optional<Entity<any, any, any>> =
+                this.entities.get(primaryKey);
+            if (entity) {
+                entities.push(entity as EntityT);
+            }
+        }
+
+        return entities;
     }
 
     public fromJSON<EntityT extends BaseEntityT>(serialized: string): EntityT {
@@ -57,16 +75,16 @@ export abstract class Repository<
 
     public abstract async find<EntityT extends BaseEntityT>(
         ...args: any[]
+    ): Promise<Optional<EntityT>>;
+
+    public abstract async findAll<EntityT extends BaseEntityT>(
+        ...args: any[]
     ): Promise<EntityT[]>;
 
     /*public abstract async findByPrimaryKey<
         EntityT extends BaseEntityT,
         PrimaryKeyT extends BasePrimaryKeyT
     >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>>;*/
-
-    public abstract async findOne<EntityT extends BaseEntityT>(
-        ...args: any[]
-    ): Promise<Optional<EntityT>>;
 
     public abstract async read<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
@@ -77,6 +95,8 @@ export abstract class Repository<
         entity: Promisable<EntityT>,
         ...args: any[]
     ): Promise<EntityT>;
+
+    public abstract async synchronize(): Promise<void>;
 }
 
 /**

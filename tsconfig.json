@@ -33,6 +33,7 @@
     },
     "include": [
         "conf",
-        "src"
+        "src",
+        "tests"
     ]
 }

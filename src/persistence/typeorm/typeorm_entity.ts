@@ -26,6 +26,9 @@ export type TypeORMEntityClass<
     RepositoryT extends TypeORMRepository<any, any>
 > = typeof TypeORMEntity & (new (repository: RepositoryT) => EntityT);
 
+/**
+ * TODO
+ */
 export type TypeORMEntityPrimaryKey<
     EntityT extends TypeORMEntity<any, any, any>
 > = EntityPrimaryKey<TypeORMEntity<any, any, any>, EntityT>;

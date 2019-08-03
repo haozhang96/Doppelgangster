@@ -12,7 +12,7 @@ export abstract class Module extends DisableableComponent {
     // @Override
     public readonly characteristics: CharacteristicClass[] = [];
     public readonly commands: CommandClass[] = [];
-    public readonly entities: Array<EntityClass<any>> = [];
+    public readonly entities: Array<EntityClass<any, any>> = [];
 
     /**
      * Construct a Module instance.

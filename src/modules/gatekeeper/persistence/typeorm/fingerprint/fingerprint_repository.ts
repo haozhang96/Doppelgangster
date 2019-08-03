@@ -1,6 +1,5 @@
 // Import internal components.
 import { Promisable } from "@/common/types";
-import { TypeORMPersistenceController } from "@/controllers/persistence";
 import { Profile } from "@/core/heuristic/profile";
 import { IFingerprint } from "@/modules/gatekeeper/interfaces";
 import {
@@ -18,11 +17,8 @@ export class FingerprintRepository extends TypeORMRepository<
     FingerprintEntity,
     string
 > implements IFingerprintRepository {
-    protected entityClass = FingerprintEntity;
-
-    constructor(persistenceController: TypeORMPersistenceController) {
-        super(persistenceController, "fingerprints");
-    }
+    public repositoryName = "fingerprints";
+    public entityClass = FingerprintEntity;
 
     public async getFingerprints(
         profile: Promisable<Profile>,

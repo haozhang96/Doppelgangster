@@ -8,9 +8,7 @@ import { SetUtils } from "@/utilities/set";
  * @param Class An instantiable class that 
  * @param iterables An array of iterables to coerce into the given type
  */
-export function coerceTypes<
-    ClassT extends InstantiableClass<InstanceType<ClassT>>
->(
+export function coerceTypes<ClassT extends InstantiableClass>(
     Class: ClassT,
     ...iterables: Array<Iterable<any>>
 ): Array<InstanceType<ClassT>> {

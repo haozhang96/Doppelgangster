@@ -14,8 +14,10 @@
         "watch": "tsc -w"
     },
     "devDependencies": {
-        "@types/node": "^12.6.8",
+        "@types/node": "^12.6.9",
         "@types/request": "^2.48.2",
+        "chai": "^4.2.0",
+        "mocha": "^6.2.0",
         "nodemon": "^1.19.1",
         "tslint-microsoft-contrib": "^6.2.0"
     },
@@ -28,7 +30,7 @@
         "reflect-metadata": "^0.1.13",
         "request": "^2.88.0",
         "simple-statistics": "^7.0.5",
-        "tracer": "^0.9.8",
+        "tracer": "^0.9.9",
         "tslib": "^1.10.0",
         "typeorm": "^0.2.18"
     },
