@@ -22,7 +22,6 @@
         "javascript-obfuscator": "^0.18.1",
         "jsonschema": "^1.2.4",
         "mongodb": "^3.2.7",
-        "reflect-metadata": "^0.1.13",
         "tslib": "^1.10.0",
         "typeorm": "^0.2.18"
     }
