@@ -22,7 +22,7 @@ export abstract class TypeORMRepository<
     TypeORMPersistenceController,
     BasePrimaryKeyT
 > implements IInitializable {
-    public abstract readonly repositoryName: string;
+    public abstract readonly tableName: string;
     public typeormRepository!:
         $TypeORM.Repository<TypeORMEntity<any, any, any>>;
 
@@ -75,7 +75,7 @@ export abstract class TypeORMRepository<
         if (!this.typeormRepository) {
             this.typeormRepository =
                 this.persistenceController.typeormDatabase.getRepository(
-                    this.repositoryName,
+                    this.tableName,
                 );
         }
 

@@ -11,7 +11,7 @@
         "docker-debug": "docker-compose up --build",
         "postinstall": "tsc",
         "start": "node dist/src/app.js",
-        "test": "mocha -r ts-node/register tests/**/*.test.ts",
+        "test": "mocha -r ts-node/register -r module-alias/register tests/**/*.test.ts",
         "watch": "tsc -w"
     },
     "devDependencies": {

@@ -18,7 +18,7 @@ export class FingerprintRepository extends TypeORMRepository<
     FingerprintEntity,
     string
 > implements IFingerprintRepository {
-    public repositoryName = "fingerprints";
+    public tableName = "fingerprints";
     public entityClass = FingerprintEntity;
 
     public async getFingerprints(

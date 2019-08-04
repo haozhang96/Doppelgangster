@@ -12,5 +12,5 @@
         "LICENSE": true,
     },
     "mochaExplorer.files": "tests/**/*.test.ts",
-    "mochaExplorer.require": "ts-node/register"
+    "mochaExplorer.require": ["ts-node/register", "module-alias/register"]
 }

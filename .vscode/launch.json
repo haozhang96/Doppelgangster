@@ -43,6 +43,8 @@
             "args": [
                 "-r",
                 "ts-node/register",
+                "-r",
+                "module-alias/register",
                 "--timeout",
                 "999999",
                 "--colors",
