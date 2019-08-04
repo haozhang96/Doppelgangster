@@ -86,6 +86,8 @@ export abstract class Repository<
         PrimaryKeyT extends BasePrimaryKeyT
     >(primaryKey: PrimaryKeyT): Promise<Optional<EntityT>>;*/
 
+    public abstract async query(query: string, ...args: any[]): Promise<void>;
+
     public abstract async read<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
         ...args: any[]

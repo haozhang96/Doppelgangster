@@ -5,9 +5,7 @@ import { MathUtils } from "@/utilities";
 import { expect } from "chai";
 import "mocha";
 
-describe("calculateSimilarity", () => {
-    const calculateSimilarity = MathUtils.calculateSimilarity;
-
+describe("calculateSimilarity", ({ calculateSimilarity } = MathUtils) => {
     it("should return NaN when factor is 0", () => {
         expect(isNaN(calculateSimilarity(0, 0, 0))).to.equal(true);
     });
