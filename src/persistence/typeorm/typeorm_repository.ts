@@ -82,11 +82,6 @@ export abstract class TypeORMRepository<
         return this;
     }
 
-    public async query(query: string): Promise<void> {
-        await this.initialize();
-        await this.typeormRepository.query(query);
-    }
-
     public async read<EntityT extends BaseEntityT>(
         entity: Promisable<EntityT>,
     ): Promise<EntityT> {
@@ -113,10 +108,6 @@ export abstract class TypeORMRepository<
         // TODO: Save to TypeORM repository
 
         return entity;
-    }
-
-    public async synchronize(): Promise<void> {
-        await this.initialize();
     }
 }
 

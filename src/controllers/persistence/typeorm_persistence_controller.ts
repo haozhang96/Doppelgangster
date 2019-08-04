@@ -33,9 +33,7 @@ export class TypeORMPersistenceController
             // Merge user-provided connection options with the static options.
             await $TypeORM.createConnection({
                 ...options,
-                ...{
-                    entities: ["dist/src/core/persistence/entities/*.js"],
-                },
+                entities: ["dist/src/core/persistence/entities/*.js"],
             }),
         ).then((database) => {
             this.typeormDatabase = database.manager;
@@ -72,6 +70,16 @@ export class TypeORMPersistenceController
             () => this.typeormDatabase,
             () => this,
         ) as unknown as this;
+    }
+
+    public async query(query: string): Promise<any> {
+        await this.initialize();
+        return this.typeormDatabase.query(query);
+    }
+
+    public async synchronize(): Promise<void> {
+        await this.initialize();
+        await this.typeormDatabase.connection.synchronize();
     }
 }
 

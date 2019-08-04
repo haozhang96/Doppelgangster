@@ -43,6 +43,9 @@ export abstract class PersistenceController extends Controller {
             this.repositories.get(_Repository) as InstanceType<RepositoryClassT>
         );
     }
+
+    public abstract async query(query: string, ...args: any[]): Promise<any>;
+    public abstract async synchronize(): Promise<void>;
 }
 
 /**
