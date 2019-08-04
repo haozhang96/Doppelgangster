@@ -7,7 +7,8 @@ import {
 } from "@/modules/gatekeeper/persistence/base/fingerprint";
 import {
     FingerprintEntity,
-} from "@/modules/gatekeeper/persistence/typeorm/fingerprint";
+// tslint:disable-next-line: max-line-length
+} from "@/modules/gatekeeper/persistence/typeorm/fingerprint/fingerprint_entity";
 import { TypeORMRepository } from "@/persistence/typeorm";
 
 /**

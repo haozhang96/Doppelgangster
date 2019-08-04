@@ -5,10 +5,7 @@ import {
 } from "@/modules/gatekeeper/persistence/typeorm/fingerprint";
 
 (async () => {
-    // Attach a persistence controller to a Doppelgangster instance.
-    const controller =
-        await new TypeORMPersistenceController(doppelgangster).initialize();
-
+    const controller = new TypeORMPersistenceController(doppelgangster);
     const repository: FingerprintRepository =
         await controller.getRepository(FingerprintRepository);
     const entity: FingerprintEntity =
