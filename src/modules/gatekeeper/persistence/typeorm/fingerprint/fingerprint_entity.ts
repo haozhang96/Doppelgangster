@@ -3,10 +3,8 @@ import { IFingerprint } from "@/modules/gatekeeper/interfaces";
 import {
     IFingerprintEntity,
 } from "@/modules/gatekeeper/persistence/base/fingerprint";
-import {
-    FingerprintRepository,
 // tslint:disable-next-line: max-line-length
-} from "@/modules/gatekeeper/persistence/typeorm/fingerprint/fingerprint_repository";
+import FingerprintRepository from "@/modules/gatekeeper/persistence/typeorm/fingerprint/fingerprint_repository";
 import { TypeORMEntity, TypeORMEntityPrimaryKey } from "@/persistence/typeorm";
 
 // Import external libraries.
@@ -16,7 +14,7 @@ import * as $TypeORM from "typeorm";
  * TODO
  */
 @$TypeORM.Entity("fingerprints")
-export class FingerprintEntity extends TypeORMEntity<
+export default class FingerprintEntity extends TypeORMEntity<
     FingerprintEntity,
     FingerprintRepository,
     string

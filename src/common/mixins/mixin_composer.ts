@@ -1,6 +1,7 @@
 import {
     Callback, Class, InstantiableClass, MixIn, MixInCallSignature,
 } from "@/common/types";
+import { waitUntil } from "@/utilities/miscellaneous";
 
 /**
  * The MixInComposer class allows applying mix-ins in a chain to a base
@@ -13,8 +14,19 @@ export class MixInComposer<ClassT extends InstantiableClass> {
      * Begin a mix-in composition chain on a base [abstract] class.
      * @param Base The base class to apply the mix-ins to
      */
-    public static mix<ClassT extends Class>(Base: ClassT, _count: number = 0) {
-        return new MixInComposer(Base as ClassT & InstantiableClass, _count);
+    public static mix<ClassT extends Class>(Base: ClassT) {
+        return MixInComposer._mix(Base);
+    }
+
+    /**
+     * This helper method is used to hide away the count variable used to keep
+     *   count of the number of mix-ins that will require initialization during
+     *   the instantiation chain of the final, mixed-in class.
+     * @param Base The base class to apply the mix-ins to
+     * @param count The number of mix-ins that has currently been applied
+     */
+    private static _mix<ClassT extends Class>(Base: ClassT, count: number = 0) {
+        return new this(Base as ClassT & InstantiableClass, count);
     }
 
     private constructor(private _Base: ClassT, private _count: number) { }
@@ -28,7 +40,7 @@ export class MixInComposer<ClassT extends InstantiableClass> {
         _MixIn: MixInT,
         ...args: MixInCallSignature<MixInT>
     ) {
-        return MixInComposer.mix(_MixIn(this._Base, ...args), this._count + 1);
+        return MixInComposer._mix(_MixIn(this._Base, ...args), this._count + 1);
     }
 
     /**
@@ -56,7 +68,11 @@ export class MixInComposer<ClassT extends InstantiableClass> {
              *   initialized
              */
             public onMixInComplete(callback: Callback) {
-                if (this._mixinsRemaining === 0) {
+                waitUntil(
+                    () => this._mixinsRemaining === 0,
+                    callback,
+                );
+                /*if (this._mixinsRemaining === 0) {
                     return callback();
                 }
 
@@ -65,7 +81,7 @@ export class MixInComposer<ClassT extends InstantiableClass> {
                         clearInterval(checker);
                         return callback();
                     }
-                }, 0);
+                }, 0);*/
             }
         };
     }

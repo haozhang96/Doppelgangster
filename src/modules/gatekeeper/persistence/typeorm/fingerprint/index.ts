@@ -1,2 +1,2 @@
-export * from "./fingerprint_entity";
-export * from "./fingerprint_repository";
+export { default as FingerprintEntity } from "./fingerprint_entity";
+export { default as FingerprintRepository } from "./fingerprint_repository";

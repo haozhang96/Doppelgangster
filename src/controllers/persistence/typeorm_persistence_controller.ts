@@ -23,6 +23,7 @@ import * as $TypeORM from "typeorm";
  */
 export class TypeORMPersistenceController
         extends PersistenceController implements IInitializable {
+    public name: string = "typeorm";
     public typeormDatabase!: $TypeORM.EntityManager;
 
     constructor(doppelgangster: Doppelgangster) {

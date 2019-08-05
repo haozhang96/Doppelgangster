@@ -7,7 +7,8 @@ import {
 /**
  * TODO
  */
-export abstract class DisableableComponent extends Component implements IDisableable {
+export abstract class DisableableComponent
+        extends Component implements IDisableable {
     // Private variables
     private _enabled: boolean = true;
 

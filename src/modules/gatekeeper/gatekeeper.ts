@@ -2,10 +2,6 @@
 import { DiscordGuildAttachable, Mix } from "@/common/mixins";
 import { Doppelgangster } from "@/core";
 import { Module } from "@/core/base/module";
-import { EntityClass } from "@/core/base/persistence";
-import { CharacteristicClass } from "@/core/heuristic/characteristic";
-import { CommandClass } from "@/core/interaction/command";
-import { getDefaultClassesInDirectory } from "@/utilities/reflection";
 
 /**
  * TODO
@@ -13,12 +9,9 @@ import { getDefaultClassesInDirectory } from "@/utilities/reflection";
 export class Gatekeeper extends Mix(Module)
     .with(DiscordGuildAttachable)
 .compose() {
-    public readonly characteristics: CharacteristicClass[] =
-        getDefaultClassesInDirectory(__dirname, "characteristics");
-    public readonly commands: CommandClass[] =
-        getDefaultClassesInDirectory(__dirname, "commands");
-    public readonly entities: Array<EntityClass<any, any>> =
-        getDefaultClassesInDirectory(__dirname, "entities");
+    public characteristics = Module.getCharacteristicClasses(__dirname);
+    public commands = Module.getCommandClasses(__dirname);
+    public entities = Module.getEntityClasses(__dirname, this.doppelgangster);
 
     constructor(doppelgangster: Doppelgangster) {
         super(doppelgangster);

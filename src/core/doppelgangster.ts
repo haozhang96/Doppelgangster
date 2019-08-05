@@ -10,7 +10,7 @@ import * as Utilities from "@/utilities";
 import * as $Discord from "discord.js";
 
 // Import built-in libraries.
-import { EventEmitter } from "events";
+import { EventEmitter as $EventEmitter } from "events";
 import * as $Utilities from "util";
 
 // Import configurations.
@@ -27,7 +27,7 @@ import {
 /**
  * TODO
  */
-export class Doppelgangster extends Mix(EventEmitter)
+export class Doppelgangster extends Mix($EventEmitter)
     .with(DiscordGuildAttachable)
 .compose() implements IDestructible {
     // Public constants

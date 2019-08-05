@@ -12,6 +12,8 @@ import { Repository, RepositoryClass } from "@/core/base/persistence";
  *   controllers to build upon.
  */
 export abstract class PersistenceController extends Controller {
+    public abstract readonly name: string;
+
     protected readonly repositories:
         Map<RepositoryClass<any, any>, Repository<any, any, any>> = new Map();
 

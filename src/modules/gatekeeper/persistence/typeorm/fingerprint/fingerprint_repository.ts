@@ -5,16 +5,14 @@ import { IFingerprint } from "@/modules/gatekeeper/interfaces";
 import {
     IFingerprintRepository,
 } from "@/modules/gatekeeper/persistence/base/fingerprint";
-import {
-    FingerprintEntity,
 // tslint:disable-next-line: max-line-length
-} from "@/modules/gatekeeper/persistence/typeorm/fingerprint/fingerprint_entity";
+import FingerprintEntity from "@/modules/gatekeeper/persistence/typeorm/fingerprint/fingerprint_entity";
 import { TypeORMRepository } from "@/persistence/typeorm";
 
 /**
  * TODO
  */
-export class FingerprintRepository extends TypeORMRepository<
+export default class FingerprintRepository extends TypeORMRepository<
     FingerprintEntity,
     string
 > implements IFingerprintRepository {
