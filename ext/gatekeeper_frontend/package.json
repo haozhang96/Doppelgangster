@@ -23,6 +23,6 @@
         "jsonschema": "^1.2.4",
         "mongodb": "^3.2.7",
         "tslib": "^1.10.0",
-        "typeorm": "^0.2.18"
+        "typeorm": "^0.2.25"
     }
 }
