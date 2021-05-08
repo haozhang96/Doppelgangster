@@ -28,7 +28,7 @@
         "simple-statistics": "^7.0.2",
         "tracer": "^0.9.8",
         "tslib": "^1.10.0",
-        "typeorm": "^0.2.18"
+        "typeorm": "^0.2.25"
     },
     "_moduleAliases": {
         "?": "dist/conf",
